@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from os.path import join
 
 from .utils import CONFIG, CONF_FILES, FOUND_CONFIG_FILES, DEFAULTSECTION
-from .utils import DB_ENGINES, BATCH_HELP, ASROOT_HELP
+from .utils import DB_ENGINES, BATCH_HELP
 from .utils import Installer
 
 
@@ -113,8 +113,7 @@ add('--admin-email', 'joe@example.com',
     "The email address of the server administrator")
 add('--time-zone', 'Europe/Brussels', "The TIME_ZONE to set on new sites")
 
-
-def configure(ctx, batch, asroot,
+def configure(ctx, batch,
               projects_root, local_prefix, shared_env, repositories_root,
               webdav, backups_root, log_root, usergroup,
               supervisor_dir, db_engine, db_port, db_host, env_link, repos_link,
@@ -126,14 +125,14 @@ def configure(ctx, batch, asroot,
     according to the configuration file.
     """
 
-    if len(FOUND_CONFIG_FILES) > 1:
-        # reconfigure is not yet supported
-        raise click.UsageError("Found multiple config files: {}".format(
-            FOUND_CONFIG_FILES))
+    # if len(FOUND_CONFIG_FILES) > 1:
+    #     # reconfigure is not yet supported
+    #     raise click.UsageError("Found multiple config files: {}".format(
+    #         FOUND_CONFIG_FILES))
 
-    i = Installer(batch, asroot)
+    i = Installer(batch)
 
-    if asroot:
+    if i.asroot:
         conffile = CONF_FILES[0]
     else:
         conffile = CONF_FILES[1]
@@ -208,7 +207,7 @@ def configure(ctx, batch, asroot,
     i.write_file(join(pth, 'settings.py'),
                  LOCAL_SETTINGS.format(**DEFAULTSECTION))
 
-    if asroot:
+    if i.asroot:
         if batch or click.confirm("Upgrade the system", default=True):
             with i.override_batch(True):
                 i.runcmd("apt-get update")
@@ -217,7 +216,7 @@ def configure(ctx, batch, asroot,
     i.apt_install(
         "git subversion python3 python3-dev python3-setuptools python3-pip supervisor")
 
-    if asroot:
+    if i.asroot:
         i.apt_install("nginx uwsgi-plugin-python3")
         i.apt_install("logrotate")
 
@@ -269,7 +268,6 @@ def configure(ctx, batch, asroot,
 
 params = [
     click.Option(['--batch/--no-batch'], default=False, help=BATCH_HELP),
-    click.Option(['--asroot/--no-asroot'], default=False, help=ASROOT_HELP)
 ] + CONFIGURE_OPTIONS
 configure = click.pass_context(configure)
 configure = click.Command('configure', callback=configure,

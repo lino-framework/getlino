@@ -10,7 +10,7 @@ from os.path import join
 from cookiecutter.main import cookiecutter
 
 from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
-from .utils import DB_ENGINES, BATCH_HELP, ASROOT_HELP, REPOS_DICT, KNOWN_REPOS
+from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
 from .utils import Installer, check_usergroup
 
 SITES_AVAILABLE = '/etc/nginx/sites-available'
@@ -48,25 +48,24 @@ umask = 0002
 @click.argument('appname', metavar="APPNAME", type=click.Choice(APPNAMES))
 @click.argument('prjname')
 @click.option('--batch/--no-batch', default=False, help=BATCH_HELP)
-@click.option('--asroot/--no-asroot', default=False, help=ASROOT_HELP)
 @click.option('--dev-repos', default='',
               help="List of packages for which to install development version")
 @click.pass_context
-def startsite(ctx, appname, prjname, batch, asroot, dev_repos):
+def startsite(ctx, appname, prjname, batch, dev_repos):
     """
     Create a new Lino site.
 
     Arguments:
 
-    APPNAME : The application to run on the new site. 
+    APPNAME : The application to run on the new site.
 
     SITENAME : The name for the new site.
 
     """ # .format(appnames=' '.join(APPNAMES))
 
-    if len(FOUND_CONFIG_FILES) == 0:
-        raise click.UsageError(
-            "This server is not yet configured. Did you run `sudo -H getlino configure`?")
+    # if len(FOUND_CONFIG_FILES) == 0:
+    #     raise click.UsageError(
+    #         "This server is not yet configured. Did you run `sudo -H getlino configure`?")
 
     i = Installer(batch)
 
@@ -109,9 +108,9 @@ def startsite(ctx, appname, prjname, batch, asroot, dev_repos):
     if not i.check_overwrite(project_dir):
         raise click.Abort()
 
-    if not asroot and not shared_env:
-        raise click.ClickException(
-            "Cannot startsite in a development environment without a shared-env!")
+    # if not i.asroot and not shared_env:
+    #     raise click.ClickException(
+    #         "Cannot startsite in a development environment without a shared-env!")
 
     usergroup = DEFAULTSECTION.get('usergroup')
 
@@ -190,7 +189,7 @@ sudo adduser `whoami` {0}"""
         COOKIECUTTER_URL,
         no_input=True, extra_context=context, output_dir=python_path_root)
 
-    if asroot:
+    if i.asroot:
         logdir = join(DEFAULTSECTION.get("log_root"), prjname)
         os.makedirs(logdir, exist_ok=True)
         with i.override_batch(True):
@@ -242,11 +241,14 @@ sudo adduser `whoami` {0}"""
                 raise click.ClickException("Invalid repo nickname {}".format(nickname))
             i.install_repo(lib)
 
+    for pkgname in pip_packages:
+        i.run_in_env(envdir, "pip install -e {}".format(pkgname))
+
     for e in DB_ENGINES:
         if DEFAULTSECTION.get('db_engine') == e.name:
             i.run_in_env(envdir, "pip install {}".format(e.python_packages))
 
-    if asroot:
+    if i.asroot:
         if USE_NGINX:
 
             if batch or click.confirm("Configure nginx", default=True):
@@ -270,8 +272,7 @@ sudo adduser `whoami` {0}"""
     i.setup_database(prjname, db_user, db_password, db_engine)
     i.run_in_env(envdir, "python manage.py prep --noinput")
 
-    if asroot:
+    if i.asroot:
         i.run_in_env(envdir, "python manage.py collectstatic --noinput")
 
     i.finish()
-

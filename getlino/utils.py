@@ -19,8 +19,6 @@ USE_NGINX = True
 
 BATCH_HELP = "Whether to run in batch mode, i.e. without asking any questions.  "\
              "Don't use this on a machine that is already being used."
-ASROOT_HELP = "Also install system packages (requires root permissions)"
-
 
 # Note that the DbEngine.name field must match the Django engine name
 DbEngine = collections.namedtuple(
@@ -66,9 +64,9 @@ DEFAULTSECTION = CONFIG[CONFIG.default_section]
 
 
 class Installer(object):
-    def __init__(self, batch=False, asroot=False):
+    def __init__(self, batch=False):
         self.batch = batch
-        self.asroot = asroot
+        self.asroot = os.geteuid() == 0
         self._services = set()
         self._system_packages = set()
 
@@ -234,4 +232,3 @@ def check_usergroup(usergroup):
         if grp.getgrgid(gid).gr_name == usergroup:
             return True
     return False
-
