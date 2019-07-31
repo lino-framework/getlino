@@ -242,7 +242,7 @@ sudo adduser `whoami` {0}"""
             i.install_repo(lib)
 
     for pkgname in pip_packages:
-        i.run_in_env(envdir, "pip install -e {}".format(pkgname))
+        i.run_in_env(envdir, "pip install {}".format(pkgname))
 
     for e in DB_ENGINES:
         if DEFAULTSECTION.get('db_engine') == e.name:
