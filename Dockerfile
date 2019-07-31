@@ -24,7 +24,7 @@ RUN mkdir /getlino
 WORKDIR /getlino
 
 # Copy the current directory contents into the container at /getlino
-ADD ./* .
+ADD ./* ./
 RUN pip3 install -e .
 
 # Install sudo package and create a user lino
