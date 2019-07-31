@@ -245,7 +245,7 @@ sudo adduser `whoami` {0}"""
         i.run_in_env(envdir, "pip install {}".format(pkgname))
 
     for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name:
+        if DEFAULTSECTION.get('db_engine') == e.name and e.python_packages:
             i.run_in_env(envdir, "pip install {}".format(e.python_packages))
 
     if i.asroot:

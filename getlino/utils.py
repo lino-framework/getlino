@@ -27,7 +27,7 @@ DB_ENGINES = [
     DbEngine('postgresql', "postgresql postgresql-contrib", "psycopg2-binary"),
     DbEngine(
         'mysql', "mysql-server libmysqlclient-dev python-dev libffi-dev libssl-dev python-mysqldb", "mysqlclient"),
-    DbEngine('sqlite3', "", "")
+    DbEngine('sqlite3', "sqlite3", "")
 ]
 
 Repo = collections.namedtuple(
