@@ -16,7 +16,16 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -y
 RUN apt-get install -y --no-install-recommends apt-utils
 RUN apt-get upgrade -y
-RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+#RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+# create root directory for our project in the container
+RUN mkdir /getlino
+
+# Set the working directory to /getlino
+WORKDIR /getlino
+
+# Copy the current directory contents into the container at /getlino
+ADD ./* .
+RUN pip3 install -e .
 
 # Install sudo package and create a user lino
 RUN apt-get install -y sudo
