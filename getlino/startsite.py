@@ -287,18 +287,14 @@ sudo adduser `whoami` {0}"""
             if lib is None:
                 raise click.ClickException("Invalid repo nickname {}".format(nickname))
             i.install_repo(lib)
-
-<<<<<<< HEAD
     for pkgname in pip_packages:
         i.run_in_env(envdir, "pip install {}".format(pkgname))
 
     for e in DB_ENGINES:
         if DEFAULTSECTION.get('db_engine') == e.name and e.python_packages:
             i.run_in_env(envdir, "pip install {}".format(e.python_packages))
-=======
     if len(pip_packages):
         i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))
->>>>>>> 4c8349c7bb8abac674263710f5ae5f0fe6eb4984
 
     if ifroot():
         if USE_NGINX:
