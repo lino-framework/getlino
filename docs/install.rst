@@ -9,7 +9,7 @@ On a production server
 
 To install a production server, you need a Debian machine and a user account
 which has permission to run ``sudo``. You must install getlino into the
-system-wide Python.
+system-wide Python 3 environment.
 
 Either the officially stable version::
 
@@ -23,17 +23,16 @@ Or the development version::
 On a development machine
 ========================
 
-You can  use getlino to simply configure a development environment. In that case
+You can use getlino to simply configure a development environment. In that case
 you don't need root privileges.
 
 Make sure your default working environment is activated.
 
-We recommend to  install your own local clone::
+We recommend to install your own local clone::
 
    $ cd ~/repositories
    $ git clone git@github.com:lino-framework/getlino.git
-   $ pip3 install -e getlino
-
+   $ pip install -e getlino
 
 Or the officially stable version::
 

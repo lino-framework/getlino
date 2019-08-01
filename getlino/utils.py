@@ -43,14 +43,18 @@ def add(nickname, package_name, git_repo='', settings_module='', front_end=''):
         # add an alias because front ends are identified using their full package name
         REPOS_DICT[t.front_end] = t
 
-add("noi", "lino-noi", "https://github.com/lino-framework/noi", "lino_noi.lib.noi.settings")
-add("voga", "lino-voga", "https://github.com/lino-framework/voga", "lino_voga.lib.voga.settings")
-add("cosi", "lino-cosi", "https://github.com/lino-framework/cosi", "lino_cosi.lib.cosi.settings")
-add("avanti", "lino-avanti", "https://github.com/lino-framework/avanti", "lino_avanti.lib.avanti.settings")
 add("amici", "lino-amici", "https://github.com/lino-framework/amici", "lino_amici.lib.amici.settings")
+add("avanti", "lino-avanti", "https://github.com/lino-framework/avanti", "lino_avanti.lib.avanti.settings")
+add("care", "lino-care", "https://github.com/lino-framework/care", "lino_care.lib.care.settings")
+add("cosi", "lino-cosi", "https://github.com/lino-framework/cosi", "lino_cosi.lib.cosi.settings")
+add("noi", "lino-noi", "https://github.com/lino-framework/noi", "lino_noi.lib.noi.settings")
 add("presto", "lino-presto", "https://github.com/lino-framework/presto", "lino_presto.lib.presto.settings")
+add("tera", "lino-tera", "https://github.com/lino-framework/tera", "lino_tera.lib.tera.settings")
+add("vilma", "lino-vilma", "https://github.com/lino-framework/vilma", "lino_vilma.lib.vilma.settings")
+add("voga", "lino-voga", "https://github.com/lino-framework/voga", "lino_voga.lib.voga.settings")
 add("weleup", "lino-weleup", "https://github.com/lino-framework/weleup", "lino_weleup.settings")
 add("welcht", "lino-welcht", "https://github.com/lino-framework/welcht", "lino_welcht.settings")
+
 add("book", "lino-book", "https://github.com/lino-framework/book")
 add("lino", "lino", "https://github.com/lino-framework/lino", "", "lino.modlib.extjs")
 add("xl", "lino-xl", "https://github.com/lino-framework/xl")

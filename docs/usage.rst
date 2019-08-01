@@ -10,15 +10,13 @@ The :cmd:`getlino configure` command
 
 .. program:: getlino configure
 
-The :cmd:`getlino configure` command configures a machine to become a
-:term:`Lino server`, or a virtual environment to become a Lino development
-environment. After :cmd:`getlino configure` you can run :cmd:`getlino startsite`
-to actually create Lino sites.
+The :cmd:`getlino configure` command configures this machine as a :term:`Lino
+server`.  This is required before you can run :cmd:`startsite`.
 
 If you run this command as root (using :cmd:`sudo`), it will also install system
 packages and system-wide configuration files, turning the machine into a
-production server.   Otherwise it will configure your environment as a
-development environment.
+production server.   Otherwise it will configure your machine as a development
+server.
 
 :cmd:`getlino configure` reads or creates and updates a configuration file and
 then set up this machine accordingly.
@@ -63,16 +61,16 @@ whether you are root, the configuration file will be either
 
         Full path to your default virtualenv.
 
-    .. option:: --repositories-root PATH
+    .. option:: --repos-base
 
-        Full path to your shared repositories root.  This is where getlino
+        Base directory for your shared repositories.  This is where getlino
         should clone repositories of packages to be used in editable mode
-        ("development version").
+        ("development version") specified by :option:`--dev-repos`.
 
         If this is empty and a site requests a development version, this will
-        be stored in a directory below the virtualenv dir.
+        be stored in a directory named :option:`repos-link` below the virtualenv dir.
 
-    .. option:: --projects-root
+    .. option:: --sites-base
 
         The root directory for sites on this server.
 
@@ -86,21 +84,23 @@ whether you are root, the configuration file will be either
 
     .. option:: --env-link
 
-        Name of subdir or link to virtualenv.
+        Relative directory or symbolic link to the virtualenv.
 
     .. option:: --local-prefix
 
-        The local prefix.
+        Prefix for local server-wide importable packages.
 
-    .. option:: --repositories-link
+    .. option:: --backups-base
 
-        Name of subdir or link to repositories.
+        Base directory for backups
 
-    .. option:: --server-domain NAME
+    .. option:: --repos-link
+
+        Relative directory or symbolic link to repositories.
+
+    .. option:: --server-domain
 
         Fully qualified domain name of this server.  Default is 'localhost'.
-
-
 
     .. rubric:: Default settings for new sites
 
@@ -164,13 +164,6 @@ whether you are root, the configuration file will be either
 
 
 ..
-  --projects-root TEXT            Base directory for Lino sites
-  --local-prefix TEXT             Prefix for for local server-wide importable
-                                  packages
-  --shared-env TEXT               Directory with shared virtualenv
-  --repositories-root TEXT        Base directory for shared code repositories
-  --webdav / --no-webdav          Whether to enable webdav on new sites.
-  --backups-root TEXT             Base directory for backups
   --log-root TEXT                 Base directory for log files
   --usergroup TEXT                User group for files to be shared with the
                                   web server
