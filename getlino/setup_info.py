@@ -6,6 +6,11 @@ SETUP_INFO = dict(
     description="Lino installer",
     long_description=u"""
     Configure a Lino server and create sites on it.
+
+    Quick guide: http://www.lino-framework.org/getlino.html
+
+    Technical docs: http://getlino.lino-framework.org
+
     """,
     author='Rumma & Ko Ltd',
     author_email='team@lino-framework.org',
