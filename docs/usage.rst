@@ -65,10 +65,10 @@ whether you are root, the configuration file will be either
 
         Base directory for your shared repositories.  This is where getlino
         should clone repositories of packages to be used in editable mode
-        ("development version") specified by :option:`--dev-repos`.
+        ("development version") specified by :option:`getlino startsite --dev-repos`.
 
         If this is empty and a site requests a development version, this will
-        be stored in a directory named :option:`repos-link` below the virtualenv dir.
+        be stored in a directory named :option:`--repos-link` below the virtualenv dir.
 
     .. option:: --sites-base
 
