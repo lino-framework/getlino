@@ -57,7 +57,9 @@ add("xl", "lino-xl", "https://github.com/lino-framework/xl")
 add("welfare", "lino-welfare", "https://github.com/lino-framework/welfare")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
 # experimental: an application which has no repo on its own
+add("min1", "", "", "lino_book.projects.min1.settings")
 add("min2", "", "", "lino_book.projects.min2.settings")
+add("chatter", "", "", "lino_book.projects.chatter.settings")
 
 APPNAMES = [a.nickname for a in KNOWN_REPOS if a.settings_module]
 FRONT_ENDS = [a for a in KNOWN_REPOS if a.front_end]

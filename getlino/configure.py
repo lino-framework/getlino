@@ -100,6 +100,7 @@ add('--devtools/--no-devtools', False,
     "Whether this server provides developer tools (build docs and run tests)")
 add('--server-domain', 'localhost', "Domain name of this server")
 add('--https/--no-https', False, "Whether this server uses secure http")
+add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
 add('--monit/--no-monit', ifroot, "Whether this server uses monit")
 add('--db-engine', 'sqlite3', "Default database engine for new sites.",
     click.Choice([e.name for e in DB_ENGINES]))
@@ -120,7 +121,7 @@ def configure(ctx, batch,
               projects_root, local_prefix, shared_env, repositories_root,
               webdav, backups_root, log_root, usergroup,
               supervisor_dir, env_link, repos_link,
-              appy, redis, devtools, server_domain, https, monit,
+              appy, redis, devtools, server_domain, https, ldap, monit,
               db_engine, db_port, db_host,
               db_user, db_password,
               admin_name, admin_email, time_zone,
@@ -241,6 +242,9 @@ def configure(ctx, batch,
 
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
+
+    if DEFAULTSECTION.getboolean('ldap'):
+        i.apt_install("slapd ldap-utils")
 
     i.finish()
 
