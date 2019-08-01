@@ -2,7 +2,7 @@
 # We Use an official Python runtime as a parent image
 # FROM python:3.7
 # FROM python:3-buster
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 # FROM debian:buster
 
 # The enviroment variable ensures that the python output is set straight
