@@ -75,7 +75,7 @@ def add(spec, default, help, type=None):
     o.default = DEFAULTSECTION.get(o.name, default)
     CONFIGURE_OPTIONS.append(o)
 
-def default_projects_root():
+def default_sites_base():
     return ifroot('/usr/local/lino', os.path.expanduser('~/lino'))
 
 def default_shared_env():
@@ -83,13 +83,13 @@ def default_shared_env():
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
-add('--projects-root', default_projects_root, 'Base directory for Lino sites')
+add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
-add('--repositories-root', '', "Base directory for shared code repositories")
+add('--repos-base', '', "Base directory for shared code repositories")
 add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites.")
-add('--backups-root', '/var/backups/lino', 'Base directory for backups')
-add('--log-root', '/var/log/lino', 'Base directory for log files')
+add('--backups-base', '/var/backups/lino', 'Base directory for backups')
+add('--log-base', '/var/log/lino', 'Base directory for log files')
 add('--usergroup', 'www-data', "User group for files to be shared with the web server")
 add('--supervisor-dir', '/etc/supervisor/conf.d', "Directory for supervisor config files")
 add('--env-link', 'env', "link to virtualenv (relative to project dir)")
@@ -118,8 +118,8 @@ add('--front-end', 'lino.modlib.extjs', "The front end to use on new sites",
     click.Choice([r.front_end for r in FRONT_ENDS]))
 
 def configure(ctx, batch,
-              projects_root, local_prefix, shared_env, repositories_root,
-              webdav, backups_root, log_root, usergroup,
+              sites_base, local_prefix, shared_env, repos_base,
+              webdav, backups_base, log_base, usergroup,
               supervisor_dir, env_link, repos_link,
               appy, redis, devtools, server_domain, https, ldap, monit,
               db_engine, db_port, db_host,
@@ -192,15 +192,15 @@ def configure(ctx, batch,
     #     if i.write_file(pth, content):
     #         i.must_restart("nginx")
 
-    pth = DEFAULTSECTION.get('projects_root')
+    pth = DEFAULTSECTION.get('sites_base')
     if os.path.exists(pth):
         i.check_permissions(pth)
-    elif batch or click.confirm("Create projects root directory {}".format(pth), default=True):
+    elif batch or click.confirm("Create sites base directory {}".format(pth), default=True):
         os.makedirs(pth, exist_ok=True)
         i.check_permissions(pth)
 
     local_prefix = DEFAULTSECTION.get('local_prefix')
-    pth = join(DEFAULTSECTION.get('projects_root'), local_prefix)
+    pth = join(DEFAULTSECTION.get('sites_base'), local_prefix)
     if os.path.exists(pth):
         i.check_permissions(pth)
     elif batch or click.confirm("Create shared settings package {}".format(pth), default=True):
@@ -275,7 +275,7 @@ def configure(ctx, batch,
                     i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
             if batch or click.confirm("Set up automatic certificate renewal ", default=True):
                 i.runcmd(CERTBOT_AUTO_RENEW)
-        
+
         if DEFAULTSECTION.getboolean('ldap'):
             i.runcmd("dpkg-reconfigure slapd")
 

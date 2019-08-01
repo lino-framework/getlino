@@ -1,4 +1,4 @@
-.. _docker.usage:
+.. _getlino.usage:
 
 =====
 Usage
@@ -10,13 +10,15 @@ The :cmd:`getlino configure` command
 
 .. program:: getlino configure
 
-The :cmd:`getlino configure` command configures this machine as a :term:`Lino
-server`.  This is required before you can run :cmd:`startsite`.
+The :cmd:`getlino configure` command configures a machine to become a
+:term:`Lino server`, or a virtual environment to become a Lino development
+environment. After :cmd:`getlino configure` you can run :cmd:`getlino startsite`
+to actually create Lino sites.
 
 If you run this command as root (using :cmd:`sudo`), it will also install system
 packages and system-wide configuration files, turning the machine into a
-production server.   Otherwise it will configure your machine as a development
-server.
+production server.   Otherwise it will configure your environment as a
+development environment.
 
 :cmd:`getlino configure` reads or creates and updates a configuration file and
 then set up this machine accordingly.
@@ -33,9 +35,6 @@ really know that you want it (e.g. in a Dockerfile).
 On a development server you should activate  your default work virtual
 environment when running this :cmd:`getlino configure` because this will be the
 default value for :option:`--shared-env`.
-
-.. xfile:: /etc/getlino/getlino.conf
-.. xfile:: ~/.getlino.conf
 
 Your answers will be stored in a getlino configuration file.  Depending on
 whether you are root, the configuration file will be either

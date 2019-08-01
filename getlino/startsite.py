@@ -21,7 +21,7 @@ COOKIECUTTER_URL = "https://github.com/lino-framework/cookiecutter-startsite"
 
 # note that we double curly braces because we will run format() on this string:
 LOGROTATE_CONF = """
-{log_root}/{prjname}/lino.log {{
+{log_base}/{prjname}/lino.log {{
         weekly
         missingok
         rotate 156
@@ -88,9 +88,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     #     raise click.UsageError("Project directory {} already exists.".format(prjpath))
 
     # prod = DEFAULTSECTION.getboolean('prod')
-    projects_root = DEFAULTSECTION.get('projects_root')
+    sites_base = DEFAULTSECTION.get('sites_base')
     local_prefix = DEFAULTSECTION.get('local_prefix')
-    python_path_root = join(projects_root, local_prefix)
+    python_path_root = join(sites_base, local_prefix)
     project_dir = join(python_path_root, prjname)
     shared_env = DEFAULTSECTION.get('shared_env')
     admin_name = DEFAULTSECTION.get('admin_name')
@@ -174,7 +174,7 @@ sudo adduser `whoami` {0}"""
         "pip_packages": ' '.join(pip_packages),
         "server_url": server_url,
         "db_name": prjname,
-        "python_path": projects_root,
+        "python_path": sites_base,
         "usergroup": usergroup
     })
 
@@ -227,7 +227,7 @@ sudo adduser `whoami` {0}"""
         no_input=True, extra_context=context, output_dir=python_path_root)
 
     if ifroot():
-        logdir = join(DEFAULTSECTION.get("log_root"), prjname)
+        logdir = join(DEFAULTSECTION.get("log_base"), prjname)
         os.makedirs(logdir, exist_ok=True)
         with i.override_batch(True):
             i.check_permissions(logdir)
@@ -272,7 +272,7 @@ sudo adduser `whoami` {0}"""
         if not os.path.exists(static_dir):
             os.makedirs(static_dir, exist_ok=True)
 
-    full_repos_dir = DEFAULTSECTION.get('repositories_root')
+    full_repos_dir = DEFAULTSECTION.get('repos_base')
     if not full_repos_dir:
         full_repos_dir = join(envdir, DEFAULTSECTION.get('repos_link'))
         if not os.path.exists(full_repos_dir):
@@ -285,7 +285,7 @@ sudo adduser `whoami` {0}"""
         for nickname in dev_repos.split():
             lib = REPOS_DICT.get(nickname, None)
             if lib is None:
-                raise click.ClickException("Invalid repo nickname {}".format(nickname))
+                raise click.ClickException("Invalid repository nickname {}".format(nickname))
             i.install_repo(lib)
     for pkgname in pip_packages:
         i.run_in_env(envdir, "pip install {}".format(pkgname))
@@ -293,6 +293,7 @@ sudo adduser `whoami` {0}"""
     for e in DB_ENGINES:
         if DEFAULTSECTION.get('db_engine') == e.name and e.python_packages:
             i.run_in_env(envdir, "pip install {}".format(e.python_packages))
+
     if len(pip_packages):
         i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))
 
