@@ -215,8 +215,8 @@ class Installer(object):
 
     def install_repo(self, repo):
         if not os.path.exists(repo.nickname):
-            i.runcmd("git clone --depth 1 -b master {}".format(repo.git_repo))
-            i.run_in_env(envdir, "pip install -e {}".format(repo.nickname))
+            self.runcmd("git clone --depth 1 -b master {}".format(repo.git_repo))
+            self.run_in_env(repo, "pip install -e {}".format(repo.nickname))
         else:
             click.echo(
                 "Don't install {} because the code repository exists.".format(
