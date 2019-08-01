@@ -275,6 +275,10 @@ def configure(ctx, batch,
                     i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
             if batch or click.confirm("Set up automatic certificate renewal ", default=True):
                 i.runcmd(CERTBOT_AUTO_RENEW)
+        
+        if DEFAULTSECTION.getboolean('ldap'):
+            i.runcmd("dpkg-reconfigure slapd")
+
 
     click.echo("getlino configure completed.")
 
