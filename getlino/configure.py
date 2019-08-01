@@ -16,8 +16,8 @@ from contextlib import contextmanager
 from os.path import join
 
 from .utils import CONFIG, CONF_FILES, FOUND_CONFIG_FILES, DEFAULTSECTION
-from .utils import DB_ENGINES, BATCH_HELP
-from .utils import Installer
+from .utils import DB_ENGINES, BATCH_HELP, FRONT_ENDS
+from .utils import Installer, ifroot
 
 
 CERTBOT_AUTO_RENEW = """
@@ -76,9 +76,7 @@ def add(spec, default, help, type=None):
     CONFIGURE_OPTIONS.append(o)
 
 def default_projects_root():
-    if os.access('/usr/local', os.W_OK):
-        return '/usr/local/lino'
-    return os.path.expanduser('~/lino')
+    return ifroot('/usr/local/lino', os.path.expanduser('~/lino'))
 
 def default_shared_env():
     return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
@@ -93,35 +91,43 @@ add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites.")
 add('--backups-root', '/var/backups/lino', 'Base directory for backups')
 add('--log-root', '/var/log/lino', 'Base directory for log files')
 add('--usergroup', 'www-data', "User group for files to be shared with the web server")
-add('--supervisor-dir', '/etc/supervisor/conf.d',
-    "Directory for supervisor config files")
-add('--db-engine', 'sqlite3', "Default database engine for new sites.",
-    click.Choice([e.name for e in DB_ENGINES]))
-add('--db-port', 3306, "Default database port for new sites.")
-add('--db-host', 'localhost', "Default database host name for new sites.")
+add('--supervisor-dir', '/etc/supervisor/conf.d', "Directory for supervisor config files")
 add('--env-link', 'env', "link to virtualenv (relative to project dir)")
 add('--repos-link', 'repositories', "link to code repositories (relative to virtualenv)")
-add('--appy/--no-appy', True, "Whether this server provides appypod and LibreOffice")
-add('--redis/--no-redis', True, "Whether this server provides redis")
+add('--appy/--no-appy', ifroot, "Whether this server provides appypod and LibreOffice")
+add('--redis/--no-redis', ifroot, "Whether this server provides redis")
 add('--devtools/--no-devtools', False,
     "Whether this server provides developer tools (build docs and run tests)")
 add('--server-domain', 'localhost', "Domain name of this server")
 add('--https/--no-https', False, "Whether this server uses secure http")
-add('--monit/--no-monit', True, "Whether this server uses monit")
+add('--monit/--no-monit', ifroot, "Whether this server uses monit")
+add('--db-engine', 'sqlite3', "Default database engine for new sites.",
+    click.Choice([e.name for e in DB_ENGINES]))
+add('--db-port', 3306, "Default database port for new sites.")
+add('--db-host', 'localhost', "Default database host name for new sites.")
+add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.")
+add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.")
 add('--admin-name', 'Joe Dow', "The full name of the server administrator")
 add('--admin-email', 'joe@example.com',
     "The email address of the server administrator")
 add('--time-zone', 'Europe/Brussels', "The TIME_ZONE to set on new sites")
+add('--linod/--no-linod', True, "Whether new sites use linod")
+add('--languages', 'en', "The languages to set on new sites")
+add('--front-end', 'lino.modlib.extjs', "The front end to use on new sites",
+    click.Choice([r.front_end for r in FRONT_ENDS]))
 
 def configure(ctx, batch,
               projects_root, local_prefix, shared_env, repositories_root,
               webdav, backups_root, log_root, usergroup,
-              supervisor_dir, db_engine, db_port, db_host, env_link, repos_link,
+              supervisor_dir, env_link, repos_link,
               appy, redis, devtools, server_domain, https, monit,
-              admin_name, admin_email, time_zone):
+              db_engine, db_port, db_host,
+              db_user, db_password,
+              admin_name, admin_email, time_zone,
+              linod, languages, front_end):
     """
     Edit and/or create a configuration file and
-    set up this machine to become a Lino production server
+    configure this machine to become a Lino production server
     according to the configuration file.
     """
 
@@ -132,10 +138,7 @@ def configure(ctx, batch,
 
     i = Installer(batch)
 
-    if i.asroot:
-        conffile = CONF_FILES[0]
-    else:
-        conffile = CONF_FILES[1]
+    conffile = ifroot(CONF_FILES[0], CONF_FILES[1])
 
     # # write config file. if there is no system-wide file but a user file, write
     # # the user file. Otherwise write the system-wide file.
@@ -207,7 +210,7 @@ def configure(ctx, batch,
     i.write_file(join(pth, 'settings.py'),
                  LOCAL_SETTINGS.format(**DEFAULTSECTION))
 
-    if i.asroot:
+    if ifroot():
         if batch or click.confirm("Upgrade the system", default=True):
             with i.override_batch(True):
                 i.runcmd("apt-get update")
@@ -215,13 +218,16 @@ def configure(ctx, batch,
 
     i.apt_install(
         "git subversion python3 python3-dev python3-setuptools python3-pip supervisor")
+    i.apt_install("libffi-dev libssl-dev") # maybe needed for weasyprint
 
-    if i.asroot:
+    if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
         i.apt_install("logrotate")
 
     if DEFAULTSECTION.getboolean('devtools'):
-        i.apt_install("tidy swig graphviz sqlite3")
+        i.apt_install("swig graphviz sqlite3")
+        if False:
+            i.apt_install("tidy")  # was needed for html2xhtml
 
     if DEFAULTSECTION.getboolean('monit'):
         i.apt_install("monit")
@@ -238,33 +244,35 @@ def configure(ctx, batch,
 
     i.finish()
 
-    if DEFAULTSECTION.getboolean('monit'):
-        i.write_file('/usr/local/bin/healthcheck.sh', HEALTHCHECK_SH, executable=True)
-        i.write_file('/etc/monit/conf.d/lino.conf', MONIT_CONF)
+    if ifroot():
+        if DEFAULTSECTION.getboolean('monit'):
+            i.write_file('/usr/local/bin/healthcheck.sh', HEALTHCHECK_SH, executable=True)
+            i.write_file('/etc/monit/conf.d/lino.conf', MONIT_CONF)
 
-    if DEFAULTSECTION.getboolean('appy'):
-        i.write_supervisor_conf(
-            'libreoffice.conf',
-            LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))
+        if DEFAULTSECTION.getboolean('appy'):
+            i.write_supervisor_conf(
+                'libreoffice.conf',
+                LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))
 
-    if DEFAULTSECTION.get('db_engine') == 'mysql':
-        i.runcmd("mysql_secure_installation")
+        if DEFAULTSECTION.get('db_engine') == 'mysql':
+            if False:  # is this needed?
+                i.runcmd("mysql_secure_installation")
 
-    if DEFAULTSECTION.getboolean('https'):
-        if shutil.which("certbot-auto"):
-            click.echo("certbot-auto already installed")
-        elif batch or click.confirm("Install certbot-auto ?", default=True):
-            with i.override_batch(True):
-                i.runcmd("wget https://dl.eff.org/certbot-auto")
-                i.runcmd("mv certbot-auto /usr/local/bin/certbot-auto")
-                i.runcmd("chown root /usr/local/bin/certbot-auto")
-                i.runcmd("chmod 0755 /usr/local/bin/certbot-auto")
-                i.runcmd("certbot-auto -n")
-                i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
-        if batch or click.confirm("Set up automatic certificate renewal ", default=True):
-            i.runcmd(CERTBOT_AUTO_RENEW)
+        if DEFAULTSECTION.getboolean('https'):
+            if shutil.which("certbot-auto"):
+                click.echo("certbot-auto already installed")
+            elif batch or click.confirm("Install certbot-auto ?", default=True):
+                with i.override_batch(True):
+                    i.runcmd("wget https://dl.eff.org/certbot-auto")
+                    i.runcmd("mv certbot-auto /usr/local/bin/certbot-auto")
+                    i.runcmd("chown root /usr/local/bin/certbot-auto")
+                    i.runcmd("chmod 0755 /usr/local/bin/certbot-auto")
+                    i.runcmd("certbot-auto -n")
+                    i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
+            if batch or click.confirm("Set up automatic certificate renewal ", default=True):
+                i.runcmd(CERTBOT_AUTO_RENEW)
 
-    click.echo("Lino server setup completed.")
+    click.echo("getlino configure completed.")
 
 params = [
     click.Option(['--batch/--no-batch'], default=False, help=BATCH_HELP),

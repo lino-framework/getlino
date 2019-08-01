@@ -10,49 +10,55 @@ The :cmd:`getlino configure` command
 
 .. program:: getlino configure
 
-You simply run :cmd:`getlino configure` as root::
+The :cmd:`getlino configure` command configures this machine as a :term:`Lino
+server`.  This is required before you can run :cmd:`startsite`.
 
-   $ sudo getlino configure
+If you run this command as root (using :cmd:`sudo`), it will also install system
+packages and system-wide configuration files, turning the machine into a
+production server.   Otherwise it will configure your machine as a development
+server.
 
-This will ask you some questions about the general layout of this Lino server.
-You can answer ENTER to each of them if your don't care.
+:cmd:`getlino configure` reads or creates and updates a configuration file and
+then set up this machine accordingly.
 
-On a development server you will probably specify your default work virtual
-environment as :option:`--shared-env`.
+This command asks a lot of questions about the general layout of this Lino
+server. One question for each server configuration option. Read the docs about
+:cmd:`getlino configure`.   You can answer ENTER to each question if your don't
+care.
 
-You can also instruct getlino to not ask any question::
+If you specify :option:`--batch`, every option gets its default value, which you
+may override by specifying command-line arguments. Use this option only when you
+really know that you want it (e.g. in a Dockerfile).
 
-   $ sudo getlino configure --batch
+On a development server you should activate  your default work virtual
+environment when running this :cmd:`getlino configure` because this will be the
+default value for :option:`--shared-env`.
 
-You should use the :option:`--batch` option only when you really know that you want
-it (e.g. in a Dockerfile).
+.. xfile:: /etc/getlino/getlino.conf
+.. xfile:: ~/.getlino.conf
 
-Your answers will be stored in the system-wide getlino config file, and the
-server will be configured according to your config file.
+Your answers will be stored in a getlino configuration file.  Depending on
+whether you are root, the configuration file will be either
+:xfile:`/etc/getlino/getlino.conf` or :xfile:`~/.getlino.conf`.
+
 
 
 .. command:: getlino configure
 
-    Configure this machine as a :term:`Lino server`.  This is required before
-    you can run :cmd:`startsite`.
+    Configure this machine as a :term:`Lino server`.   Create and/or update a
+    Lino server configuration file and then set up this machine accordingly.
+    This is required before you can run :cmd:`startsite`.
 
-    potentially includes
-    the installation of system packages and their configuration.
 
-    Create or update a Lino server configuration file and then set up this
-    machine to become a Lino production server according to the configuration
-    file.
-
-    Options:
+    Run-time options:
 
     .. option:: --batch
 
         Run in batch mode, i.e. without asking any questions.
         Assume yes to all questions.
 
-    .. option:: --asroot
 
-        Whether you have root permissions and want to install system packages.
+    .. rubric:: Server configuration options
 
     .. option:: --shared-env
 
@@ -79,11 +85,6 @@ server will be configured according to your config file.
         :xfile:`manage.py` sets :setting:`DJANGO_SETTINGS_MODULE` to
         ``'lino_local.mysite1.settings'``.
 
-
-    .. option:: --webdav
-
-        Whether new sites should have webdav.
-
     .. option:: --env-link
 
         Name of subdir or link to virtualenv.
@@ -99,6 +100,34 @@ server will be configured according to your config file.
     .. option:: --server-domain NAME
 
         Fully qualified domain name of this server.  Default is 'localhost'.
+
+
+
+    .. rubric:: Default settings for new sites
+
+    .. option:: --languages
+
+        Default value for :attr:`languages <lino.core.site.Site.languages>` of
+        new sites.
+
+    .. option:: --linod
+
+        Whether new sites should have a :manage:`linod` command.
+
+        When running as root, this will also add a supervisor configuration file which
+        runs the :manage:`linod` command automatically at system startup.
+
+
+    .. rubric:: Server features
+
+    .. option:: --appy
+
+        Whether this server provides LibreOffice service needed by sites which
+        use :mod:`lino_xl.lib.appypod`.
+
+    .. option:: --webdav
+
+        Whether new sites should have webdav.
 
     .. option:: --https
 

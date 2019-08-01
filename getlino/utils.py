@@ -12,7 +12,7 @@ import click
 import collections
 from contextlib import contextmanager
 
-from os.path import join
+from os.path import join, expanduser
 
 # currently getlino supports only nginx, maybe we might add other web servers
 USE_NGINX = True
@@ -31,42 +31,52 @@ DB_ENGINES = [
 ]
 
 Repo = collections.namedtuple(
-    'Repo', ('nickname', 'package_name', 'settings_module', 'git_repo'))
+    'Repo', 'nickname package_name git_repo settings_module front_end')
 REPOS_DICT = {}
 KNOWN_REPOS = []
 
-def add(*args):
-    t = Repo(*args)
+def add(nickname, package_name, git_repo='', settings_module='', front_end=''):
+    t = Repo(nickname, package_name, git_repo, settings_module, front_end)
     KNOWN_REPOS.append(t)
     REPOS_DICT[t.nickname] = t
+    if t.front_end:
+        # add an alias because front ends are identified using their full package name
+        REPOS_DICT[t.front_end] = t
 
-add("noi", "lino-noi", "lino_noi.lib.noi.settings", "https://github.com/lino-framework/noi")
-add("voga", "lino-voga", "lino_voga.lib.voga.settings", "https://github.com/lino-framework/voga")
-add("cosi", "lino-cosi", "lino_cosi.lib.cosi.settings", "https://github.com/lino-framework/cosi")
-add("avanti", "lino-avanti", "lino_avanti.lib.avanti.settings", "https://github.com/lino-framework/avanti")
-add("amici", "lino-amici", "lino_amici.lib.amici.settings", "https://github.com/lino-framework/amici")
-add("presto", "lino-presto", "lino_presto.lib.presto.settings", "https://github.com/lino-framework/presto")
-add("weleup", "lino-weleup", "lino_weleup.settings", "https://github.com/lino-framework/weleup")
-add("welcht", "lino-welcht", "lino_welcht.settings", "https://github.com/lino-framework/welcht")
-add("book", "lino-book", "", "https://github.com/lino-framework/book")
-add("min2", "", "lino_book.projects.min2.settings", "")
-add("lino", "lino", "", "https://github.com/lino-framework/lino")
-add("xl", "lino-xl", "", "https://github.com/lino-framework/xl")
-add("welfare", "lino-welfare", "", "https://github.com/lino-framework/welfare")
+add("noi", "lino-noi", "https://github.com/lino-framework/noi", "lino_noi.lib.noi.settings")
+add("voga", "lino-voga", "https://github.com/lino-framework/voga", "lino_voga.lib.voga.settings")
+add("cosi", "lino-cosi", "https://github.com/lino-framework/cosi", "lino_cosi.lib.cosi.settings")
+add("avanti", "lino-avanti", "https://github.com/lino-framework/avanti", "lino_avanti.lib.avanti.settings")
+add("amici", "lino-amici", "https://github.com/lino-framework/amici", "lino_amici.lib.amici.settings")
+add("presto", "lino-presto", "https://github.com/lino-framework/presto", "lino_presto.lib.presto.settings")
+add("weleup", "lino-weleup", "https://github.com/lino-framework/weleup", "lino_weleup.settings")
+add("welcht", "lino-welcht", "https://github.com/lino-framework/welcht", "lino_welcht.settings")
+add("book", "lino-book", "https://github.com/lino-framework/book")
+add("lino", "lino", "https://github.com/lino-framework/lino", "", "lino.modlib.extjs")
+add("xl", "lino-xl", "https://github.com/lino-framework/xl")
+add("welfare", "lino-welfare", "https://github.com/lino-framework/welfare")
+add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
+# experimental: an application which has no repo on its own
+add("min2", "", "", "lino_book.projects.min2.settings")
 
 APPNAMES = [a.nickname for a in KNOWN_REPOS if a.settings_module]
+FRONT_ENDS = [a for a in KNOWN_REPOS if a.front_end]
 
-CONF_FILES = ['/etc/getlino/getlino.conf',
-              os.path.expanduser('~/.getlino.conf')]
+CONF_FILES = ['/etc/getlino/getlino.conf', expanduser('~/.getlino.conf')]
 CONFIG = configparser.ConfigParser()
 FOUND_CONFIG_FILES = CONFIG.read(CONF_FILES)
 DEFAULTSECTION = CONFIG[CONFIG.default_section]
+
+def ifroot(true=True, false=False):
+    if os.geteuid() == 0:
+        return true
+    return false
 
 
 class Installer(object):
     def __init__(self, batch=False):
         self.batch = batch
-        self.asroot = os.geteuid() == 0
+        # self.asroot = ifroot()
         self._services = set()
         self._system_packages = set()
 
@@ -211,10 +221,11 @@ class Installer(object):
                     repo.package_name))
 
     def finish(self):
-        if not self.asroot:
+        if not ifroot():
             if len(self._system_packages):
                 click.echo(
-                    "Warning: the following system packages were not installed : {}".format(
+                    "Note that the following system packages were not "
+                    "installed because you aren't root:\n{}".format(
                         ' '.join(list(self._system_packages))))
             return
 
