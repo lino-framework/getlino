@@ -105,6 +105,11 @@ whether you are root, the configuration file will be either
 
     .. rubric:: Default settings for new sites
 
+    .. option:: --front-end
+
+        Which front end (:attr:`default_ui <lino.core.Site.default_ui>`) to use
+        on new sites.
+
     .. option:: --languages
 
         Default value for :attr:`languages <lino.core.site.Site.languages>` of
@@ -112,10 +117,26 @@ whether you are root, the configuration file will be either
 
     .. option:: --linod
 
-        Whether new sites should have a :manage:`linod` command.
+        Whether new sites should have a :xfile:`linod.sh` script which runs the
+        :manage:`linod` command.
 
-        When running as root, this will also add a supervisor configuration file which
-        runs the :manage:`linod` command automatically at system startup.
+        When running as root, this will also add a :mod:`supervisor`
+        configuration file which runs the :manage:`linod` command automatically.
+
+    .. option:: --db-user
+
+        A database username to use for all sites on this server.
+
+        If this is set, you should also set :option:`--db-password`.
+
+        Used during development and testing when you prefer to have a single
+        database user for all databases. For security reasons these options
+        should not be used on a production server.
+
+    .. option:: --db-password
+
+        The password for the :option:`--db-user`.
+
 
 
     .. rubric:: Server features
