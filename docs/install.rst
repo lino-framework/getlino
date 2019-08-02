@@ -6,7 +6,7 @@ Installing getlino
 
 
 **On a production server** you must install getlino into the system-wide Python
-*3 environment.
+3 environment.
 
 Either the officially stable version::
 

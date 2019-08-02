@@ -14,7 +14,7 @@ SETUP_INFO = dict(
     """,
     author='Rumma & Ko Ltd',
     author_email='team@lino-framework.org',
-    url="http://lino-framework.org",
+    url="http://getlino.lino-framework.org",
     license='BSD-2-Clause',
     entry_points={
         'console_scripts': ['getlino = getlino.cli:main']
