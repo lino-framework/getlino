@@ -228,14 +228,14 @@ class Installer(object):
             return True
         return False
 
-    def install_repo(self, repo):
+    def install_repo(self, repo, env):
         if not os.path.exists(repo.nickname):
             self.runcmd("git clone --depth 1 -b master {}".format(repo.git_repo))
-            self.run_in_env(repo, "pip install -e {}".format(repo.nickname))
         else:
             click.echo(
-                "Don't install {} because the code repository exists.".format(
+                "No need to clone {} : directory exists.".format(
                     repo.package_name))
+        self.run_in_env(env, "pip install -e {}".format(repo.nickname))
 
     def check_usergroup(self, usergroup):
         if ifroot():

@@ -269,7 +269,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
             lib = REPOS_DICT.get(nickname, None)
             if lib is None:
                 raise click.ClickException("Invalid repository nickname {}".format(nickname))
-            i.install_repo(lib)
+            i.install_repo(lib, envdir)
 
     click.echo("Installing Python packages...")
     for pkgname in pip_packages:

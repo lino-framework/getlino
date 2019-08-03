@@ -105,7 +105,8 @@ add('--devtools/--no-devtools', False,
 add('--server-domain', 'localhost', "Domain name of this server")
 add('--https/--no-https', False, "Whether this server uses secure http")
 add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
-add('--monit/--no-monit', ifroot, "Whether this server uses monit")
+# disable monit by default as it is not included in debian buster.
+add('--monit/--no-monit', False, "Whether this server uses monit")
 add('--db-engine', 'sqlite3', "Default database engine for new sites.",
     click.Choice([e.name for e in DB_ENGINES]))
 add('--db-port', 3306, "Default database port for new sites.")
@@ -179,38 +180,6 @@ def configure(ctx, batch,
         CONFIG.write(fd)
     click.echo("Wrote config file " + conffile)
 
-    if contrib:
-        click.echo("Installing repositories...")
-        pth = DEFAULTSECTION.get('repos_base')
-        if not pth:
-            raise click.ClickException("Cannot use --contrib without --repos-base")
-        if not os.path.exists(pth):
-            if batch or click.confirm("Create base directory for repositories {}".format(pth), default=True):
-                os.makedirs(pth, exist_ok=True)
-        i.check_permissions(pth)
-        os.chdir(pth)
-        for nickname, repo in REPOS_DICT.items():
-            if repo.git_repo:
-                i.install_repo(repo)
-
-    pth = DEFAULTSECTION.get('sites_base')
-    if not os.path.exists(pth):
-        if batch or click.confirm("Create base directory for sites {}".format(pth), default=True):
-            os.makedirs(pth, exist_ok=True)
-    i.check_permissions(pth)
-
-    local_prefix = DEFAULTSECTION.get('local_prefix')
-    pth = join(DEFAULTSECTION.get('sites_base'), local_prefix)
-    if os.path.exists(pth):
-        i.check_permissions(pth)
-    elif batch or click.confirm("Create shared settings package {}".format(pth), default=True):
-        os.makedirs(pth, exist_ok=True)
-    with i.override_batch(True):
-        i.check_permissions(pth)
-        i.write_file(join(pth, '__init__.py'), '')
-    i.write_file(join(pth, 'settings.py'),
-                 LOCAL_SETTINGS.format(**DEFAULTSECTION))
-
     if ifroot():
         if batch or click.confirm("Upgrade the system", default=True):
             with i.override_batch(True):
@@ -248,6 +217,44 @@ def configure(ctx, batch,
 
     i.finish()
 
+    if contrib:
+        click.echo("Installing repositories for shared-env...")
+        repos_base = DEFAULTSECTION.get('repos_base')
+        if not repos_base:
+            raise click.ClickException("Cannot use --contrib without --repos-base")
+        envdir = DEFAULTSECTION.get('shared_env')
+        if not envdir:
+            raise click.ClickException("Cannot use --contrib without --shared-env")
+        i.check_virtualenv(envdir)
+        if not os.path.exists(repos_base):
+            if batch or click.confirm(
+                "Create base directory for repositories {}".format(repos_base),
+                default=True):
+                os.makedirs(repos_base, exist_ok=True)
+        i.check_permissions(repos_base)
+        os.chdir(repos_base)
+        for nickname, repo in REPOS_DICT.items():
+            if repo.git_repo:
+                i.install_repo(repo, envdir)
+
+    pth = DEFAULTSECTION.get('sites_base')
+    if not os.path.exists(pth):
+        if batch or click.confirm("Create base directory for sites {}".format(pth), default=True):
+            os.makedirs(pth, exist_ok=True)
+    i.check_permissions(pth)
+
+    local_prefix = DEFAULTSECTION.get('local_prefix')
+    pth = join(DEFAULTSECTION.get('sites_base'), local_prefix)
+    if os.path.exists(pth):
+        i.check_permissions(pth)
+    elif batch or click.confirm("Create shared settings package {}".format(pth), default=True):
+        os.makedirs(pth, exist_ok=True)
+    with i.override_batch(True):
+        i.check_permissions(pth)
+        i.write_file(join(pth, '__init__.py'), '')
+    i.write_file(join(pth, 'settings.py'),
+                 LOCAL_SETTINGS.format(**DEFAULTSECTION))
+
     if ifroot():
         if DEFAULTSECTION.getboolean('monit'):
             i.write_file('/usr/local/bin/healthcheck.sh', HEALTHCHECK_SH, executable=True)
@@ -278,7 +285,6 @@ def configure(ctx, batch,
 
         if DEFAULTSECTION.getboolean('ldap'):
             i.runcmd("dpkg-reconfigure slapd")
-
 
     click.echo("getlino configure completed.")
 

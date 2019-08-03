@@ -1,23 +1,25 @@
+# Thanks to https://vsupalov.com/docker-arg-vs-env/
+ARG DEBIAN_FRONTEND=noninteractive
+
 # The first instruction is what image we want to base our container on
 # We Use an official Python runtime as a parent image
 # FROM python:3.7
 # FROM python:3-buster
-FROM ubuntu:bionic
-# FROM debian:buster
+# FROM ubuntu:bionic
+FROM debian:buster  # doesn't have monit
+
+# Thanks to https://github.com/phusion/baseimage-docker/issues/58
+ENV TERM=linux
 
 # The enviroment variable ensures that the python output is set straight
 # to the terminal with out buffering it first
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
-# Thanks to https://github.com/phusion/baseimage-docker/issues/58
-# ENV TERM=linux
-
-# Set for all apt-get install, must be at the very beginning of the Dockerfile.
 # Thanks to https://stackoverflow.com/questions/51023312/docker-having-issues-installing-apt-utils
-ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-ENV TZ=Europe/Tallinn
+ENV TZ=Europe/Brussels
+
 
 RUN apt-get update -y
 # RUN apt-get install -y --no-install-recommends apt-utils
