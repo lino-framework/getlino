@@ -14,26 +14,26 @@ ENV PYTHONUNBUFFERED 1
 
 # Set for all apt-get install, must be at the very beginning of the Dockerfile.
 # Thanks to https://stackoverflow.com/questions/51023312/docker-having-issues-installing-apt-utils
-ENV DEBIAN_FRONTEND noninteractive
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV TZ=Europe/Tallinn
 
 RUN apt-get update -y
 # RUN apt-get install -y --no-install-recommends apt-utils
 RUN apt-get upgrade -y
 RUN apt-get install -y python3-pip
+
+# create /src directory and copy required project source files to the image
+RUN mkdir /src
+# RUN echo 1; pwd ; ls -l
+WORKDIR /src
+# RUN echo 2; pwd ; ls -l
+ADD setup.py .
+ADD getlino getlino/
+# RUN echo 3; pwd ; ls -l
+RUN pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
-# create root directory for our project in the container
-RUN mkdir src
-
-# Set the working directory to /getlino
-# WORKDIR /getlino
-
-# Copy the current directory contents into the container at /getlino
-ADD getlino src/
-ADD getlino src/getlino
-#RUN ls -l src
-RUN pip3 install -e src/
 
 # Install sudo package and create a user lino
 RUN apt-get install -y sudo
@@ -43,6 +43,5 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
 
-RUN sudo -H getlino configure --batch --devtools
+RUN sudo -H getlino configure --batch --db-engine postgresql
 RUN sudo -H getlino startsite --batch noi mysite1
-RUN sudo -H getlino startsite --batch min1 mysite2 --dev-repos book

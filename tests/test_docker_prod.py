@@ -4,5 +4,5 @@ import getlino
 
 class DockerTests(TestCase):
     def test_01(self):
-        args = ['docker', 'build', '-t', 'getlino', join(dirname(getlino.__file__), '..')]
+        args = ['docker', 'run', 'prod', "ls -l"]
         self.run_subprocess(args)
