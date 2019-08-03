@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from os.path import join
 
 from .utils import CONFIG, CONF_FILES, FOUND_CONFIG_FILES, DEFAULTSECTION
-from .utils import REPOS_DICT, DB_ENGINES, BATCH_HELP, FRONT_ENDS
+from .utils import KNOWN_REPOS, DB_ENGINES, BATCH_HELP, FRONT_ENDS
 from .utils import Installer, ifroot
 
 
@@ -233,7 +233,7 @@ def configure(ctx, batch,
                 os.makedirs(repos_base, exist_ok=True)
         i.check_permissions(repos_base)
         os.chdir(repos_base)
-        for nickname, repo in REPOS_DICT.items():
+        for repo in KNOWN_REPOS:
             if repo.git_repo:
                 i.install_repo(repo, envdir)
 

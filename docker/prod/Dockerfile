@@ -6,7 +6,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # FROM python:3.7
 # FROM python:3-buster
 # FROM ubuntu:bionic
-FROM debian:buster  # doesn't have monit
+# buster doesn't have monit
+FROM debian:buster  
 
 # Thanks to https://github.com/phusion/baseimage-docker/issues/58
 ENV TERM=linux

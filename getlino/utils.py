@@ -43,6 +43,9 @@ def add(nickname, package_name, git_repo='', settings_module='', front_end=''):
         # add an alias because front ends are identified using their full package name
         REPOS_DICT[t.front_end] = t
 
+add("lino", "lino", "https://github.com/lino-framework/lino", "", "lino.modlib.extjs")
+add("xl", "lino-xl", "https://github.com/lino-framework/xl")
+add("welfare", "lino-welfare", "https://github.com/lino-framework/welfare")
 add("amici", "lino-amici", "https://github.com/lino-framework/amici", "lino_amici.lib.amici.settings")
 add("avanti", "lino-avanti", "https://github.com/lino-framework/avanti", "lino_avanti.lib.avanti.settings")
 add("care", "lino-care", "https://github.com/lino-framework/care", "lino_care.lib.care.settings")
@@ -56,9 +59,6 @@ add("weleup", "lino-weleup", "https://github.com/lino-framework/weleup", "lino_w
 add("welcht", "lino-welcht", "https://github.com/lino-framework/welcht", "lino_welcht.settings")
 
 add("book", "lino-book", "https://github.com/lino-framework/book")
-add("lino", "lino", "https://github.com/lino-framework/lino", "", "lino.modlib.extjs")
-add("xl", "lino-xl", "https://github.com/lino-framework/xl")
-add("welfare", "lino-welfare", "https://github.com/lino-framework/welfare")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
 # experimental: an application which has no repo on its own
 add("min1", "", "", "lino_book.projects.min1.settings")
