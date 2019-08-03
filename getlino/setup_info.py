@@ -5,11 +5,9 @@ SETUP_INFO = dict(
     test_suite='tests',
     description="Lino installer",
     long_description=u"""
-    Configure a Lino server and create sites on it.
+    A tool to install and configure Lino on your machine.
 
-    Quick guide: http://www.lino-framework.org/getlino.html
-
-    Technical docs: http://getlino.lino-framework.org
+    The central project homepage is http://getlino.lino-framework.org
 
     """,
     author='Rumma & Ko Ltd',
