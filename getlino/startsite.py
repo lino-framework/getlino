@@ -3,7 +3,6 @@
 
 import os
 import shutil
-import virtualenv
 import secrets
 import click
 

@@ -181,21 +181,23 @@ def configure(ctx, batch,
 
     if contrib:
         click.echo("Installing repositories...")
-        full_repos_dir = DEFAULTSECTION.get('repos_base')
-        if not full_repos_dir:
+        pth = DEFAULTSECTION.get('repos_base')
+        if not pth:
             raise click.ClickException("Cannot use --contrib without --repos-base")
-        i.check_permissions(full_repos_dir)
-        os.chdir(full_repos_dir)
+        if not os.path.exists(pth):
+            if batch or click.confirm("Create base directory for repositories {}".format(pth), default=True):
+                os.makedirs(pth, exist_ok=True)
+        i.check_permissions(pth)
+        os.chdir(pth)
         for nickname, repo in REPOS_DICT.items():
             if repo.git_repo:
                 i.install_repo(repo)
 
     pth = DEFAULTSECTION.get('sites_base')
-    if os.path.exists(pth):
-        i.check_permissions(pth)
-    elif batch or click.confirm("Create sites base directory {}".format(pth), default=True):
-        os.makedirs(pth, exist_ok=True)
-        i.check_permissions(pth)
+    if not os.path.exists(pth):
+        if batch or click.confirm("Create base directory for sites {}".format(pth), default=True):
+            os.makedirs(pth, exist_ok=True)
+    i.check_permissions(pth)
 
     local_prefix = DEFAULTSECTION.get('local_prefix')
     pth = join(DEFAULTSECTION.get('sites_base'), local_prefix)

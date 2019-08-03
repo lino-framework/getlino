@@ -3,6 +3,7 @@
 # License: BSD (see file COPYING for details)
 
 import os
+from os.path import join, expanduser
 import stat
 import shutil
 import grp
@@ -11,8 +12,7 @@ import subprocess
 import click
 import collections
 from contextlib import contextmanager
-
-from os.path import join, expanduser
+import virtualenv
 
 # currently getlino supports only nginx, maybe we might add other web servers
 USE_NGINX = True

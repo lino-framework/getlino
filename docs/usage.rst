@@ -10,42 +10,33 @@ The :cmd:`getlino configure` command
 
 .. program:: getlino configure
 
-The :cmd:`getlino configure` command configures this machine as a :term:`Lino
+The :cmd:`getlino configure` command configures your machine as a :term:`Lino
 server`.  This is required before you can run :cmd:`startsite`.
 
 If you run this command as root (using :cmd:`sudo`), it will also install system
 packages and system-wide configuration files, turning the machine into a
-production server.   Otherwise it will configure your machine as a development
-server.
+**production server**.  Otherwise it will install Lino into a  **virtual
+environment**. If you want Lino to install into an existing enviroment, you
+should activate it before running :cmd:`getlino configure` in order to use it as
+the default value for :option:`--shared-env`.
 
-:cmd:`getlino configure` reads or creates and updates a configuration file and
-then set up this machine accordingly.
+:cmd:`getlino configure` asks a lot of questions, one question for each server
+configuration option. Read the docs below for more explanations. You can answer
+ENTER to each question if your don't care.
 
-This command asks a lot of questions about the general layout of this Lino
-server. One question for each server configuration option. Read the docs about
-:cmd:`getlino configure`.   You can answer ENTER to each question if your don't
-care.
+:cmd:`getlino configure` creates or reads and updates a configuration file where
+it stores  your answers.  Depending on whether you are root, the configuration
+file will be either :xfile:`/etc/getlino/getlino.conf` or
+:xfile:`~/.getlino.conf`.
 
 If you specify :option:`--batch`, every option gets its default value, which you
 may override by specifying command-line arguments. Use this option only when you
 really know that you want it (e.g. in a Dockerfile).
 
-On a development server you should activate  your default work virtual
-environment when running this :cmd:`getlino configure` because this will be the
-default value for :option:`--shared-env`.
-
-Your answers will be stored in a getlino configuration file.  Depending on
-whether you are root, the configuration file will be either
-:xfile:`/etc/getlino/getlino.conf` or :xfile:`~/.getlino.conf`.
-
-
 
 .. command:: getlino configure
 
-    Configure this machine as a :term:`Lino server`.   Create and/or update a
-    Lino server configuration file and then set up this machine accordingly.
-    This is required before you can run :cmd:`startsite`.
-
+    Install the Lino framework on this machine.
 
     Run-time options:
 
@@ -53,7 +44,7 @@ whether you are root, the configuration file will be either
 
         Run in batch mode, i.e. without asking any questions.
         Assume yes to all questions.
-
+        
 
     .. rubric:: Server configuration options
 
