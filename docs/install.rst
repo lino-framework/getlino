@@ -6,20 +6,21 @@ Installing Lino
 
 This page gives an overview on how to install Lino on your computer.
 
-From the following list, choose the one which matches your profile:
+There are several flavours of Lino, choose the one which matches your profile:
 
-- I want to write my own Lino application.
-  --> `Configure a minimal Lino site`_
+- `Configure a Lino developer environment`_ if you just want to write your own
+  Lino application.
 
-- I want to write my own Lino application and maybe contribute to the project.
-  --> `Configure a Lino contributor environment`_
+- `Configure a Lino contributor environment`_
+  if you want to write you own Lino application and maybe contribute to the project.
 
-- I want to set up a Lino server and host Lino production sites for myself or
-  others. --> `Configure a Lino production server`_
+- `Configure a Lino production server`_ if you want to set up a Lino server and
+  host Lino production sites for yourself or others. 
 
+.. _getlino.install.dev:
 
-Configure a minimal Lino site
-=============================
+Configure a Lino developer environment
+======================================
 
 Create a new virtual environment and activate it::
 
@@ -52,6 +53,7 @@ Point your browser to http://localhost:8000
 
 Continue here: http://www.lino-framework.org/dev/index.html
 
+.. _getlino.install.contrib:
 
 Configure a Lino contributor environment
 ========================================
@@ -84,6 +86,7 @@ Point your browser to http://localhost:8000
 
 Continue here:  http://www.lino-framework.org/team/index.html
 
+.. _getlino.install.admin:
 
 Configure a Lino production server
 ==================================
