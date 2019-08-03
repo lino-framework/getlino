@@ -21,24 +21,36 @@ From the following list, choose the one which matches your profile:
 Configure a minimal Lino site
 =============================
 
-Create a new virtual environment, activate it, install getlino, run
-:cmd:`getlino configure` followed by :cmd:`getlino startsite`, then run
-:manage:`runserver`::
+Create a new virtual environment and activate it::
 
   $ sudo apt-get install -y python3-pip
   $ mkdir ~/lino
   $ cd ~/lino
   $ virtualenv -p python3 env
   $ . env/bin/activate
+
+Install getlino::
+
   $ pip install getlino
+
+Optionally use the development version::
+
+  $ pip uninstall getlino
+  $ pip install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+
+Run :cmd:`getlino configure` and :cmd:`getlino startsite`::
+
   $ getlino configure --sites-base .
   $ getlino startsite noi first
+
+Run :manage:`runserver`::
+
   $ cd first
   $ python manage.py runserver
 
 Point your browser to http://localhost:8000
 
-Read the http://www.lino-framework.org/dev/index.html
+Continue here: http://www.lino-framework.org/dev/index.html
 
 
 Configure a Lino contributor environment
@@ -48,16 +60,29 @@ Activate the virtual environment you want to use for your Lino projects::
 
   $ . path/to/my/virtualenv/bin/activate
 
+Install getlino::
 
-  $ pip install getlino
+  $ pip install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+
+Run :cmd:`getlino configure` ::
+
   $ getlino configure --contrib
+
+Try one of the demo projects::
+
+  $ go team
+  $ pm prep
+  $ pm runserver
+
+If you ran configure as root and also installed a production server, you may add
+sites and test them under nginx::
+
   $ getlino startsite noi first --dev-repos "lino xl noi book"
   $ cd first
-  $ python manage.py runserver
 
 Point your browser to http://localhost:8000
 
-Read the http://www.lino-framework.org/team/index.html
+Continue here:  http://www.lino-framework.org/team/index.html
 
 
 Configure a Lino production server
@@ -72,13 +97,9 @@ Install getlino into the system-wide Python 3 environment::
 
    $ sudo -H pip3 install getlino
 
-We run :cmd:`getlino configure` as root::
+Run :cmd:`getlino configure` as root::
 
    $ sudo -H getlino configure
-
-If your customers want to access their Lino from outside of their intranet, then
-you need to setup a domain name and add use the :option:`getlino configure
---https` option in above command line.
 
 Install a first site.  You will do the following for every new site on your
 server.
@@ -87,53 +108,21 @@ server.
 
 Point your browser to http://first.localhost
 
+If your customers want to access their Lino from outside of their intranet, then
+you need to setup a domain name and add use the :option:`getlino configure
+--https` option in above command line.
 
-Three variants of getlino
-=========================
+Continue here:  http://www.lino-framework.org/admin/index.html
 
-Either the officially stable version::
 
-   $ pip install getlino
+Contributing to getlino development
+===================================
 
-Or the development version::
+If you have a contributor environment, you may install your own local clone of
+getlino::
 
-   $ pip install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
-
-Or install your own local clone::
-
-   $ cd ~/repositories
+   $ cd path/to/your/repos-base
    $ git clone git@github.com:lino-framework/getlino.git
    $ pip install -e getlino
 
-
-
-
-Or the officially stable version::
-
-   $ pip install getlino
-
-Or a snapshot the development version::
-
-   $ pip install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
-
-
-.. _ss:
-
-The ``startsite`` template
-==========================
-
-The `cookiecutter-startsite
-<https://github.com/lino-framework/cookiecutter-startsite>`__ project contains
-a cookiecutter template used by :cmd:`getlino startsite`.
-
-
-Notes
-=====
-
-When you maintain a Lino server, then you don't want to decide for each new
-site which database engine to use. You decide this once for all during
-:cmd:`getlino configure`. In general, `apt-get install` is called only during
-:cmd:`getlino configure`, never during :cmd:`getlino startsite`. If you have a
-server with some mysql sites and exceptionally want to install a site with
-postgres, you simply call :cmd:`getlino configure` before calling
-:cmd:`getlino startsite`.
+Dont forget to manually add getlino to your atelier config.

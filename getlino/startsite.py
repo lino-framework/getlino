@@ -12,7 +12,7 @@ from cookiecutter.main import cookiecutter
 
 from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
 from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
-from .utils import Installer, check_usergroup, ifroot
+from .utils import Installer, ifroot
 
 SITES_AVAILABLE = '/etc/nginx/sites-available'
 SITES_ENABLED = '/etc/nginx/sites-enabled'
@@ -88,6 +88,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     #     raise click.UsageError("Project directory {} already exists.".format(prjpath))
 
     # prod = DEFAULTSECTION.getboolean('prod')
+    contrib = DEFAULTSECTION.getboolean('contrib')
     sites_base = DEFAULTSECTION.get('sites_base')
     local_prefix = DEFAULTSECTION.get('local_prefix')
     python_path_root = join(sites_base, local_prefix)
@@ -101,6 +102,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     secret_key = secrets.token_urlsafe(20)
     db_engine = DEFAULTSECTION.get('db_engine')
     db_port = DEFAULTSECTION.get('db_port')
+    usergroup = DEFAULTSECTION.get('usergroup')
 
     app = REPOS_DICT.get(appname, None)
     if app is None:
@@ -112,6 +114,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     if front_end is None:
         raise click.ClickException("Invalid front_end name '{}''".format(front_end))
 
+    i.check_usergroup(usergroup)
 
     if dev_repos:
         for k in dev_repos.split():
@@ -130,16 +133,6 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     #     raise click.ClickException(
     #         "Cannot startsite in a development environment without a shared-env!")
 
-    usergroup = DEFAULTSECTION.get('usergroup')
-
-    if check_usergroup(usergroup) or True:
-        click.echo("OK you belong to the {0} user group.".format(usergroup))
-    else:
-        msg = """\
-ERROR: you don't belong to the {0} user group.  Maybe you want to run:
-sudo adduser `whoami` {0}"""
-        raise click.ClickException(msg.format(usergroup))
-
     app_package = app.package_name
     # app_package = app.settings_module.split('.')[0]
     repo_nickname = app.git_repo.split('/')[-1]
@@ -147,19 +140,23 @@ sudo adduser `whoami` {0}"""
     context = {}
     context.update(DEFAULTSECTION)
     pip_packages = set()
-    if app.nickname not in dev_repos:
-        pip_packages.add(app.package_name)
-    if front_end.nickname not in dev_repos:
-        pip_packages.add(front_end.package_name)
-    for nickname in ("lino", "xl"):
-        if nickname not in dev_repos:
-            pip_packages.add(REPOS_DICT[nickname].package_name)
+    if not contrib:
+        if app.nickname not in dev_repos:
+            pip_packages.add(app.package_name)
+        if front_end.nickname not in dev_repos:
+            pip_packages.add(front_end.package_name)
 
-    for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name:
-            for pkgname in e.python_packages.split():
-                pip_packages.add(pkgname)
-            break
+        # 20190803 not needed:
+        # for nickname in ("lino", "xl"):
+        #     if nickname not in dev_repos:
+        #         pip_packages.add(REPOS_DICT[nickname].package_name)
+
+    # 20190803 no need to install again here. See docs/usage.rst
+    # for e in DB_ENGINES:
+    #     if DEFAULTSECTION.get('db_engine') == e.name:
+    #         for pkgname in e.python_packages.split():
+    #             pip_packages.add(pkgname)
+    #         break
 
     context.update({
         "prjname": prjname,
@@ -182,7 +179,6 @@ sudo adduser `whoami` {0}"""
         'Create a new Lino {appname} site into {project_dir}'.format(
             **context))
 
-
     db_user = DEFAULTSECTION.get('db_user')
     if db_user:
         db_password = DEFAULTSECTION.get('db_password')
@@ -198,8 +194,6 @@ sudo adduser `whoami` {0}"""
                 db_password = click.prompt("- user password", default=db_password)
                 # db_port = click.prompt("- port", default=db_port)
                 # db_host = click.prompt("- host name", default=db_host)
-
-
 
     if not batch:
         shared_env = click.prompt("Shared virtualenv", default=shared_env)
@@ -247,24 +241,15 @@ sudo adduser `whoami` {0}"""
                 'linod_{}.conf'.format(prjname),
                 LINOD_SUPERVISOR_CONF.format(**context))
 
-
     os.makedirs(join(project_dir, 'media'), exist_ok=True)
 
-    is_new_env = True
+
     if shared_env:
         envdir = shared_env
-        if os.path.exists(envdir):
-            is_new_env = False
-            venv_msg = "Update shared virtualenv in {}"
-        else:
-            venv_msg = "Create shared virtualenv in {}"
     else:
         envdir = join(project_dir, DEFAULTSECTION.get('env_link'))
-        venv_msg = "Create local virtualenv in {}"
 
-    if is_new_env:
-        if batch or click.confirm(venv_msg.format(envdir), default=True):
-            virtualenv.create_environment(envdir)
+    i.check_virtualenv(envdir)
 
     if shared_env:
         os.symlink(envdir, join(project_dir, DEFAULTSECTION.get('env_link')))
@@ -272,27 +257,29 @@ sudo adduser `whoami` {0}"""
         if not os.path.exists(static_dir):
             os.makedirs(static_dir, exist_ok=True)
 
-    full_repos_dir = DEFAULTSECTION.get('repos_base')
-    if not full_repos_dir:
-        full_repos_dir = join(envdir, DEFAULTSECTION.get('repos_link'))
-        if not os.path.exists(full_repos_dir):
-            os.makedirs(full_repos_dir, exist_ok=True)
-            i.check_permissions(full_repos_dir)
-
-    click.echo("Installing repositories ...".format(full_repos_dir))
     if dev_repos:
+        click.echo("Installing repositories...")
+        full_repos_dir = DEFAULTSECTION.get('repos_base')
+        if not full_repos_dir:
+            full_repos_dir = join(envdir, DEFAULTSECTION.get('repos_link'))
+            if not os.path.exists(full_repos_dir):
+                os.makedirs(full_repos_dir, exist_ok=True)
+        i.check_permissions(full_repos_dir)
         os.chdir(full_repos_dir)
         for nickname in dev_repos.split():
             lib = REPOS_DICT.get(nickname, None)
             if lib is None:
                 raise click.ClickException("Invalid repository nickname {}".format(nickname))
             i.install_repo(lib)
+
+    click.echo("Installing Python packages...")
     for pkgname in pip_packages:
         i.run_in_env(envdir, "pip install {}".format(pkgname))
 
-    for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name and e.python_packages:
-            i.run_in_env(envdir, "pip install {}".format(e.python_packages))
+    # startsite does not install any db engine because this is done by configure.
+    # for e in DB_ENGINES:
+    #     if DEFAULTSECTION.get('db_engine') == e.name and e.python_packages:
+    #         i.run_in_env(envdir, "pip install {}".format(e.python_packages))
 
     if len(pip_packages):
         i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))

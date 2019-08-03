@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from os.path import join
 
 from .utils import CONFIG, CONF_FILES, FOUND_CONFIG_FILES, DEFAULTSECTION
-from .utils import DB_ENGINES, BATCH_HELP, FRONT_ENDS
+from .utils import REPOS_DICT, DB_ENGINES, BATCH_HELP, FRONT_ENDS
 from .utils import Installer, ifroot
 
 
@@ -81,12 +81,16 @@ def default_sites_base():
 def default_shared_env():
     return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
 
+def default_repos_base():
+    return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
+
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
+add('--contrib/--no-contrib', ifroot, "Whether to configure a contributor environment")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
-add('--repos-base', '', "Base directory for shared code repositories")
+add('--repos-base', default_repos_base, "Base directory for shared code repositories")
 add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites.")
 add('--backups-base', '/var/backups/lino', 'Base directory for backups')
 add('--log-base', '/var/log/lino', 'Base directory for log files')
@@ -118,7 +122,7 @@ add('--front-end', 'lino.modlib.extjs', "The front end to use on new sites",
     click.Choice([r.front_end for r in FRONT_ENDS]))
 
 def configure(ctx, batch,
-              sites_base, local_prefix, shared_env, repos_base,
+              contrib, sites_base, local_prefix, shared_env, repos_base,
               webdav, backups_base, log_base, usergroup,
               supervisor_dir, env_link, repos_link,
               appy, redis, devtools, server_domain, https, ldap, monit,
@@ -140,22 +144,12 @@ def configure(ctx, batch,
     i = Installer(batch)
 
     conffile = ifroot(CONF_FILES[0], CONF_FILES[1])
-
-    # # write config file. if there is no system-wide file but a user file, write
-    # # the user file. Otherwise write the system-wide file.
-    # if len(FOUND_CONFIG_FILES) == 1:
-    #     conffile = FOUND_CONFIG_FILES[0]
-    #     msg = "This will update configuration file {}"
-    # else:
-    #     msg = "This will create configuration file {}"
+    click.echo("This will write to configuration file {}".format(conffile))
 
     # before asking questions check whether we will be able to store them
-    click.echo("This will write configuration file {}".format(conffile))
     pth = os.path.dirname(conffile)
     if not os.path.exists(pth):
         os.makedirs(pth, exist_ok=True)
-
-    pth = os.path.dirname(conffile)
     if not os.access(pth, os.W_OK):
         raise click.ClickException(
             "No write permission for directory {}".format(pth))
@@ -185,12 +179,16 @@ def configure(ctx, batch,
         CONFIG.write(fd)
     click.echo("Wrote config file " + conffile)
 
-    # pth = "/etc/default/nginx"
-    # content = open(pth, "r").read()
-    # if not "umask" in content:
-    #     content += """\n# added by getlino\numask 0002\n"""
-    #     if i.write_file(pth, content):
-    #         i.must_restart("nginx")
+    if contrib:
+        click.echo("Installing repositories...")
+        full_repos_dir = DEFAULTSECTION.get('repos_base')
+        if not full_repos_dir:
+            raise click.ClickException("Cannot use --contrib without --repos-base")
+        i.check_permissions(full_repos_dir)
+        os.chdir(full_repos_dir)
+        for nickname, repo in REPOS_DICT.items():
+            if repo.git_repo:
+                i.install_repo(repo)
 
     pth = DEFAULTSECTION.get('sites_base')
     if os.path.exists(pth):

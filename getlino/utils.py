@@ -217,6 +217,17 @@ class Installer(object):
             cmd += "-y "
         self.runcmd(cmd + ' '.join(self._system_packages))
 
+    def check_virtualenv(self, envdir):
+        if os.path.exists(envdir):
+            return True
+            # msg = "Update virtualenv in {}"
+            # return self.batch or click.confirm(msg.format(envdir), default=True)
+        msg = "Create virtualenv in {}"
+        if self.batch or click.confirm(msg.format(envdir), default=True):
+            virtualenv.create_environment(envdir)
+            return True
+        return False
+
     def install_repo(self, repo):
         if not os.path.exists(repo.nickname):
             self.runcmd("git clone --depth 1 -b master {}".format(repo.git_repo))
@@ -225,6 +236,17 @@ class Installer(object):
             click.echo(
                 "Don't install {} because the code repository exists.".format(
                     repo.package_name))
+
+    def check_usergroup(self, usergroup):
+        if ifroot():
+            return
+        for gid in os.getgroups():
+            if grp.getgrgid(gid).gr_name == usergroup:
+                return
+        msg = """\
+You don't belong to the {0} user group.  Maybe you want to run:
+sudo adduser `whoami` {0}"""
+        raise click.ClickException(msg.format(usergroup))
 
     def finish(self):
         if not ifroot():
@@ -242,10 +264,3 @@ class Installer(object):
                 with self.override_batch(True):
                     for srv in self._services:
                         self.runcmd("service {} restart".format(srv))
-
-
-def check_usergroup(usergroup):
-    for gid in os.getgroups():
-        if grp.getgrgid(gid).gr_name == usergroup:
-            return True
-    return False
