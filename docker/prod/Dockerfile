@@ -17,9 +17,11 @@ ENV TERM=linux
 ENV PYTHONUNBUFFERED=1
 
 # Thanks to https://stackoverflow.com/questions/51023312/docker-having-issues-installing-apt-utils
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-ENV TZ=Europe/Brussels
+#ENV LC_ALL=C.UTF-8
+#ENV LANG=C.UTF-8
+#ENV TZ=Europe/Brussels
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        tzdata
 
 
 RUN apt-get update -y
