@@ -150,12 +150,11 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
         #     if nickname not in dev_repos:
         #         pip_packages.add(REPOS_DICT[nickname].package_name)
 
-    # 20190803 no need to install again here. See docs/usage.rst
-    # for e in DB_ENGINES:
-    #     if DEFAULTSECTION.get('db_engine') == e.name:
-    #         for pkgname in e.python_packages.split():
-    #             pip_packages.add(pkgname)
-    #         break
+    for e in DB_ENGINES:
+        if DEFAULTSECTION.get('db_engine') == e.name:
+            for pkgname in e.python_packages.split():
+                pip_packages.add(pkgname)
+            break
 
     context.update({
         "prjname": prjname,
@@ -272,13 +271,8 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
             i.install_repo(lib, envdir)
 
     click.echo("Installing Python packages...")
-    for pkgname in pip_packages:
-        i.run_in_env(envdir, "pip install {}".format(pkgname))
-
-    # startsite does not install any db engine because this is done by configure.
-    # for e in DB_ENGINES:
-    #     if DEFAULTSECTION.get('db_engine') == e.name and e.python_packages:
-    #         i.run_in_env(envdir, "pip install {}".format(e.python_packages))
+    # for pkgname in pip_packages:
+    #     i.run_in_env(envdir, "pip install {}".format(pkgname))
 
     if len(pip_packages):
         i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))

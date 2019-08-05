@@ -25,8 +25,12 @@ DbEngine = collections.namedtuple(
     'DbEngine', ('name', 'apt_packages', 'python_packages'))
 DB_ENGINES = [
     DbEngine('postgresql', "postgresql postgresql-contrib", "psycopg2"),
-    DbEngine(
-        'mysql', "mysql-server libmysqlclient-dev python-dev libffi-dev libssl-dev python-mysqldb", "mysqlclient"),
+    # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
+    # practical choice for development and testing but in production it is
+    # advised to use the package built from sources."
+    DbEngine('mysql',
+        "mysql-server libmysqlclient-dev python-dev libffi-dev libssl-dev python-mysqldb",
+        "mysqlclient"),
     DbEngine('sqlite3', "sqlite3", "")
 ]
 
@@ -207,7 +211,7 @@ class Installer(object):
             run("create user '{user}'@'localhost' identified by '{pwd}'".format(**locals()))
             run("create database {database} charset 'utf8'".format(**locals()))
             run("grant all PRIVILEGES on {database}.* to '{user}'@'localhost'".format(**locals()))
-        elif db_engine == 'pgsql':
+        elif db_engine == 'postgresql':
             def run(cmd):
                 assert '"' not in cmd
                 self.runcmd('sudo -u postgres bash -c "psql -c \"{}\";"'.format(cmd))
