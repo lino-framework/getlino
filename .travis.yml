@@ -17,5 +17,4 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - ./prep.sh
-  - inv test
+  - inv prep test

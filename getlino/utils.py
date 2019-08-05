@@ -219,7 +219,7 @@ class Installer(object):
         elif db_engine == 'postgresql':
             def run(cmd):
                 assert '"' not in cmd
-                self.runcmd('sudo -u postgres bash -c "psql -c \"{}\";"'.format(cmd))
+                self.runcmd('sudo -u postgres bash -c "psql -c \\\"{}\\\""'.format(cmd))
             run("CREATE USER {user} WITH PASSWORD '{pwd}';".format(**locals()))
             run("CREATE DATABASE {database};".format(**locals()))
             run("GRANT ALL PRIVILEGES ON DATABASE {database} TO {user};".format(**locals()))
