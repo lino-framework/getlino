@@ -24,7 +24,7 @@ BATCH_HELP = "Whether to run in batch mode, i.e. without asking any questions.  
 DbEngine = collections.namedtuple(
     'DbEngine', ('name', 'apt_packages', 'python_packages'))
 DB_ENGINES = [
-    DbEngine('postgresql', "postgresql postgresql-contrib", "psycopg2-binary"),
+    DbEngine('postgresql', "postgresql postgresql-contrib", "psycopg2"),
     DbEngine(
         'mysql', "mysql-server libmysqlclient-dev python-dev libffi-dev libssl-dev python-mysqldb", "mysqlclient"),
     DbEngine('sqlite3', "sqlite3", "")
@@ -120,15 +120,25 @@ class Installer(object):
         self._services.add(srvname)
 
     def runcmd(self, cmd, **kw):
-        """Run the cmd similar as os.system(), but stop when Ctrl-C."""
+        """Run the cmd similar as os.system(), but stop when Ctrl-C.
+
+        If the subprocess has non-zero return code, we simply stop. We don't use
+        check=True because this would add another useless traceback.  The
+        subprocess is responsible for reporting the reason of the error.
+
+        """
         # kw.update(stdout=subprocess.PIPE)
         # kw.update(stderr=subprocess.STDOUT)
         kw.update(shell=True)
         kw.update(universal_newlines=True)
+        # kw.update(check=True)
         # subprocess.check_output(cmd, **kw)
         if self.batch or click.confirm("run {}".format(cmd), default=True):
             click.echo(cmd)
-            subprocess.run(cmd, **kw)
+            cp = subprocess.run(cmd, **kw)
+            if cp.returncode != 0:
+                raise click.ClickException(
+                "{} ended with return code {}".format(cmd, cp.returncode))
 
     def apt_install(self, packages):
         for pkg in packages.split():

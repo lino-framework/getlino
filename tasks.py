@@ -5,5 +5,4 @@ ns = setup_from_tasks(
     # tolerate_sphinx_warnings=True,
     # blogref_url="http://lino-framework.org",
     revision_control_system='git',
-    cleanable_files=['docs/api/getlino.*'],
-    prep_command="prep.sh")
+    cleanable_files=['docs/api/getlino.*'])
