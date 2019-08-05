@@ -297,7 +297,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
                     i.must_restart("nginx")
 
     os.chdir(project_dir)
-    i.run_in_env(envdir, "python manage.py install")
+    i.run_in_env(envdir, "python manage.py install --noinput")
     i.setup_database(prjname, db_user, db_password, db_engine)
     i.run_in_env(envdir, "python manage.py prep --noinput")
 
