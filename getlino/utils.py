@@ -2,6 +2,9 @@
 # Copyright 2019 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
+"""Some utilities for getlino.
+"""
+
 import os
 from os.path import join, expanduser
 import stat
@@ -24,7 +27,7 @@ BATCH_HELP = "Whether to run in batch mode, i.e. without asking any questions.  
 DbEngine = collections.namedtuple(
     'DbEngine', ('name', 'apt_packages', 'python_packages'))
 DB_ENGINES = [
-    DbEngine('postgresql', "postgresql postgresql-contrib", "psycopg2"),
+    DbEngine('postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2"),
     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
@@ -84,6 +87,8 @@ def ifroot(true=True, false=False):
 
 
 class Installer(object):
+    """Volatile object used by :mod:`getlino.configure` and :mod:`getlino.startsite`.
+    """
     def __init__(self, batch=False):
         self.batch = batch
         # self.asroot = ifroot()

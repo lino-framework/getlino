@@ -1,6 +1,8 @@
-#!python
 # Copyright 2019 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
+
+"""The main entry point for the :command:`getlino`  command.
+"""
 
 import click
 

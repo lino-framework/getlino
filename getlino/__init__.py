@@ -1,3 +1,14 @@
+"""
+.. autosummary::
+   :toctree:
+
+   configure
+   startsite
+   utils
+   cli
+
+"""
+
 from .setup_info import SETUP_INFO
 __version__ = SETUP_INFO['version']
 
