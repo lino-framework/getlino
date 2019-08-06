@@ -48,5 +48,5 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
 
-RUN sudo -H getlino configure --batch --db-engine mysql
+RUN sudo -H getlino configure --batch --db-engine postgresql
 RUN sudo -H getlino startsite --batch noi mysite1

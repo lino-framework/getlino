@@ -25,16 +25,16 @@ BATCH_HELP = "Whether to run in batch mode, i.e. without asking any questions.  
 
 # Note that the DbEngine.name field must match the Django engine name
 DbEngine = collections.namedtuple(
-    'DbEngine', ('name', 'apt_packages', 'python_packages'))
+    'DbEngine', ('name service apt_packages python_packages'))
 DB_ENGINES = [
-    DbEngine('postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2"),
+    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2"),
     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
-    DbEngine('mysql',
+    DbEngine('mysql', 'mysql',
         "mysql-server libmysqlclient-dev python-dev libffi-dev libssl-dev python-mysqldb",
         "mysqlclient"),
-    DbEngine('sqlite3', "sqlite3", "")
+    DbEngine('sqlite3', '', "sqlite3", "")
 ]
 
 Repo = collections.namedtuple(
@@ -274,6 +274,11 @@ sudo adduser `whoami` {0}"""
                     "Note that the following system packages were not "
                     "installed because you aren't root:\n{}".format(
                         ' '.join(list(self._system_packages))))
+            if len(self._services):
+                click.echo(
+                    "The following system services were not "
+                    "restarted because you aren't root:\n{}".format(
+                        ' '.join(list(self._services))))
             return
 
         self.run_apt_install()

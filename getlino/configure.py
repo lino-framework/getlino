@@ -208,6 +208,8 @@ def configure(ctx, batch,
     for e in DB_ENGINES:
         if DEFAULTSECTION.get('db_engine') == e.name:
             i.apt_install(e.apt_packages)
+            if e.service:
+                i.must_restart(e.service)
 
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
