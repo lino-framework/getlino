@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # FROM python:3-buster
 # FROM ubuntu:bionic
 # buster doesn't have monit
-FROM debian:buster  
+FROM debian:buster
 
 # Thanks to https://github.com/phusion/baseimage-docker/issues/58
 ENV TERM=linux
@@ -48,5 +48,5 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
 
-RUN sudo -H getlino configure --batch --db-engine postgresql
+RUN sudo -H getlino configure --batch --db-engine mysql
 RUN sudo -H getlino startsite --batch noi mysite1
