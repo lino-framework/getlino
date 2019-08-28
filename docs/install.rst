@@ -15,7 +15,7 @@ There are several flavours of Lino, choose the one which matches your profile:
   if you want to write you own Lino application and maybe contribute to the project.
 
 - `Configure a Lino production server`_ if you want to set up a Lino server and
-  host Lino production sites for yourself or others. 
+  host Lino production sites for yourself or others.
 
 .. _getlino.install.dev:
 
@@ -95,6 +95,10 @@ You need shell access to a **Linux machine**, i.e. a virtual or physical machine
 with a Linux operating system running in a network. We recommend a **stable
 Debian** as operating system.   We will install a series of system packages like
 Python, nginx, monit, a database server (MySQL or PostGreSQL) on your machine.
+
+Install pip::
+
+  $ sudo apt-get install -y python3-pip
 
 Install getlino into the system-wide Python 3 environment::
 
