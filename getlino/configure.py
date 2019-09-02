@@ -57,8 +57,6 @@ STATIC_ROOT = 'env/static'
 TIME_ZONE = "{time_zone}"
 """
 
-
-
 # The configure command will be decorated below. We cannot use decorators
 # because we define the list of options in CONFIGURE_OPTIONS because we need
 # that list also for asking questions using the help text.
@@ -258,9 +256,15 @@ def configure(ctx, batch,
                  LOCAL_SETTINGS.format(**DEFAULTSECTION))
 
     if ifroot():
+        i.write_logrotate_conf(
+            'supervisor.conf', '/var/log/supervisor/supervisord.log')
+
         if DEFAULTSECTION.getboolean('monit'):
             i.write_file('/usr/local/bin/healthcheck.sh', HEALTHCHECK_SH, executable=True)
             i.write_file('/etc/monit/conf.d/lino.conf', MONIT_CONF)
+            # seems that monit creates its own logrotate config file
+            # i.write_logrotate_conf(
+            #     'monit.conf', '/var/log/monit.log')
 
         if DEFAULTSECTION.getboolean('appy'):
             i.write_supervisor_conf(

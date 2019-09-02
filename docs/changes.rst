@@ -4,6 +4,11 @@
 Changes in `getlino`
 =======================
 
+2019-09-02
+==========
+
+Also write logrotate config files for supervisor and monit.
+
 2019-08-27
 ==========
 
