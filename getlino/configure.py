@@ -77,14 +77,22 @@ def default_sites_base():
     return ifroot('/usr/local/lino', os.path.expanduser('~/lino'))
 
 def default_shared_env():
-    return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
+    return os.environ.get('VIRTUAL_ENV', '')
+    # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
 
 def default_repos_base():
-    return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
+    if default_shared_env():
+        return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
+    return ''
+
+def default_db_engine():
+    if ifroot():
+        return 'mysql'
+    return 'sqlite'
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
-add('--contrib/--no-contrib', ifroot, "Whether to configure a contributor environment")
+add('--contrib/--no-contrib', lambda : not ifroot(), "Whether to configure a contributor environment")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")

@@ -44,7 +44,7 @@ really know that you want it (e.g. in a Dockerfile).
 
         Run in batch mode, i.e. without asking any questions.
         Assume yes to all questions.
-        
+
 
     .. rubric:: Server configuration options
 
@@ -56,6 +56,8 @@ really know that you want it (e.g. in a Dockerfile).
     .. option:: --shared-env
 
         Full path to your default virtualenv.
+        Default value i taken from :envvar:`VIRTUAL_ENV` environment value.
+        If this is empty, every new site  will get its own virgin environment.
 
     .. option:: --repos-base
 
@@ -118,6 +120,10 @@ really know that you want it (e.g. in a Dockerfile).
         When running as root, this will also add a :mod:`supervisor`
         configuration file which runs the :manage:`linod` command automatically.
 
+    .. option:: --db-engine
+
+        Default value is 'mysql' when running as root or 'sqlite' otherwise.
+
     .. option:: --db-user
 
         A database username to use for all sites on this server.
@@ -131,8 +137,6 @@ really know that you want it (e.g. in a Dockerfile).
     .. option:: --db-password
 
         The password for the :option:`--db-user`.
-
-
 
     .. rubric:: Server features
 
