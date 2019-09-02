@@ -50,7 +50,7 @@ if False:
         def get_apt_packages(self):
             return self.apt_packages.split()
 
-    class MySQL(DbEngine)
+    class MySQL(DbEngine):
         def get_apt_packages(self):
             if platform.dist()[0] == "Debian":
                 return "mariadb..."
