@@ -86,9 +86,7 @@ def default_repos_base():
     return ''
 
 def default_db_engine():
-    if ifroot():
-        return 'mysql'
-    return 'sqlite'
+    return ifroot('mysql', 'sqlite')
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
@@ -113,7 +111,7 @@ add('--https/--no-https', False, "Whether this server uses secure http")
 add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
 # disable monit by default as it is not included in debian buster.
 add('--monit/--no-monit', False, "Whether this server uses monit")
-add('--db-engine', 'sqlite3', "Default database engine for new sites.",
+add('--db-engine', default_db_engine, "Default database engine for new sites.",
     click.Choice([e.name for e in DB_ENGINES]))
 add('--db-port', 3306, "Default database port for new sites.")
 add('--db-host', 'localhost', "Default database host name for new sites.")
@@ -203,7 +201,6 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('devtools'):
         i.apt_install("swig graphviz sqlite3")
         if False:
-            i.apt_install("tidy")  # was needed for html2xhtml
 
     if DEFAULTSECTION.getboolean('monit'):
         i.apt_install("monit")
@@ -219,6 +216,8 @@ def configure(ctx, batch,
 
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
+        i.apt_install("tidy")
+        i.must_restart('supervisor')
 
     if DEFAULTSECTION.getboolean('ldap'):
         i.apt_install("slapd ldap-utils")
@@ -280,6 +279,7 @@ def configure(ctx, batch,
                 LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))
 
         if DEFAULTSECTION.get('db_engine') == 'mysql':
+            # TODO: set a mysql root password
             if False:  # is this needed?
                 i.runcmd("mysql_secure_installation")
 

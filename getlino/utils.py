@@ -39,6 +39,25 @@ LOGROTATE_CONF = """
 }}
 """
 
+if False:
+    class DbEngine(object):
+        def __init__(self):
+            self.name
+            self.service
+            self.apt_packages
+            self.python_packages
+
+        def get_apt_packages(self):
+            return self.apt_packages.split()
+
+    class MySQL(DbEngine)
+        def get_apt_packages(self):
+            if platform.dist()[0] == "Debian":
+                return "mariadb..."
+            else:
+                return "mysql-server..."
+
+
 # Note that the DbEngine.name field must match the Django engine name
 DbEngine = collections.namedtuple(
     'DbEngine', ('name service apt_packages python_packages'))
@@ -47,9 +66,12 @@ DB_ENGINES = [
     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
-    DbEngine('mysql', 'mysql',
-        "mysql-server libmysqlclient-dev python-dev libffi-dev libssl-dev python-mysqldb",
-        "mysqlclient"),
+
+    apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev"
+    # apt_packages = "mysql-server libmysqlclient-dev"
+    # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
+    apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
+    DbEngine('mysql', 'mysql', apt_packages, "mysqlclient"),
     DbEngine('sqlite3', '', "sqlite3", "")
 ]
 

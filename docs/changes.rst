@@ -20,7 +20,7 @@ and :option:`--repos-base` are now empty when
 :envvar:`VIRTUAL_ENV` is not set.
 And :option:`--db-engine` is now mysql when running as root.
 
-Released getlino 19.9.0 to PyPI.
+Released getlino 19.9.0 to PyPI, followed by a bugfix release 19.9.1.
 
 
 2019-08-27

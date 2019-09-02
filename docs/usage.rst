@@ -244,6 +244,10 @@ The script will ask you some questions:
 
             $ getlino startsite avanti mysite --dev-repos "lino xl"
 
+        Not that the sort order is important. The following would not work::
+
+            $ getlino startsite avanti mysite --dev-repos "xl lino"
+
 
 Configuration files
 ===================
