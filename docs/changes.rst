@@ -9,18 +9,16 @@ Changes in `getlino`
 
 Also write logrotate config file for supervisor.
 
-The default value for :option:`getlino configure --no-contrib` was wrong : when
-running as root, it is not a contributor environment
-
-.. command:: getlino configure
+.. program:: getlino configure
 
 Changed some default values
 in :cmd:`getlino configure`:
+The default value for :option:`--contrib` was wrong : when
+running as root, it is *not* a contributor environment.
 :option:`--shared-env`
 and :option:`--repos-base` are now empty when
 :envvar:`VIRTUAL_ENV` is not set.
-:option:`--db-engine` is now mysql when running as root.
-
+And :option:`--db-engine` is now mysql when running as root.
 
 Released getlino 19.9.0 to PyPI.
 
