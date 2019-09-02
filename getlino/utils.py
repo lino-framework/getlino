@@ -61,8 +61,9 @@ if False:
 # Note that the DbEngine.name field must match the Django engine name
 DbEngine = collections.namedtuple(
     'DbEngine', ('name service apt_packages python_packages'))
-DB_ENGINES = [
-    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2"),
+DB_ENGINES = []
+DB_ENGINES.append(
+    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2"))
     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
@@ -71,9 +72,9 @@ DB_ENGINES = [
     # apt_packages = "mysql-server libmysqlclient-dev"
     # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
     apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-    DbEngine('mysql', 'mysql', apt_packages, "mysqlclient"),
-    DbEngine('sqlite3', '', "sqlite3", "")
-]
+DB_ENGINES.append(DbEngine('mysql', 'mysql', apt_packages, "mysqlclient"))
+DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", ""))
+
 
 Repo = collections.namedtuple(
     'Repo', 'nickname package_name git_repo settings_module front_end')
