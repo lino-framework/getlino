@@ -200,7 +200,6 @@ def configure(ctx, batch,
 
     if DEFAULTSECTION.getboolean('devtools'):
         i.apt_install("swig graphviz sqlite3")
-        if False:
 
     if DEFAULTSECTION.getboolean('monit'):
         i.apt_install("monit")
