@@ -68,11 +68,12 @@ DB_ENGINES.append(
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
 
-apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev"
+mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev python-dev libffi-dev libssl-dev python-mysqldb"
 # apt_packages = "mysql-server libmysqlclient-dev"
 # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
-apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-DB_ENGINES.append(DbEngine('mysql', 'mysql', apt_packages, "mysqlclient"))
+# apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
+DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient"))
+DB_ENGINES.append(DbEngine('mariadb', 'mariadb', mariadb_apt_packages, "mysqlclient"))
 DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", ""))
 
 
@@ -249,7 +250,7 @@ class Installer(object):
     def setup_database(self, database, user, pwd, db_engine):
         if db_engine == 'sqlite3':
             click.echo("No setup needed for " + db_engine)
-        elif db_engine == 'mysql':
+        elif db_engine in ['mysql','mariadb']:
             def run(cmd):
                 self.runcmd('mysql -u root -p -e "{};"'.format(cmd))
             run("create user '{user}'@'localhost' identified by '{pwd}'".format(**locals()))

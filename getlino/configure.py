@@ -6,6 +6,7 @@ import sys
 import stat
 import shutil
 import grp
+import platform
 import configparser
 import subprocess
 import virtualenv
@@ -86,7 +87,7 @@ def default_repos_base():
     return ''
 
 def default_db_engine():
-    return ifroot('mysql', 'sqlite')
+    return ifroot('mariadb' if platform.dist()[0] == "debian" else "mysql", 'sqlite')
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
@@ -277,10 +278,8 @@ def configure(ctx, batch,
                 'libreoffice.conf',
                 LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))
 
-        if DEFAULTSECTION.get('db_engine') == 'mysql':
-            # TODO: set a mysql root password
-            if False:  # is this needed?
-                i.runcmd("mysql_secure_installation")
+        if DEFAULTSECTION.get('db_engine') in ['mysql','mariadb']:
+            i.runcmd("mysql_secure_installation")
 
         if DEFAULTSECTION.getboolean('https'):
             if shutil.which("certbot-auto"):
