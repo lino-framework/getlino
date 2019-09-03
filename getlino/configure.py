@@ -87,7 +87,7 @@ def default_repos_base():
     return ''
 
 def default_db_engine():
-    return ifroot('mariadb' if platform.dist()[0] == "debian" else "mysql", 'sqlite')
+    return ifroot("mysql", 'sqlite')
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")

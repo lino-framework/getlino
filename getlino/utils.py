@@ -68,12 +68,15 @@ DB_ENGINES.append(
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
 
-mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev python-dev libffi-dev libssl-dev python-mysqldb"
+mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
+    "python-dev libffi-dev libssl-dev python-mysqldb"
 # apt_packages = "mysql-server libmysqlclient-dev"
 # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
 # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient"))
-DB_ENGINES.append(DbEngine('mariadb', 'mariadb', mariadb_apt_packages, "mysqlclient"))
+if platform.dist()[0].lower() == "debian":
+    DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient"))
+else:
+    DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient"))
 DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", ""))
 
 
