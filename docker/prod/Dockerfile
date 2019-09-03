@@ -20,7 +20,7 @@ ENV PYTHONUNBUFFERED=1
 #ENV LC_ALL=C.UTF-8
 #ENV LANG=C.UTF-8
 #ENV TZ=Europe/Brussels
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         tzdata
 
 
@@ -49,4 +49,4 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER lino
 
 RUN sudo -H getlino configure --batch --db-engine postgresql
-RUN sudo -H getlino startsite --batch noi mysite1
+RUN sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi"
