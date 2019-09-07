@@ -7,7 +7,7 @@ Changes in `getlino`
 2019-09-07
 ==========
 
-Released getlino 19.9.2 on PyPI.
+Released getlino 19.9.2 on PyPI, followed by a bugfix release 19.9.3.
 
 2019-09-02
 ==========
