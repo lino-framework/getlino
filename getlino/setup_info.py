@@ -4,10 +4,10 @@ SETUP_INFO = dict(
     install_requires=['setuptools', 'click', 'virtualenv', 'cookiecutter', 'atelier'],
     test_suite='tests',
     description="Lino installer",
-    long_description=u"""
-    A tool to install and configure Lino on your machine.
+    long_description="""
+A tool to install and configure Lino on your machine.
 
-    The central project homepage is http://getlino.lino-framework.org
+The central project homepage is http://getlino.lino-framework.org
 
     """,
     author='Rumma & Ko Ltd',
@@ -20,7 +20,7 @@ SETUP_INFO = dict(
 
     classifiers="""\
 Programming Language :: Python :: 3
-Development Status :: 1 - Planning
+Development Status :: 4 - Beta
 Environment :: Console
 Framework :: Django
 Intended Audience :: Developers
