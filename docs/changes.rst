@@ -23,8 +23,7 @@ The configure command now supports :option:`--clone` without specifying a
 New option :option:`--shared-env` for startsite.  When used with startsite, it
 overrides the value specified during configure.
 
-
-.. Released getlino 19.9.4 on PyPI.
+Released getlino 19.9.4 on PyPI.
 
 2019-09-07
 ==========
