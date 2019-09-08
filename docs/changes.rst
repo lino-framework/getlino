@@ -4,6 +4,28 @@
 Changes in `getlino`
 =======================
 
+2019-09-08
+==========
+
+.. program:: getlino configure
+
+Renamed the ``--contrib`` option  to :option:`--clone` because it is also used
+when configuring a :term:`demo server`. It means "clone all known repositories
+to the --repos-base and install them to the shared env using :cmd:`pip -e`."
+This change requires that you run :cmd:`getlino configure` once after upgrade,
+or manually edit your getlino config file.
+
+The configure command now supports :option:`--clone` without specifying a
+--repos-base. In that case it uses the `repositories` subdir of the shared-env.
+
+.. program:: getlino startsite
+
+New option :option:`--shared-env` for startsite.  When used with startsite, it
+overrides the value specified during configure.
+
+
+.. Released getlino 19.9.4 on PyPI.
+
 2019-09-07
 ==========
 
@@ -18,7 +40,7 @@ Also write logrotate config file for supervisor.
 
 Changed some default values
 in :cmd:`getlino configure`:
-The default value for :option:`--contrib` was wrong : when
+The default value for :option:`--clone` was wrong : when
 running as root, it is *not* a contributor environment.
 :option:`--shared-env`
 and :option:`--repos-base` are now empty when

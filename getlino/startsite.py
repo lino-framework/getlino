@@ -41,6 +41,9 @@ PRJ={project_dir}
 exec python $PRJ/manage.py linod
 """
 
+def default_shared_env():
+    return DEFAULTSECTION.get('shared_env')
+
 
 @click.command()
 @click.argument('appname', metavar="APPNAME", type=click.Choice(APPNAMES))
@@ -48,8 +51,10 @@ exec python $PRJ/manage.py linod
 @click.option('--batch/--no-batch', default=False, help=BATCH_HELP)
 @click.option('--dev-repos', default='',
               help="List of packages for which to install development version")
+@click.option('--shared-env', default=default_shared_env,
+              help="Directory with shared virtualenv")
 @click.pass_context
-def startsite(ctx, appname, prjname, batch, dev_repos):
+def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     """
     Create a new Lino site.
 
@@ -71,12 +76,12 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     #     raise click.UsageError("Project directory {} already exists.".format(prjpath))
 
     # prod = DEFAULTSECTION.getboolean('prod')
-    contrib = DEFAULTSECTION.getboolean('contrib')
+    # contrib = DEFAULTSECTION.getboolean('contrib')
     sites_base = DEFAULTSECTION.get('sites_base')
     local_prefix = DEFAULTSECTION.get('local_prefix')
     python_path_root = join(sites_base, local_prefix)
     project_dir = join(python_path_root, prjname)
-    shared_env = DEFAULTSECTION.get('shared_env')
+    # shared_env = DEFAULTSECTION.get('shared_env')
     admin_name = DEFAULTSECTION.get('admin_name')
     admin_email = DEFAULTSECTION.get('admin_email')
     server_domain = prjname + "." + DEFAULTSECTION.get('server_domain')
@@ -123,7 +128,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos):
     context = {}
     context.update(DEFAULTSECTION)
     pip_packages = set()
-    if not contrib:
+    if not shared_env:
         if app.nickname not in dev_repos:
             pip_packages.add(app.package_name)
         if front_end.nickname not in dev_repos:

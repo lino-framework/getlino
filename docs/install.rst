@@ -89,7 +89,7 @@ Install getlino::
 
 Run :cmd:`getlino configure` ::
 
-  $ getlino configure --contrib
+  $ getlino configure --clone
 
 Try one of the demo projects::
 
@@ -143,7 +143,35 @@ Continue here:  http://www.lino-framework.org/admin/index.html
 Configure a Lino demo server
 ============================
 
-(todo)
+Install pip::
+
+  $ sudo apt-get install -y python3-pip
+
+Install getlino into the system-wide Python 3 environment::
+
+   $ sudo -H pip3 install getlino
+
+Run :cmd:`getlino configure` as root::
+
+   $ sudo -H getlino configure --shared-env /usr/local/lino/sharedenvs/master --clone
+
+.. program:: getlino configure
+
+That is, you say :option:`--clone` and create a :option:`--shared-env`.
+
+You may create other shared envs by changing the branch and clone another set of
+repositories::
+
+   $ sudo -H getlino configure --shared-env /usr/local/lino/sharedenvs/stable --clone --branch stable
+
+.. program:: getlino startsite
+
+Specify :option:`--shared-env` when creating demo sites::
+
+   $ sudo -H getlino startsite noi first --shared-env /usr/local/lino/sharedenvs/stable
+   $ sudo -H getlino startsite tera second --shared-env /usr/local/lino/sharedenvs/master
+
+
 
 Contributing to getlino development
 ===================================

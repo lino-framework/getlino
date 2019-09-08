@@ -91,12 +91,13 @@ def default_db_engine():
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
-add('--contrib/--no-contrib', lambda : not ifroot(), "Whether to configure a contributor environment")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
 add('--repos-base', default_repos_base, "Base directory for shared code repositories")
-add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites.")
+add('--clone/--no-clone', lambda : not ifroot(), "Clone all known repositories and install them to the shared-env")
+add('--branch', 'master', "The git branch to use for --clone")
+add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites")
 add('--backups-base', '/var/backups/lino', 'Base directory for backups')
 add('--log-base', '/var/log/lino', 'Base directory for log files')
 add('--usergroup', 'www-data', "User group for files to be shared with the web server")
@@ -128,8 +129,8 @@ add('--front-end', 'lino.modlib.extjs', "The front end to use on new sites",
     click.Choice([r.front_end for r in FRONT_ENDS]))
 
 def configure(ctx, batch,
-              contrib, sites_base, local_prefix, shared_env, repos_base,
-              webdav, backups_base, log_base, usergroup,
+              sites_base, local_prefix, shared_env, repos_base,
+              clone, branch, webdav, backups_base, log_base, usergroup,
               supervisor_dir, env_link, repos_link,
               appy, redis, devtools, server_domain, https, ldap, monit,
               db_engine, db_port, db_host,
@@ -224,15 +225,16 @@ def configure(ctx, batch,
 
     i.finish()
 
-    if contrib:
+    if clone:
         click.echo("Installing repositories for shared-env...")
-        repos_base = DEFAULTSECTION.get('repos_base')
-        if not repos_base:
-            raise click.ClickException("Cannot use --contrib without --repos-base")
         envdir = DEFAULTSECTION.get('shared_env')
         if not envdir:
-            raise click.ClickException("Cannot use --contrib without --shared-env")
+            raise click.ClickException("Cannot --clone without --shared-env")
         i.check_virtualenv(envdir)
+
+        repos_base = DEFAULTSECTION.get('repos_base')
+        if not repos_base:
+            repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
         if not os.path.exists(repos_base):
             if batch or click.confirm(
                 "Create base directory for repositories {}".format(repos_base),

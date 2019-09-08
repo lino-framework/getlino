@@ -48,15 +48,10 @@ really know that you want it (e.g. in a Dockerfile).
 
     .. rubric:: Server configuration options
 
-    .. option:: --contrib
-
-        Configure a contributor environment. Install a clone of all repositories
-        to your ``--repos-base`` and use these for new sites.
-
     .. option:: --shared-env
 
         Full path to your default virtualenv.
-        Default value i taken from :envvar:`VIRTUAL_ENV` environment value.
+        Default value is taken from :envvar:`VIRTUAL_ENV` environment value.
         If this is empty, every new site  will get its own virgin environment.
 
     .. option:: --repos-base
@@ -67,6 +62,16 @@ really know that you want it (e.g. in a Dockerfile).
 
         If this is empty and a site requests a development version, this will
         be stored in a directory named :option:`--repos-link` below the virtualenv dir.
+
+    .. option:: --clone
+
+        Clone all known repositories to your ``--repos-base`` and install them
+        into your ``--shared-env``. Used when configuring a :term:`contributor
+        environment` or a :term:`demo server`.
+
+    .. option:: --branch
+
+        The git branch to use for :option:`--clone`.
 
     .. option:: --sites-base
 
@@ -248,6 +253,12 @@ The script will ask you some questions:
 
             $ getlino startsite avanti mysite --dev-repos "xl lino"
 
+    .. option:: --shared-env
+
+        Full path to the shared virtualenv to use for this site.
+        Default value is the value specified during :option:`getlino configure --shared-env`
+        If this is empty, the new site will get its own virgin environment.
+
 
 Configuration files
 ===================
@@ -283,5 +294,30 @@ The `cookiecutter-startsite
 a cookiecutter template used by :cmd:`getlino startsite`.
 
 
-Notes
-=====
+Shared virtual environments
+===========================
+
+You can run multiple sites on a same virtualenv.  That virtualenv is then called
+a shared environment.
+
+Note that if you update a shared virtualenv (by activating it and running some
+pip command), the change will affect all sites and you must take special care
+for migrating their data if needed.
+
+In a :term:`developer environment` and a :term:`contributor environment` you
+usually have a single shared env used by all your sites.  On a :term:`production
+server` you usually have no shared-env at all (each production site has its own
+env). On a :term:`demo server` you usually hav several shared envs:
+
+- /usr/local/lino/sharedenvs/master
+- /usr/local/lino/sharedenvs/stable
+
+You can specify a *default* shared environment with
+:option:`getlino configure --shared-env`
+:option:`getlino startsite --shared-env`.
+
+Note that :option:`getlino configure --clone`) will install all known framework
+repositories into the default shared env.
+
+:cmd:`getlino startsite` does not install any Python packages when a shared env
+is used.

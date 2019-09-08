@@ -293,8 +293,9 @@ class Installer(object):
         return False
 
     def install_repo(self, repo, env):
+        branch = DEFAULTSECTION.get('branch')
         if not os.path.exists(repo.nickname):
-            self.runcmd("git clone --depth 1 -b master {}".format(repo.git_repo))
+            self.runcmd("git clone --depth 1 -b {} {}".format(branch, repo.git_repo))
         else:
             click.echo(
                 "No need to clone {} : directory exists.".format(
