@@ -4,18 +4,39 @@
 Installing Lino
 ===============
 
-This page gives an overview on how to install Lino on your computer.
+This page explains how to install Lino on your computer. There are several
+recipes, depending on what you want to do. Choose the one which matches your
+needs:
 
-There are several flavours of Lino, choose the one which matches your profile:
 
-- `Configure a Lino developer environment`_ if you just want to write your own
-  Lino application.
+.. glossary::
 
-- `Configure a Lino contributor environment`_
-  if you want to write you own Lino application and maybe contribute to the project.
+  Developer environment
 
-- `Configure a Lino production server`_ if you want to set up a Lino server and
-  host Lino production sites for yourself or others.
+    A set of utilities on your computer, to be used for developing your own
+    :term:`Lino application`.
+
+    See :ref:`getlino.install.dev`.
+
+  Contributor environment
+
+    An extended :term:`developer environment` for developers who plan to
+    potentially contribute to the :term:`Lino framework`.  A bit more work to
+    install, but more future-proof.
+
+    See :ref:`getlino.install.dev`.
+
+  Production server
+
+    A server with one or several :term:`Lino sites <Lino site>` in
+    :term:`production` mode for yourself or your customers.
+
+    See :ref:`getlino.install.prod`.
+
+  Demo server
+
+    See :ref:`getlino.install.demo`.
+
 
 .. _getlino.install.dev:
 
@@ -76,16 +97,11 @@ Try one of the demo projects::
   $ pm prep
   $ pm runserver
 
-If you ran configure as root and also installed a production server, you may add
-sites and test them under nginx::
-
-  $ getlino startsite noi first --dev-repos "lino xl noi book"
-  $ cd first
-
 Point your browser to http://localhost:8000
 
 Continue here:  http://www.lino-framework.org/team/index.html
 
+.. _getlino.install.prod:
 .. _getlino.install.admin:
 
 Configure a Lino production server
@@ -122,6 +138,13 @@ you need to setup a domain name and add use the :option:`getlino configure
 Continue here:  http://www.lino-framework.org/admin/index.html
 
 
+.. _getlino.install.demo:
+
+Configure a Lino demo server
+============================
+
+(todo)
+
 Contributing to getlino development
 ===================================
 
@@ -132,4 +155,4 @@ getlino::
    $ git clone git@github.com:lino-framework/getlino.git
    $ pip install -e getlino
 
-Dont forget to manually add getlino to your atelier config.
+Don't forget to manually add getlino to your atelier config.
