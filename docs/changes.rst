@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2019-09-09
+==========
+
+Add more demo projects to be used by the getlino configure command.
+Released getlino 19.9.5.
+
 2019-09-08
 ==========
 
