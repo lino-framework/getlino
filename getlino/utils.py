@@ -114,6 +114,7 @@ add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_
 # experimental: an application which has no repo on its own
 add("min1", "", "", "lino_book.projects.min1.settings")
 add("min2", "", "", "lino_book.projects.min2.settings")
+add("polls", "", "", "lino_book.projects.polls.mysite.settings")
 add("chatter", "", "", "lino_book.projects.chatter.settings")
 
 APPNAMES = [a.nickname for a in KNOWN_REPOS if a.settings_module]
