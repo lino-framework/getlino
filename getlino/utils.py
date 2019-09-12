@@ -294,7 +294,7 @@ class Installer(object):
         if self.batch or click.confirm(msg.format(envdir), default=True):
             # create an empty directory and fix permissions
             os.mkdir(envdir)
-            i.check_permissions(envdir)
+            self.check_permissions(envdir)
             virtualenv.create_environment(envdir)
             return True
         return False

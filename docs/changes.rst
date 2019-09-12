@@ -18,7 +18,8 @@ only when you aren't running as root. After running :cmd:`getlino configure` as
 root, you may want to run it once more without being root to create a
 :xfile:`.bash_aliases` file to your home directory.
 
-Released getlino 19.9.6 to PyPI.
+Released getlino 19.9.6 to PyPI, immediately followed by a bug-fix release
+19.9.7
 
 ==========
 2019-09-09
