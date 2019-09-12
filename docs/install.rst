@@ -85,7 +85,7 @@ Activate the virtual environment you want to use for your Lino projects::
 
 Install getlino::
 
-  $ pip install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+  $ pip install getlino
 
 Run :cmd:`getlino configure` ::
 
@@ -187,6 +187,12 @@ Specify :option:`--shared-env` when creating demo sites::
    $ sudo -H getlino startsite noi first --shared-env /usr/local/lino/sharedenvs/stable
    $ sudo -H getlino startsite tera second --shared-env /usr/local/lino/sharedenvs/master
 
+Updating getlino
+================
+
+Depending on how you installed getlino, run either  :cmd:`sudo -H pip3 install
+-U getlino` in your system-wide virtualenv, or  :cmd:`pip3 install -U getlino`
+in your default virtualenv.
 
 
 Contributing to getlino development
