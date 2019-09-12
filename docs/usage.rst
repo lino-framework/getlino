@@ -13,25 +13,30 @@ The :cmd:`getlino configure` command
 The :cmd:`getlino configure` command configures your machine as a :term:`Lino
 server`.  This is required before you can run :cmd:`startsite`.
 
-If you run this command as root (using :cmd:`sudo`), it will also install system
-packages and system-wide configuration files, turning the machine into a
-**production server**.  Otherwise it will install Lino into a  **virtual
-environment**. If you want Lino to install into an existing enviroment, you
-should activate it before running :cmd:`getlino configure` in order to use it as
-the default value for :option:`--shared-env`.
+If you run this command as root (using :cmd:`sudo`), it will turn the machine
+into a :term:`production server` or a :term:`demo server` by also installing
+system packages and system-wide configuration files.  Otherwise it will install
+Lino into a **virtual environment**. If you want Lino to install into an
+existing virtual environment, you should activate it before running
+:cmd:`getlino configure` in order to use it as the default value for
+:option:`--shared-env`.
 
 :cmd:`getlino configure` asks a lot of questions, one question for each server
 configuration option. Read the docs below for more explanations. You can answer
 ENTER to each question if your don't care.
 
 :cmd:`getlino configure` creates or reads and updates a configuration file where
-it stores  your answers.  Depending on whether you are root, the configuration
+it stores your answers.  Depending on whether you are root, the configuration
 file will be either :xfile:`/etc/getlino/getlino.conf` or
 :xfile:`~/.getlino.conf`.
 
 If you specify :option:`--batch`, every option gets its default value, which you
 may override by specifying command-line arguments. Use this option only when you
-really know that you want it (e.g. in a Dockerfile).
+know what you want (e.g. in a Dockerfile).
+
+After running :cmd:`getlino configure` as root, you may want to run it once more
+without being root, because only then it will also write a
+:xfile:`.bash_aliases` file in your home directory.
 
 
 .. command:: getlino configure

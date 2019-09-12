@@ -109,8 +109,20 @@ Configure a Lino production server
 
 You need shell access to a **Linux machine**, i.e. a virtual or physical machine
 with a Linux operating system running in a network. We recommend a **stable
-Debian** as operating system.   We will install a series of system packages like
-Python, nginx, monit, a database server (MySQL or PostGreSQL) on your machine.
+Debian** as operating system.
+
+If the :term:`server provider` wants to keep root access for themselves, then
+they must create a user for the :term:`site maintainer` and install sudo::
+
+  # apt-get install sudo
+  # adduser joe
+  # adduser joe sudo
+  # adduser joe www-data
+
+And of course grant access to that new account, e.g. by creating the user's
+:file:`.ssh/authorized_keys` file with the maintainer's public ssh key.
+
+Now the :term:`site maintainer` can continue alone.
 
 Install pip::
 
@@ -118,11 +130,15 @@ Install pip::
 
 Install getlino into the system-wide Python 3 environment::
 
-   $ sudo -H pip3 install getlino
+  $ sudo -H pip3 install setuptools
+  $ sudo -H pip3 install getlino
 
 Run :cmd:`getlino configure` as root::
 
    $ sudo -H getlino configure
+
+For details about each question see the documentation about :cmd:`getlino
+configure`.
 
 Install a first site.  You will do the following for every new site on your
 server.

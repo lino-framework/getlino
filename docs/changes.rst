@@ -4,6 +4,23 @@
 Changes in `getlino`
 =======================
 
+2019-09-12
+===========
+
+When running as root, getlino now also installs the `build-essential` Debian
+package because this is maybe needed for installing Python extensions.
+
+getlino didn't set the group owner in some cases (e.g. the lino_local directory
+and a project's virtualenv).
+
+:cmd:`getlino configure` now also creates a :xfile:`~/.bash_aliases` file. But
+only when you aren't running as root. After running :cmd:`getlino configure` as
+root, you may want to run it once more without being root to create a
+:xfile:`.bash_aliases` file to your home directory.
+
+Released getlino 19.9.5 to PyPI.
+
+
 2019-09-08
 ==========
 
