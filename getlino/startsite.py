@@ -154,9 +154,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         "app_settings_module": app.settings_module,
         "django_settings_module": "{}.{}.settings".format(local_prefix, prjname),
         "server_domain":server_domain,
+        "server_url": server_url,
         "dev_packages": ' '.join([a.nickname for a in KNOWN_REPOS if a.nickname in dev_repos]),
         "pip_packages": ' '.join(pip_packages),
-        "server_url": server_url,
         "db_name": prjname,
         "python_path": sites_base,
         "usergroup": usergroup

@@ -258,7 +258,7 @@ class Installer(object):
     def setup_database(self, database, user, pwd, db_engine):
         if db_engine == 'sqlite3':
             click.echo("No setup needed for " + db_engine)
-        elif db_engine in ['mysql','mariadb']:
+        elif db_engine == 'mysql':
             def run(cmd):
                 self.runcmd('mysql -u root -p -e "{};"'.format(cmd))
             run("create user '{user}'@'localhost' identified by '{pwd}'".format(**locals()))
