@@ -229,6 +229,7 @@ def configure(ctx, batch,
     if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
         i.apt_install("logrotate")
+        i.must_restart('nginx')
 
     if DEFAULTSECTION.getboolean('devtools'):
         i.apt_install("swig graphviz sqlite3")
