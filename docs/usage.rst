@@ -169,7 +169,7 @@ without being root, because only then it will also write a
         (:option:`--server-domain`) registered so that it points to the server.
         If your server has a dynamic IP address, you may use some dynamic DNS
         service like `FreedomBox
-        <https://wiki.debian.org/FreedomBox/Manual/DynamicDNS>`__or `dynu.com
+        <https://wiki.debian.org/FreedomBox/Manual/DynamicDNS>`__ or `dynu.com
         <https://www.dynu.com/DynamicDNS/IPUpdateClient/Linux>`__.
 
 
