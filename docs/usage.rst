@@ -78,9 +78,22 @@ without being root, because only then it will also write a
 
         The git branch to use for :option:`--clone`.
 
+    .. option:: --log-base
+
+        The root directory for Lino's log files on this server.  Each new site
+        will get its entry below that directory.
+
+    .. option:: --backups-base
+
+        The root directory for backups on this server.  Each new site will get
+        its entry below that directory.  Used e.g. by :xfile:`make_snapshot.sh`.
+
     .. option:: --sites-base
 
         The root directory for sites on this server.
+
+        New sites will get created below that directory (with another level
+        named by :option:`--local-prefix`).
 
         This will be added to the :envvar:`PYTHONPATH` of every Lino process
         (namely in :xfile:`manage.py` and :xfile:`wsgi.py`).
@@ -90,17 +103,13 @@ without being root, because only then it will also write a
         :xfile:`manage.py` sets :setting:`DJANGO_SETTINGS_MODULE` to
         ``'lino_local.mysite1.settings'``.
 
-    .. option:: --env-link
-
-        Relative directory or symbolic link to the virtualenv.
-
     .. option:: --local-prefix
 
         Prefix for local server-wide importable packages.
 
-    .. option:: --backups-base
+    .. option:: --env-link
 
-        Base directory for backups
+        Relative directory or symbolic link to the virtualenv.
 
     .. option:: --repos-link
 

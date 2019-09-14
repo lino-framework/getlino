@@ -4,6 +4,15 @@
 Changes in `getlino`
 =======================
 
+2019-09-14
+==========
+
+.. program:: getlino configure
+
+When running as root, :cmd:`getlino configure` now also creates empty
+directories for :option:`--log-base` and :option:`--backups-base` and sets their
+permissions.
+
 2019-09-12
 ===========
 

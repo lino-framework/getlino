@@ -254,6 +254,18 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('ldap'):
         i.apt_install("slapd ldap-utils")
 
+    for k in ("log_base", "backups_base"):
+        pth = DEFAULTSECTION.get(k)
+        if not pth:
+            print("Strange: {} is empty...".format(k))
+            continue
+        if not os.path.exists(pth):
+            if batch or click.confirm(
+                "Create {} {}".format(k, pth), default=True):
+                os.makedirs(pth, exist_ok=True)
+        i.check_permissions(pth)
+
+
     i.finish()
 
     go_bases = []
