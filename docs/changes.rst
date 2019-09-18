@@ -4,6 +4,18 @@
 Changes in `getlino`
 =======================
 
+2019-09-18
+==========
+
+.. program:: getlino configure
+
+Optimized behaviour when running as non-root:
+The default value for :option:`--devtools` is now `True` in that case.
+:option:`--db-engine` had a wrong default value "sqlite" (must be "sqlite3"),
+getlino tried to create the directories given by
+:option:`--log-base` and :option:`--backups-base` (which failed because not
+running as root).
+
 2019-09-14
 ==========
 

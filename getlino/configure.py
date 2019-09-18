@@ -116,7 +116,7 @@ def default_repos_base():
     return ''
 
 def default_db_engine():
-    return ifroot("mysql", 'sqlite')
+    return ifroot("mysql", 'sqlite3')
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
@@ -135,8 +135,8 @@ add('--env-link', 'env', "link to virtualenv (relative to project dir)")
 add('--repos-link', 'repositories', "link to code repositories (relative to virtualenv)")
 add('--appy/--no-appy', ifroot, "Whether this server provides appypod and LibreOffice")
 add('--redis/--no-redis', ifroot, "Whether this server provides redis")
-add('--devtools/--no-devtools', False,
-    "Whether this server provides developer tools (build docs and run tests)")
+add('--devtools/--no-devtools', lambda : not ifroot(),
+    "Whether to install development tools (build docs and run tests)")
 add('--server-domain', 'localhost', "Domain name of this server")
 add('--https/--no-https', False, "Whether this server uses secure http")
 add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
@@ -208,7 +208,7 @@ def configure(ctx, batch,
             # conf_values[k] = answer
             CONFIG.set(CONFIG.default_section, k, str(answer))
 
-    if not i.yes_or_no("Okay to configure your system using above options? [y or n]"):
+    if not i.yes_or_no("Start configuring your system using above options? [y or n]"):
         raise click.Abort()
 
     with open(conffile, 'w') as fd:
@@ -254,16 +254,17 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('ldap'):
         i.apt_install("slapd ldap-utils")
 
-    for k in ("log_base", "backups_base"):
-        pth = DEFAULTSECTION.get(k)
-        if not pth:
-            print("Strange: {} is empty...".format(k))
-            continue
-        if not os.path.exists(pth):
-            if batch or click.confirm(
-                "Create {} {}".format(k, pth), default=True):
-                os.makedirs(pth, exist_ok=True)
-        i.check_permissions(pth)
+    if ifroot():
+        for k in ("log_base", "backups_base"):
+            pth = DEFAULTSECTION.get(k)
+            if not pth:
+                print("Strange: {} is empty...".format(k))
+                continue
+            if not os.path.exists(pth):
+                if batch or click.confirm(
+                    "Create {} {}".format(k, pth), default=True):
+                    os.makedirs(pth, exist_ok=True)
+            i.check_permissions(pth)
 
 
     i.finish()
@@ -287,7 +288,7 @@ def configure(ctx, batch,
                 os.makedirs(repos_base, exist_ok=True)
         i.check_permissions(repos_base)
         os.chdir(repos_base)
-        if batch or click.confirm("Install cloned repos to {}".format(envdir), default=True):
+        if batch or click.confirm("Install cloned repositories to {}".format(envdir), default=True):
             with i.override_batch(True):
                 for repo in KNOWN_REPOS:
                     if repo.git_repo:

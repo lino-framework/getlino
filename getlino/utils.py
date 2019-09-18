@@ -210,12 +210,13 @@ class Installer(object):
     def check_permissions(self, pth, executable=False):
         si = os.stat(pth)
 
-        # check whether group owner is what we want
-        usergroup = DEFAULTSECTION.get('usergroup')
-        if grp.getgrgid(si.st_gid).gr_name != usergroup:
-            if self.batch or click.confirm("Set group owner for {}".format(pth),
-                                            default=True):
-                shutil.chown(pth, group=usergroup)
+        if ifroot():
+            # check whether group owner is what we want
+            usergroup = DEFAULTSECTION.get('usergroup')
+            if grp.getgrgid(si.st_gid).gr_name != usergroup:
+                if self.batch or click.confirm("Set group owner for {}".format(pth),
+                                                default=True):
+                    shutil.chown(pth, group=usergroup)
 
         # check access permissions
         mode = stat.S_IRGRP | stat.S_IWGRP
