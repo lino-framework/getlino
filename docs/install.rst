@@ -5,9 +5,8 @@ Installing Lino
 ===============
 
 This page explains how to install Lino on your computer. There are several
-recipes, depending on what you want to do. Choose the one which matches your
+recipes, depending on what you want to do.  Choose the one which matches your
 needs:
-
 
 .. glossary::
 
@@ -28,8 +27,8 @@ needs:
 
   Production server
 
-    A server with one or several :term:`Lino sites <Lino site>` in
-    :term:`production` mode for yourself or your customers.
+    A server designed to host one or several :term:`production sites <production
+    site>`.
 
     See :ref:`getlino.install.prod`.
 
@@ -45,7 +44,7 @@ Configure a Lino developer environment
 
 Create a new virtual environment and activate it::
 
-  $ sudo apt-get install -y python3-pip
+  $ sudo apt-get install python3-pip
   $ mkdir ~/lino
   $ cd ~/lino
   $ virtualenv -p python3 env
@@ -89,7 +88,7 @@ Install getlino::
 
 Run :cmd:`getlino configure` ::
 
-  $ getlino configure --clone
+  $ getlino configure --clone --devtools
 
 Try one of the demo projects::
 
@@ -128,7 +127,11 @@ Install pip::
 
   $ sudo apt-get install -y python3-pip
 
-Install getlino into the system-wide Python 3 environment::
+Install getlino into your user environment::
+
+  $ pip install --user setuptools getlino
+
+.. Install getlino into the system-wide Python 3 environment::
 
   $ sudo -H pip3 install setuptools
   $ sudo -H pip3 install getlino

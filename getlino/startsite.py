@@ -243,6 +243,13 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             os.makedirs(static_dir, exist_ok=True)
 
     if dev_repos:
+        repos = []
+        for nickname in dev_repos.split():
+            lib = REPOS_DICT.get(nickname, None)
+            if lib is None:
+                raise click.ClickException("Invalid repository nickname {} in --dev-repos".format(nickname))
+            repos.append(lib)
+
         click.echo("Installing repositories...")
         full_repos_dir = DEFAULTSECTION.get('repos_base')
         if not full_repos_dir:
@@ -251,10 +258,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                 os.makedirs(full_repos_dir, exist_ok=True)
         i.check_permissions(full_repos_dir)
         os.chdir(full_repos_dir)
-        for nickname in dev_repos.split():
-            lib = REPOS_DICT.get(nickname, None)
-            if lib is None:
-                raise click.ClickException("Invalid repository nickname {}".format(nickname))
+        for lib in repos:
+            i.clone_repo(lib)
+        for lib in repos:
             i.install_repo(lib, envdir)
 
     click.echo("Installing Python packages...")

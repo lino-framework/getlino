@@ -99,7 +99,8 @@ add("cd", "commondata", "https://github.com/lsaffre/commondata")
 add("be", "commondata.be", "https://github.com/lsaffre/commondata-be")
 add("ee", "commondata.ee", "https://github.com/lsaffre/commondata-ee")
 add("eg", "commondata.eg", "https://github.com/lsaffre/commondata-eg")
-add("atelier", "atelier", "https://github.com/lsaffre/atelier")
+add("atelier", "atelier", "https://github.com/lino-framework/atelier")
+add("etgen", "etgen", "https://github.com/lino-framework/etgen")
 add("eid", "eidreader", "https://github.com/lino-framework/eidreader")
 
 add("lino", "lino", "https://github.com/lino-framework/lino", "", "lino.modlib.extjs")
@@ -309,14 +310,16 @@ class Installer(object):
             return True
         return False
 
-    def install_repo(self, repo, env):
+    def clone_repo(self, repo):
         branch = DEFAULTSECTION.get('branch')
         if not os.path.exists(repo.nickname):
             self.runcmd("git clone --depth 1 -b {} {}".format(branch, repo.git_repo))
         else:
             click.echo(
                 "No need to clone {} : directory exists.".format(
-                    repo.package_name))
+                    repo.nickname))
+
+    def install_repo(self, repo, env):
         self.run_in_env(env, "pip install -e {}".format(repo.nickname))
 
     def check_usergroup(self, usergroup):

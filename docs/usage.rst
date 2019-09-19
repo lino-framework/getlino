@@ -78,6 +78,10 @@ without being root, because only then it will also write a
 
         The git branch to use for :option:`--clone`.
 
+    .. option:: --devtools
+
+        Whether to install development tools (used to build docs and run tests).
+
     .. option:: --log-base
 
         The root directory for Lino's log files on this server.  Each new site

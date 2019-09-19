@@ -124,7 +124,7 @@ add('--sites-base', default_sites_base, 'Base directory for Lino sites on this s
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
 add('--repos-base', default_repos_base, "Base directory for shared code repositories")
-add('--clone/--no-clone', lambda : not ifroot(), "Clone all known repositories and install them to the shared-env")
+add('--clone/--no-clone', lambda : not ifroot(), "Clone all contributor repositories and install them to the shared-env")
 add('--branch', 'master', "The git branch to use for --clone")
 add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites")
 add('--backups-base', '/var/backups/lino', 'Base directory for backups')
@@ -288,11 +288,15 @@ def configure(ctx, batch,
                 os.makedirs(repos_base, exist_ok=True)
         i.check_permissions(repos_base)
         os.chdir(repos_base)
+        repos = [r for r in KNOWN_REPOS if r.git_repo]
+        if batch or click.confirm("Clone repositories to {}".format(repos_base), default=True):
+            with i.override_batch(True):
+                for repo in repos:
+                    i.clone_repo(repo)
         if batch or click.confirm("Install cloned repositories to {}".format(envdir), default=True):
             with i.override_batch(True):
-                for repo in KNOWN_REPOS:
-                    if repo.git_repo:
-                        i.install_repo(repo, envdir)
+                for repo in repos:
+                    i.install_repo(repo, envdir)
         go_bases.append(repos_base)
 
     pth = DEFAULTSECTION.get('sites_base')

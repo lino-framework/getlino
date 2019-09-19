@@ -4,6 +4,16 @@
 Changes in `getlino`
 =======================
 
+2019-09-19
+==========
+
+.. program:: getlino configure
+
+The :option:`getlino configure --clone` option installs all contributor
+repositories, i.e. those  required to build the book. Some repositories were
+still missing. Fixed.  Also separated the sequence of resulting actions: first
+run "git clone" for all repos, then "pip install -e".
+
 2019-09-18
 ==========
 
