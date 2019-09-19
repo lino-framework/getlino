@@ -94,6 +94,14 @@ def add(nickname, package_name, git_repo='', settings_module='', front_end=''):
         # add an alias because front ends are identified using their full package name
         REPOS_DICT[t.front_end] = t
 
+# some tools to be installed with --clone because they are required for a complete contributor environment:
+add("cd", "commondata", "https://github.com/lsaffre/commondata")
+add("be", "commondata.be", "https://github.com/lsaffre/commondata-be")
+add("ee", "commondata.ee", "https://github.com/lsaffre/commondata-ee")
+add("eg", "commondata.eg", "https://github.com/lsaffre/commondata-eg")
+add("atelier", "atelier", "https://github.com/lsaffre/atelier")
+add("eid", "eidreader", "https://github.com/lino-framework/eidreader")
+
 add("lino", "lino", "https://github.com/lino-framework/lino", "", "lino.modlib.extjs")
 add("xl", "lino-xl", "https://github.com/lino-framework/xl")
 add("welfare", "lino-welfare", "https://github.com/lino-framework/welfare")
@@ -103,6 +111,7 @@ add("care", "lino-care", "https://github.com/lino-framework/care", "lino_care.li
 add("cosi", "lino-cosi", "https://github.com/lino-framework/cosi", "lino_cosi.lib.cosi.settings")
 add("noi", "lino-noi", "https://github.com/lino-framework/noi", "lino_noi.lib.noi.settings")
 add("presto", "lino-presto", "https://github.com/lino-framework/presto", "lino_presto.lib.presto.settings")
+add("pronto", "lino-pronto", "https://github.com/lino-framework/pronto", "lino_pronto.lib.pronto.settings")
 add("tera", "lino-tera", "https://github.com/lino-framework/tera", "lino_tera.lib.tera.settings")
 add("vilma", "lino-vilma", "https://github.com/lino-framework/vilma", "lino_vilma.lib.vilma.settings")
 add("voga", "lino-voga", "https://github.com/lino-framework/voga", "lino_voga.lib.voga.settings")
