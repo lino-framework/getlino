@@ -125,20 +125,33 @@ Now the :term:`site maintainer` can continue alone.
 
 Install pip::
 
-  $ sudo apt-get install -y python3-pip
+  $ sudo apt-get install python3-pip
 
-Install getlino into your user environment::
+Install getlino either into your user environment or into a shared virtual
+environment outside of your home.
+
+a) Into your user environment::
 
   $ pip install --user setuptools getlino
 
-.. Install getlino into the system-wide Python 3 environment::
+b) into a shared virtual environment
 
-  $ sudo -H pip3 install setuptools
-  $ sudo -H pip3 install getlino
+  $ sudo mkdir /usr/local/lino/sharedenvs
+  $ cd /usr/local/lino/sharedenvs
+  $ sudo chown root:www-data .
+  $ sudo chmod g+ws .
+  $ virtualenv -p python3 master
+  $ . master/bin/activate
+  $ pip install getlino
+
 
 Run :cmd:`getlino configure` as root::
 
-   $ sudo -H getlino configure
+   $ sudo env PATH=$PATH getlino configure
+
+The ``env PATH=$PATH`` is needed to work around the controversial Debian feature
+of overriding the :envvar:`PATH` for security reasons (`source
+<https://stackoverflow.com/questions/257616/why-does-sudo-change-the-path>`__).
 
 For details about each question see the documentation about :cmd:`getlino
 configure`.
@@ -146,7 +159,7 @@ configure`.
 Install a first site.  You will do the following for every new site on your
 server.
 
-   $ sudo -H getlino startsite noi first
+   $ sudo env PATH=$PATH getlino startsite noi first
 
 Point your browser to http://first.localhost
 

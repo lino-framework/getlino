@@ -190,7 +190,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         #     admin_email = click.prompt("Administrator's full name", default=admin_email)
         secret_key = click.prompt("Site's secret key", default=secret_key)
 
-    if not i.yes_or_no("OK to create {} with above options ? [y or n]".format(project_dir)):
+    if not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
         raise click.Abort()
 
     context.update({
@@ -273,7 +273,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     if ifroot():
         if USE_NGINX:
 
-            if batch or click.confirm("Configure nginx", default=True):
+            if batch or i.yes_or_no("Configure nginx? ", default=True):
                 filename = "{}.conf".format(prjname)
                 avpth = join(SITES_AVAILABLE, filename)
                 enpth = join(SITES_ENABLED, filename)

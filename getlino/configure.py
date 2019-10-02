@@ -208,7 +208,7 @@ def configure(ctx, batch,
             # conf_values[k] = answer
             CONFIG.set(CONFIG.default_section, k, str(answer))
 
-    if not i.yes_or_no("Start configuring your system using above options? [y or n]"):
+    if not i.yes_or_no("Start configuring your system using above options?"):
         raise click.Abort()
 
     with open(conffile, 'w') as fd:
@@ -216,7 +216,7 @@ def configure(ctx, batch,
     click.echo("Wrote config file " + conffile)
 
     if ifroot():
-        if batch or click.confirm("Upgrade the system", default=True):
+        if batch or i.yes_or_no("Upgrade the system?", default=True):
             with i.override_batch(True):
                 i.runcmd("apt-get update")
                 i.runcmd("apt-get upgrade")
@@ -261,8 +261,8 @@ def configure(ctx, batch,
                 print("Strange: {} is empty...".format(k))
                 continue
             if not os.path.exists(pth):
-                if batch or click.confirm(
-                    "Create {} {}".format(k, pth), default=True):
+                if batch or i.yes_or_no(
+                    "Create {} {} ?".format(k, pth), default=True):
                     os.makedirs(pth, exist_ok=True)
             i.check_permissions(pth)
 
@@ -282,18 +282,18 @@ def configure(ctx, batch,
         if not repos_base:
             repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
         if not os.path.exists(repos_base):
-            if batch or click.confirm(
-                "Create base directory for repositories {}".format(repos_base),
+            if batch or i.yes_or_no(
+                "Create base directory for repositories {} ?".format(repos_base),
                 default=True):
                 os.makedirs(repos_base, exist_ok=True)
         i.check_permissions(repos_base)
         os.chdir(repos_base)
         repos = [r for r in KNOWN_REPOS if r.git_repo]
-        if batch or click.confirm("Clone repositories to {}".format(repos_base), default=True):
+        if batch or i.yes_or_no("Clone repositories to {} ?".format(repos_base), default=True):
             with i.override_batch(True):
                 for repo in repos:
                     i.clone_repo(repo)
-        if batch or click.confirm("Install cloned repositories to {}".format(envdir), default=True):
+        if batch or i.yes_or_no("Install cloned repositories to {} ?".format(envdir), default=True):
             with i.override_batch(True):
                 for repo in repos:
                     i.install_repo(repo, envdir)
@@ -301,7 +301,7 @@ def configure(ctx, batch,
 
     pth = DEFAULTSECTION.get('sites_base')
     if not os.path.exists(pth):
-        if batch or click.confirm("Create base directory for sites {}".format(pth), default=True):
+        if batch or i.yes_or_no("Create base directory for sites {} ?".format(pth), default=True):
             os.makedirs(pth, exist_ok=True)
     i.check_permissions(pth)
 
@@ -309,7 +309,7 @@ def configure(ctx, batch,
     pth = join(DEFAULTSECTION.get('sites_base'), local_prefix)
     if os.path.exists(pth):
         i.check_permissions(pth)
-    elif batch or click.confirm("Create shared settings package {}".format(pth), default=True):
+    elif batch or i.yes_or_no("Create shared settings package {} ?".format(pth), default=True):
         os.makedirs(pth, exist_ok=True)
         i.check_permissions(pth)
     with i.override_batch(True):
@@ -351,7 +351,7 @@ def configure(ctx, batch,
         if DEFAULTSECTION.getboolean('https'):
             if shutil.which("certbot-auto"):
                 click.echo("certbot-auto already installed")
-            elif batch or click.confirm("Install certbot-auto ?", default=True):
+            elif batch or i.yes_or_no("Install certbot-auto?", default=True):
                 with i.override_batch(True):
                     i.runcmd("wget https://dl.eff.org/certbot-auto")
                     i.runcmd("mv certbot-auto /usr/local/bin/certbot-auto")
@@ -359,7 +359,7 @@ def configure(ctx, batch,
                     i.runcmd("chmod 0755 /usr/local/bin/certbot-auto")
                     i.runcmd("certbot-auto -n")
                     i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
-            if batch or click.confirm("Set up automatic certificate renewal ", default=True):
+            if batch or i.yes_or_no("Set up automatic certificate renewal?", default=True):
                 i.runcmd(CERTBOT_AUTO_RENEW)
 
         if DEFAULTSECTION.getboolean('ldap'):

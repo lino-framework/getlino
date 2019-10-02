@@ -152,19 +152,21 @@ class Installer(object):
         # self.asroot = ifroot()
         self._services = set()
         self._system_packages = set()
+        if ifroot():
+            click.echo("Running as root.")
 
     def check_overwrite(self, pth):
-        """If pth (directory or file ) exists, remove it (after asking for confirmation).
+        """If `pth` (directory or file) exists, remove it after asking for confirmation.
         Return False if it exists and user doesn't confirm.
         """
         if not os.path.exists(pth):
             return True
         if os.path.isdir(pth):
-            if self.yes_or_no("Overwrite existing directory {} ? [y or n]".format(pth)):
+            if self.yes_or_no("Overwrite existing directory {} ?".format(pth)):
                 shutil.rmtree(pth)
                 return True
         else:
-            if self.yes_or_no("Overwrite existing file {} ? [y or n]".format(pth)):
+            if self.yes_or_no("Overwrite existing file {} ?".format(pth)):
                 os.remove(pth)
                 return True
         return False
@@ -173,7 +175,7 @@ class Installer(object):
         """Ask for confirmation without accepting a mere RETURN."""
         if self.batch:
             return default
-        click.echo(msg, nl=False)
+        click.echo(msg + " [y or n]", nl=False)
         while True:
             c = click.getchar()
             if c in yes:
@@ -200,7 +202,7 @@ class Installer(object):
         kw.update(universal_newlines=True)
         # kw.update(check=True)
         # subprocess.check_output(cmd, **kw)
-        if self.batch or click.confirm("run {}".format(cmd), default=True):
+        if self.batch or self.yes_or_no("run {}".format(cmd), default=True):
             click.echo(cmd)
             cp = subprocess.run(cmd, **kw)
             if cp.returncode != 0:
@@ -224,7 +226,7 @@ class Installer(object):
             # check whether group owner is what we want
             usergroup = DEFAULTSECTION.get('usergroup')
             if grp.getgrgid(si.st_gid).gr_name != usergroup:
-                if self.batch or click.confirm("Set group owner for {}".format(pth),
+                if self.batch or self.yes_or_no("Set group owner for {}".format(pth),
                                                 default=True):
                     shutil.chown(pth, group=usergroup)
 
@@ -241,7 +243,7 @@ class Installer(object):
             msg = "Set mode for {} from {} to {}".format(
                 pth, imode, mode)
             # pth, stat.filemode(imode), stat.filemode(mode))
-            if self.batch or click.confirm(msg, default=True):
+            if self.batch or self.yes_or_no(msg, default=True):
                 os.chmod(pth, mode)
 
     @contextmanager
@@ -302,7 +304,7 @@ class Installer(object):
             # msg = "Update virtualenv in {}"
             # return self.batch or click.confirm(msg.format(envdir), default=True)
         msg = "Create virtualenv in {}"
-        if self.batch or click.confirm(msg.format(envdir), default=True):
+        if self.batch or self.yes_or_no(msg.format(envdir), default=True):
             # create an empty directory and fix permissions
             os.mkdir(envdir)
             self.check_permissions(envdir)
@@ -359,7 +361,7 @@ sudo adduser `whoami` {0}"""
 
         if len(self._services):
             msg = "Restart services {}".format(self._services)
-            if self.batch or click.confirm(msg, default=True):
+            if self.batch or self.yes_or_no(msg, default=True):
                 with self.override_batch(True):
                     for srv in self._services:
                         self.runcmd("service {} restart".format(srv))
