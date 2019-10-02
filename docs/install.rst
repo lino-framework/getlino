@@ -132,17 +132,17 @@ environment outside of your home.
 
 a) Into your user environment::
 
-  $ pip install --user setuptools getlino
+    $ pip install --user setuptools getlino
 
 b) into a shared virtual environment
 
-  $ sudo mkdir /usr/local/lino/sharedenvs
-  $ cd /usr/local/lino/sharedenvs
-  $ sudo chown root:www-data .
-  $ sudo chmod g+ws .
-  $ virtualenv -p python3 master
-  $ . master/bin/activate
-  $ pip install getlino
+    $ sudo mkdir /usr/local/lino/sharedenvs
+    $ cd /usr/local/lino/sharedenvs
+    $ sudo chown root:www-data .
+    $ sudo chmod g+ws .
+    $ virtualenv -p python3 master
+    $ . master/bin/activate
+    $ pip install getlino
 
 
 Run :cmd:`getlino configure` as root::
