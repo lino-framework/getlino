@@ -119,7 +119,7 @@ def default_db_engine():
     return ifroot("mysql", 'sqlite3')
 
 def default_db_port():
-    return ifroot(3306, 0)
+    return ifroot("3306", "")
 
 
 # must be same order as in signature of configure command below
