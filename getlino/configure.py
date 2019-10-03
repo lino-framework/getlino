@@ -345,7 +345,7 @@ def configure(ctx, batch,
                 'libreoffice.conf',
                 LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))
 
-        if DEFAULTSECTION.get('db_engine') in ['mysql','mariadb']:
+        if DEFAULTSECTION.get('db_engine') == 'mysql':
             i.runcmd("mysql_secure_installation")
 
         if DEFAULTSECTION.getboolean('https'):
