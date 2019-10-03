@@ -64,7 +64,7 @@ DbEngine = collections.namedtuple(
     'DbEngine', ('name service apt_packages python_packages default_port'))
 DB_ENGINES = []
 DB_ENGINES.append(
-    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2","5432"))
+    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev python-dev", "psycopg2","5432"))
     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
