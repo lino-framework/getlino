@@ -4,6 +4,13 @@
 Changes in `getlino`
 =======================
 
+2019-11-03
+==========
+.. program:: getlino configure
+
+The :option:`getlino configure --db-port` shows the default ports of databases.
+
+
 2019-09-19
 ==========
 

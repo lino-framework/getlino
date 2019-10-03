@@ -118,6 +118,10 @@ def default_repos_base():
 def default_db_engine():
     return ifroot("mysql", 'sqlite3')
 
+def default_db_port():
+    return ifroot(3306, 0)
+
+
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
@@ -144,7 +148,8 @@ add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
 add('--monit/--no-monit', False, "Whether this server uses monit")
 add('--db-engine', default_db_engine, "Default database engine for new sites.",
     click.Choice([e.name for e in DB_ENGINES]))
-add('--db-port', 3306, "Default database port for new sites.")
+add('--db-port', default_db_port, "Default database port for new sites.",
+    click.Choice([e.default_port for e in DB_ENGINES]))
 add('--db-host', 'localhost', "Default database host name for new sites.")
 add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.")
 add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.")

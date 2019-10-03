@@ -61,10 +61,10 @@ if False:
 
 # Note that the DbEngine.name field must match the Django engine name
 DbEngine = collections.namedtuple(
-    'DbEngine', ('name service apt_packages python_packages'))
+    'DbEngine', ('name service apt_packages python_packages default_port'))
 DB_ENGINES = []
 DB_ENGINES.append(
-    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2"))
+    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev", "psycopg2",5432))
     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
     # practical choice for development and testing but in production it is
     # advised to use the package built from sources."
@@ -75,10 +75,10 @@ mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
 # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
 # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
 if platform.dist()[0].lower() == "debian":
-    DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient"))
+    DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient",3306))
 else:
-    DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient"))
-DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", ""))
+    DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient",3306))
+DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", "",0))
 
 
 Repo = collections.namedtuple(
