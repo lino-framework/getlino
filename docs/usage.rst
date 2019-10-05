@@ -254,10 +254,6 @@ The script will ask you some questions:
 
         Don't ask anything. Assume yes to all questions.
 
-    .. option:: --asroot
-
-        Whether you have root permissions and want to install system packages.
-
     .. option:: --dev-repos
 
         A space-separated list of repositories for which this site uses the
