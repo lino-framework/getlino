@@ -23,7 +23,7 @@ extensions += ['sphinx.ext.intersphinx']
 intersphinx_mapping['cg'] = ('http://community.lino-framework.org/', None)
 
 
-import getlino
+import .. as getlino
 
 # primary_domain = 'py'
 
