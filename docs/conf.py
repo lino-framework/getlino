@@ -10,6 +10,10 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+import sys,os
+
+sys.path.insert(0, os.path.abspath(".."))
+import  getlino
 
 extensions = []
 intersphinx_mapping = {}
@@ -22,8 +26,6 @@ extensions += ['sphinx.ext.intersphinx']
 
 intersphinx_mapping['cg'] = ('http://community.lino-framework.org/', None)
 
-
-from getlino import getlino
 
 # primary_domain = 'py'
 
