@@ -74,6 +74,9 @@ Optionally use the development version::
 Configure a Lino developer environment
 ======================================
 
+This is what you should try first. You can later convert your developer
+environment into a contributor environment.
+
 .. program:: getlino configure
 
 Run :cmd:`getlino configure`::
@@ -81,8 +84,8 @@ Run :cmd:`getlino configure`::
   $ getlino configure
 
 It asks a lot of questions, but you can hit ENTER for each of them. If it asks a
-[y or n] question, should read it and understand it before you hit :kbd:`y`. For
-details about each question see the documentation about :cmd:`getlino
+``[y or n]`` question, should read it and understand it before you hit :kbd:`y`.
+For details about each question see the documentation about :cmd:`getlino
 configure`.
 
 Run :cmd:`getlino startsite` to create a first site (and for every new site)::
