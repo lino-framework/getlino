@@ -145,7 +145,7 @@ without being root, because only then it will also write a
 
     .. option:: --db-engine
 
-        Default value is 'mysql' when running as root or 'sqlite' otherwise.
+        Default value is 'mysql' when running as root or 'sqlite3' otherwise.
 
     .. option:: --db-user
 
@@ -160,6 +160,11 @@ without being root, because only then it will also write a
     .. option:: --db-password
 
         The password for the :option:`--db-user`.
+
+    .. option:: --db-port
+
+        The port to use for connecting to the database server when
+        :option:`--db-engine` is ``mysql`` or ``postgresql``.
 
     .. rubric:: Server features
 
