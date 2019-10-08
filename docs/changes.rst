@@ -19,6 +19,10 @@ option sometimes had `True` as default value when it shouldn't.
 
 Released version 19.10.1 to PyPI.
 
+Found another bug: with :option:`--clone`, getlino didn't clone the repositories
+using their nickname, which later caused failures when trying to install them.
+
+Released version 19.10.2 to PyPI.
 
 .. program:: getlino configure
 

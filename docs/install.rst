@@ -35,8 +35,8 @@ some vocabulary.
 Setting up your default environment
 ===================================
 
-The **default environment** is the virtualenv that contains the
-:command:`getlino` command.
+The **default environment** is the virtualenv that contains the :cmd:`getlino`
+command.
 
 - In a :term:`developer environment` or :term:`contributor environment` we suggest
   :file:`~/lino/env` as your *default environment*.
@@ -76,10 +76,14 @@ Configure a Lino developer environment
 
 .. program:: getlino configure
 
-Run :cmd:`getlino configure` (for details about each question see the documentation about :cmd:`getlino
-configure`)::
+Run :cmd:`getlino configure`::
 
   $ getlino configure
+
+It asks a lot of questions, but you can hit ENTER for each of them. If it asks a
+[y or n] question, should read it and understand it before you hit :kbd:`y`. For
+details about each question see the documentation about :cmd:`getlino
+configure`.
 
 Run :cmd:`getlino startsite` to create a first site (and for every new site)::
 
