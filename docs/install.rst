@@ -4,43 +4,47 @@
 Installing Lino
 ===============
 
-This page explains how to install Lino on your computer. There are several
-recipes, depending on what you want to do.  Choose the one which matches your
-needs:
+This page explains how to install Lino on your computer.
+
+The instructions sometimes depend on what you want to do, so let's  begin with
+some vocabulary.
 
 .. glossary::
 
   Developer environment
 
-    A set of utilities on your computer, to be used for developing your own
-    :term:`Lino application`.
-
-    See :ref:`getlino.install.dev`.
+    You want Lino on your computer for developing your own :term:`Lino
+    application`.
 
   Contributor environment
 
-    An extended :term:`developer environment` for developers who plan to
-    potentially contribute to the :term:`Lino framework`.  A bit more work to
-    install, but more future-proof.
-
-    See :ref:`getlino.install.dev`.
+    An extended :term:`developer environment` to use if you plan to potentially
+    contribute to the :term:`Lino framework`.  A bit more work to install, but
+    more future-proof.
 
   Production server
 
-    A server designed to host one or several :term:`production sites <production
-    site>`.
-
-    See :ref:`getlino.install.prod`.
+    A dedicated server designed to host one or several :term:`production sites
+    <production site>`.
 
   Demo server
 
-    See :ref:`getlino.install.demo`.
+    A dedicated server designed to host a series of demo sites.
 
 
-.. _getlino.install.dev:
+Setting up your default environment
+===================================
 
-Configure a Lino developer environment
-======================================
+The **default environment** is the virtualenv that contains the
+:command:`getlino` command.
+
+- In a :term:`developer environment` or :term:`contributor environment` we suggest
+  :file:`~/lino/env` as your *default environment*.
+
+- On a :term:`production server` we suggest :file:`/usr/local/lino/shared/env`.
+
+- On a :term:`demo server` we suggest :file:`/usr/local/lino/shared/master` or
+  :file:`/usr/local/lino/shared/stable`.
 
 Create a new virtual environment and activate it::
 
@@ -49,6 +53,12 @@ Create a new virtual environment and activate it::
   $ cd ~/lino
   $ virtualenv -p python3 env
   $ . env/bin/activate
+
+You probably want to make sure that your virtual environment is automatically
+activated when you open a terminal, e.g. by adding the following line to your
+:file:``~/.bashrc` file::
+
+  . ~/lino/env/bin/activate
 
 Install getlino::
 
@@ -59,9 +69,18 @@ Optionally use the development version::
   $ pip uninstall getlino
   $ pip install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
 
-Run :cmd:`getlino configure` and :cmd:`getlino startsite`::
+.. _getlino.install.dev:
+
+Configure a Lino developer environment
+======================================
+
+Run :cmd:`getlino configure` (for details about each question see the documentation about :cmd:`getlino
+configure`)::
 
   $ getlino configure --sites-base .
+
+Run :cmd:`getlino startsite` to create a first site (and for every new site)::
+
   $ getlino startsite noi first
 
 Run :manage:`runserver`::
@@ -78,23 +97,18 @@ Continue here: http://www.lino-framework.org/dev/index.html
 Configure a Lino contributor environment
 ========================================
 
-Activate the virtual environment you want to use for your Lino projects::
+As a contributor you will want a local clone of the Lino code repositories
+because you are going to do local modifications  and submit pull requests.
 
-  $ . path/to/my/virtualenv/bin/activate
-
-Install getlino::
-
-  $ pip install getlino
-
-Run :cmd:`getlino configure` ::
+Run :cmd:`getlino configure` with :option:`--clone` and :option:`--devtools`::
 
   $ getlino configure --clone --devtools
 
 Try one of the demo projects::
 
-  $ go team
-  $ pm prep
-  $ pm runserver
+  $ cd ~/lino/env/repositories/book/lino_book/projects/team
+  $ python manage.py prep
+  $ python manage.py runserver
 
 Point your browser to http://localhost:8000
 
@@ -106,44 +120,15 @@ Continue here:  http://www.lino-framework.org/team/index.html
 Configure a Lino production server
 ==================================
 
-You need shell access to a **Linux machine**, i.e. a virtual or physical machine
-with a Linux operating system running in a network. We recommend a **stable
-Debian** as operating system.
+Install getlino into a shared virtual environment outside of your home::
 
-If the :term:`server provider` wants to keep root access for themselves, then
-they must create a user for the :term:`site maintainer` and install sudo::
-
-  # apt-get install sudo
-  # adduser joe
-  # adduser joe sudo
-  # adduser joe www-data
-
-And of course grant access to that new account, e.g. by creating the user's
-:file:`.ssh/authorized_keys` file with the maintainer's public ssh key.
-
-Now the :term:`site maintainer` can continue alone.
-
-Install pip::
-
-  $ sudo apt-get install python3-pip
-
-Install getlino either into your user environment or into a shared virtual
-environment outside of your home.
-
-a) Into your user environment::
-
-    $ pip install --user setuptools getlino
-
-b) into a shared virtual environment::
-
-    $ sudo mkdir /usr/local/lino/sharedenvs
-    $ cd /usr/local/lino/sharedenvs
+    $ sudo mkdir /usr/local/lino/shared/env
+    $ cd /usr/local/lino/shared/env
     $ sudo chown root:www-data .
     $ sudo chmod g+ws .
     $ virtualenv -p python3 master
     $ . master/bin/activate
     $ pip install getlino
-
 
 Run :cmd:`getlino configure` as root::
 
@@ -152,9 +137,6 @@ Run :cmd:`getlino configure` as root::
 The ``env PATH=$PATH`` is needed to work around the controversial Debian feature
 of overriding the :envvar:`PATH` for security reasons (`source
 <https://stackoverflow.com/questions/257616/why-does-sudo-change-the-path>`__).
-
-For details about each question see the documentation about :cmd:`getlino
-configure`.
 
 Install a first site.  You will do the following for every new site on your
 server.
@@ -175,17 +157,12 @@ Continue here:  http://www.lino-framework.org/admin/index.html
 Configure a Lino demo server
 ============================
 
-Install pip::
-
-  $ sudo apt-get install -y python3-pip
-
-Install getlino into the system-wide Python 3 environment::
-
-   $ sudo -H pip3 install getlino
+Warning : This is the deeper Python jungle. Don't try this before you have
+installed a few contributor environments and production servers.
 
 Run :cmd:`getlino configure` as root::
 
-   $ sudo -H getlino configure --shared-env /usr/local/lino/sharedenvs/master --clone
+   $ sudo -H env PATH=$PATH getlino configure --shared-env /usr/local/lino/shared/master --clone
 
 .. program:: getlino configure
 
@@ -194,21 +171,25 @@ That is, you say :option:`--clone` and create a :option:`--shared-env`.
 You may create other shared envs by changing the branch and clone another set of
 repositories::
 
-   $ sudo -H getlino configure --shared-env /usr/local/lino/sharedenvs/stable --clone --branch stable
+   $ sudo -H env PATH=$PATH getlino configure --shared-env /usr/local/lino/shared/stable --clone --branch stable
 
 .. program:: getlino startsite
 
 Specify :option:`--shared-env` when creating demo sites::
 
-   $ sudo -H getlino startsite noi first --shared-env /usr/local/lino/sharedenvs/stable
-   $ sudo -H getlino startsite tera second --shared-env /usr/local/lino/sharedenvs/master
+   $ sudo -H env PATH=$PATH getlino startsite noi first --shared-env /usr/local/lino/shared/stable
+   $ sudo -H env PATH=$PATH getlino startsite tera second --shared-env /usr/local/lino/shared/master
+
+
 
 Updating getlino
 ================
 
-Depending on how you installed getlino, run either  :cmd:`sudo -H pip3 install
--U getlino` in your system-wide virtualenv, or  :cmd:`pip3 install -U getlino`
-in your default virtualenv.
+Depending on how you installed getlino, run either  :cmd:`pip install -U
+getlino` after activating your default virtualenv.
+
+Or, on a :term:`demo server` you run :cmd:`sudo -H pip3 install -U getlino` in
+your system-wide virtualenv.
 
 
 Contributing to getlino development
@@ -222,3 +203,27 @@ getlino::
    $ pip install -e getlino
 
 Don't forget to manually add getlino to your atelier config.
+
+
+Granting access to a Linux machine
+==================================
+
+On a :term:`production server`  you need shell access to a **Linux machine**,
+i.e. a virtual or physical machine with a Linux operating system running in a
+network. Here are instructions for the :term:`server provider` who wants to keep
+root access for themselves and create new :term:`site maintainer` accounts as
+needed.
+
+We recommend a **stable Debian** as operating system.
+
+Ceate a user for each :term:`site maintainer` and install sudo::
+
+  # apt-get install sudo
+  # adduser joe
+  # adduser joe sudo
+  # adduser joe www-data
+
+And of course grant access to that new account, e.g. by creating the user's
+:file:`.ssh/authorized_keys` file with the maintainer's public ssh key.
+
+Now the :term:`site maintainer` can continue alone.

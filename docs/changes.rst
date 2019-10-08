@@ -4,7 +4,12 @@
 Changes in `getlino`
 =======================
 
-2019-11-03
+2019-10-08
+==========
+
+Released version 19.10.0 to PyPI.
+
+2019-10-03
 ==========
 .. program:: getlino configure
 
