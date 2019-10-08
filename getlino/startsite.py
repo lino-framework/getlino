@@ -88,8 +88,18 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     server_url = ("https://" if DEFAULTSECTION.getboolean('https') else "http://") \
                  + server_domain
     secret_key = secrets.token_urlsafe(20)
-    db_engine = DEFAULTSECTION.get('db_engine')
-    db_port = DEFAULTSECTION.get('db_port')
+    db_engine = None
+    for e in DB_ENGINES:
+        if DEFAULTSECTION.get('db_engine') == e.name:
+            db_engine = e
+            break
+    if db_engine is None:
+        raise click.ClickException(
+            "Invalid --db-engine '{}'. Run getlino configure.".format(
+                DEFAULTSECTION.get('db_engine')))
+    db_host = DEFAULTSECTION.get('db_host')
+    db_port = DEFAULTSECTION.get('db_port') or db_engine.default_port
+
     usergroup = DEFAULTSECTION.get('usergroup')
 
     app = REPOS_DICT.get(appname, None)
@@ -128,7 +138,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     context = {}
     context.update(DEFAULTSECTION)
     pip_packages = set()
-    if not shared_env:
+    if True:  # not shared_env:
         if app.nickname not in dev_repos:
             pip_packages.add(app.package_name)
         if front_end.nickname not in dev_repos:
@@ -139,11 +149,8 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         #     if nickname not in dev_repos:
         #         pip_packages.add(REPOS_DICT[nickname].package_name)
 
-    for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name:
-            for pkgname in e.python_packages.split():
-                pip_packages.add(pkgname)
-            break
+    for pkgname in db_engine.python_packages.split():
+        pip_packages.add(pkgname)
 
     context.update({
         "prjname": prjname,
@@ -173,14 +180,14 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         db_user = prjname
         db_password = secrets.token_urlsafe(8)
         if not batch:
-            if db_engine != "sqlite3":
+            if db_engine.name != "sqlite3":
                 click.echo(
                     "User credentials (for {db_engine} on {db_host}:{db_port}):".format(
                         **context))
                 db_user = click.prompt("- user name", default=db_user)
                 db_password = click.prompt("- user password", default=db_password)
-                # db_port = click.prompt("- port", default=db_port)
-                # db_host = click.prompt("- host name", default=db_host)
+                db_port = click.prompt("- port", default=db_port)
+                db_host = click.prompt("- host name", default=db_host)
 
     if not batch:
         shared_env = click.prompt("Shared virtualenv", default=shared_env)
@@ -194,6 +201,8 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         raise click.Abort()
 
     context.update({
+        "db_host": db_host,
+        "db_port": db_port,
         "db_user": db_user,
         "db_password": db_password,
         "secret_key": secret_key,

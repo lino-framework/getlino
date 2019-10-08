@@ -56,7 +56,7 @@ Create a new virtual environment and activate it::
 
 You probably want to make sure that your virtual environment is automatically
 activated when you open a terminal, e.g. by adding the following line to your
-:file:``~/.bashrc` file::
+:file:`~/.bashrc` file::
 
   . ~/lino/env/bin/activate
 
@@ -74,10 +74,12 @@ Optionally use the development version::
 Configure a Lino developer environment
 ======================================
 
+.. program:: getlino configure
+
 Run :cmd:`getlino configure` (for details about each question see the documentation about :cmd:`getlino
 configure`)::
 
-  $ getlino configure --sites-base .
+  $ getlino configure
 
 Run :cmd:`getlino startsite` to create a first site (and for every new site)::
 

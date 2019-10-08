@@ -7,10 +7,31 @@ Changes in `getlino`
 2019-10-08
 ==========
 
-Released version 19.10.0 to PyPI.
+Released version 19.10.0 to PyPI,
+
+.. program:: getlino configure
+
+Fixed some bugs: Running :command:`getlino configure` without
+:option:`--db-port` caused an error :message:`Invalid value for "--db-port":
+invalid choice: . (choose from 5432, 3306, 0)`. The :option:`--db-port` option
+is no longer a choice (it is not limited to these values). The :option:`--clone`
+option sometimes had `True` as default value when it shouldn't.
+
+Released version 19.10.1 to PyPI.
+
+
+.. program:: getlino configure
+
+Fixed some more bugs: Running :command:`getlino configure` without
+:option:`--db-port` caused an error :message:`Invalid value for "--db-port":
+invalid choice: . (choose from 5432, 3306, 0)`. The :option:`--db-port` option
+is not a choice (it must not limited to these values). The :option:`--clone`
+option sometimes had `True` as default value.
+
 
 2019-10-03
 ==========
+
 .. program:: getlino configure
 
 The :option:`getlino configure --db-port` shows the default ports of databases.

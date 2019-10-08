@@ -118,17 +118,13 @@ def default_repos_base():
 def default_db_engine():
     return ifroot("mysql", 'sqlite3')
 
-def default_db_port():
-    return ifroot("3306", "")
-
-
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
 add('--repos-base', default_repos_base, "Base directory for shared code repositories")
-add('--clone/--no-clone', lambda : not ifroot(), "Clone all contributor repositories and install them to the shared-env")
+add('--clone/--no-clone', False, "Clone all contributor repositories and install them to the shared-env")
 add('--branch', 'master', "The git branch to use for --clone")
 add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites")
 add('--backups-base', '/var/backups/lino', 'Base directory for backups')
@@ -148,8 +144,7 @@ add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
 add('--monit/--no-monit', False, "Whether this server uses monit")
 add('--db-engine', default_db_engine, "Default database engine for new sites.",
     click.Choice([e.name for e in DB_ENGINES]))
-add('--db-port', default_db_port, "Default database port for new sites.",
-    click.Choice([e.default_port for e in DB_ENGINES]))
+add('--db-port', '', "Default database port to use for new sites.")
 add('--db-host', 'localhost', "Default database host name for new sites.")
 add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.")
 add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.")
