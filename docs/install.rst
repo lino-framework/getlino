@@ -134,7 +134,7 @@ a) Into your user environment::
 
     $ pip install --user setuptools getlino
 
-b) into a shared virtual environment
+b) into a shared virtual environment::
 
     $ sudo mkdir /usr/local/lino/sharedenvs
     $ cd /usr/local/lino/sharedenvs
