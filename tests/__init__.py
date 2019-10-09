@@ -8,5 +8,5 @@ class PackagesTests(TestCase):
         self.run_packages_test(SETUP_INFO['packages'])
 
     def test_developer_mode(self):
-        self.run_subprocess(['getlino', 'configure'])
-        self.run_subprocess(['getlino', 'startsite', 'noi', 'first'])
+        self.run_subprocess(['getlino', 'configure','--batch' ,'--db-engine', 'postgresql' ,'--db-port' ,'5432'])
+        self.run_subprocess(['getlino', 'startsite', '--batch', 'noi', 'mysite1', '--dev-repos', '"lino noi xl"'])
