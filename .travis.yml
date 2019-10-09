@@ -7,14 +7,23 @@ python:
 env:
   matrix:
     - dist: bionic
+      mode: developer
+    - dist: bionic
+      mode: contributor
+    - dist: bionic
+      mode: prod
     - dist: xenial
+      mode: developer
+    - dist: xenial
+      mode: contributor
+    - dist: xenial
+      mode: prod
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - sudo apt-get -y install docker-ce
   - pip install -U setuptools
   - pip install -e .
 
 # command to run tests, e.g. python setup.py test
 script:
-  - inv prep test
+  - if [[ $mode == 'developer' ]]; then inv prep test.DockerTests.test_developer_mode; fi;
