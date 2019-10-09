@@ -4,6 +4,14 @@ python:
   - "3.6"
   - "3.7"
 
+os: linux
+sudo: required
+
+before_install:
+  - sudo apt-get update -y
+  - sudo apt-get upgrade -y
+  - sudo adduser $USER www-data
+
 env:
   matrix:
     - dist: bionic
@@ -21,7 +29,6 @@ env:
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - sudo adduser $USER www-data
   - pip install -U setuptools
   - pip install -e .
 
