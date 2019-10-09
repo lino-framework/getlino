@@ -8,9 +8,10 @@ os: linux
 sudo: required
 
 before_install:
-  - sudo apt-get update -y
-  - sudo apt-get upgrade -y
-  - sudo adduser $USER www-data
+  - sudo apt update -y
+  - sudo apt upgrade -y
+  - sudo adduser travis www-data
+  - groups
 
 env:
   matrix:
