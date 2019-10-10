@@ -29,8 +29,8 @@ env:
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - sudo pip install -U setuptools
-  - sudo pip install -e .
+  - sudo -H pip install -U setuptools
+  - sudo -H pip install -e .
 
 # command to run tests, e.g. python setup.py test
 script:
