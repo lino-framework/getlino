@@ -4,14 +4,19 @@
 Usage
 =====
 
+This page is rather for reference.
+The full process of installing Lino using :ref:`getlino` is documented
+in the `Lino Book <http://www.lino-framework.org/install/index.html>`__.
 
 The :cmd:`getlino configure` command
 ====================================
 
+.. command:: getlino configure
+
 .. program:: getlino configure
 
 The :cmd:`getlino configure` command configures your machine as a :term:`Lino
-server`.  This is required before you can run :cmd:`startsite`.
+server`.  This is required before you can run :cmd:`getlino startsite`.
 
 If you run this command as root (using :cmd:`sudo`), it will turn the machine
 into a :term:`production server` or a :term:`demo server` by also installing
@@ -38,157 +43,152 @@ After running :cmd:`getlino configure` as root, you may want to run it once more
 without being root, because only then it will also write a
 :xfile:`.bash_aliases` file in your home directory.
 
+.. rubric:: Run-time behaviour options:
 
-.. command:: getlino configure
+.. option:: --batch
 
-    Install the Lino framework on this machine.
-
-    Run-time options:
-
-    .. option:: --batch
-
-        Run in batch mode, i.e. without asking any questions.
-        Assume yes to all questions.
+    Run in batch mode, i.e. without asking any questions.
+    Assume yes to all questions.
 
 
-    .. rubric:: Server configuration options
+.. rubric:: Server configuration options
 
-    .. option:: --shared-env
+.. option:: --shared-env
 
-        Full path to your default virtualenv.
-        Default value is taken from :envvar:`VIRTUAL_ENV` environment value.
-        If this is empty, every new site  will get its own virgin environment.
+    Full path to your default virtualenv.
+    Default value is taken from :envvar:`VIRTUAL_ENV` environment value.
+    If this is empty, every new site  will get its own virgin environment.
 
-    .. option:: --repos-base
+.. option:: --repos-base
 
-        Base directory for your shared repositories.  This is where getlino
-        should clone repositories of packages to be used in editable mode
-        ("development version") specified by :option:`getlino startsite --dev-repos`.
+    Base directory for your shared repositories.  This is where getlino
+    should clone repositories of packages to be used in editable mode
+    ("development version") specified by :option:`getlino startsite --dev-repos`.
 
-        If this is empty and a site requests a development version, this will
-        be stored in a directory named :option:`--repos-link` below the virtualenv dir.
+    If this is empty and a site requests a development version, this will
+    be stored in a directory named :option:`--repos-link` below the virtualenv dir.
 
-    .. option:: --clone
+.. option:: --clone
 
-        Clone all known repositories to your ``--repos-base`` and install them
-        into your ``--shared-env``. Used when configuring a :term:`contributor
-        environment` or a :term:`demo server`.
+    Clone all known repositories to your ``--repos-base`` and install them
+    into your ``--shared-env``. Used when configuring a :term:`contributor
+    environment` or a :term:`demo server`.
 
-    .. option:: --branch
+.. option:: --branch
 
-        The git branch to use for :option:`--clone`.
+    The git branch to use for :option:`--clone`.
 
-    .. option:: --devtools
+.. option:: --devtools
 
-        Whether to install development tools (used to build docs and run tests).
+    Whether to install development tools (used to build docs and run tests).
 
-    .. option:: --log-base
+.. option:: --log-base
 
-        The root directory for Lino's log files on this server.  Each new site
-        will get its entry below that directory.
+    The root directory for Lino's log files on this server.  Each new site
+    will get its entry below that directory.
 
-    .. option:: --backups-base
+.. option:: --backups-base
 
-        The root directory for backups on this server.  Each new site will get
-        its entry below that directory.  Used e.g. by :xfile:`make_snapshot.sh`.
+    The root directory for backups on this server.  Each new site will get
+    its entry below that directory.  Used e.g. by :xfile:`make_snapshot.sh`.
 
-    .. option:: --sites-base
+.. option:: --sites-base
 
-        The root directory for sites on this server.
+    The root directory for sites on this server.
 
-        New sites will get created below that directory (with another level
-        named by :option:`--local-prefix`).
+    New sites will get created below that directory (with another level
+    named by :option:`--local-prefix`).
 
-        This will be added to the :envvar:`PYTHONPATH` of every Lino process
-        (namely in :xfile:`manage.py` and :xfile:`wsgi.py`).
+    This will be added to the :envvar:`PYTHONPATH` of every Lino process
+    (namely in :xfile:`manage.py` and :xfile:`wsgi.py`).
 
-        The :envvar:`PYTHONPATH` is needed because the :xfile:`settings.py` of
-        a site says ``from lino_local.settings import *``, and the
-        :xfile:`manage.py` sets :setting:`DJANGO_SETTINGS_MODULE` to
-        ``'lino_local.mysite1.settings'``.
+    The :envvar:`PYTHONPATH` is needed because the :xfile:`settings.py` of
+    a site says ``from lino_local.settings import *``, and the
+    :xfile:`manage.py` sets :setting:`DJANGO_SETTINGS_MODULE` to
+    ``'lino_local.mysite1.settings'``.
 
-    .. option:: --local-prefix
+.. option:: --local-prefix
 
-        Prefix for local server-wide importable packages.
+    Prefix for local server-wide importable packages.
 
-    .. option:: --env-link
+.. option:: --env-link
 
-        Relative directory or symbolic link to the virtualenv.
+    Relative directory or symbolic link to the virtualenv.
 
-    .. option:: --repos-link
+.. option:: --repos-link
 
-        Relative directory or symbolic link to repositories.
+    Relative directory or symbolic link to repositories.
 
-    .. option:: --server-domain
+.. option:: --server-domain
 
-        Fully qualified domain name of this server.  Default is 'localhost'.
+    Fully qualified domain name of this server.  Default is 'localhost'.
 
-    .. rubric:: Default settings for new sites
+.. rubric:: Default settings for new sites
 
-    .. option:: --front-end
+.. option:: --front-end
 
-        Which front end (:attr:`default_ui <lino.core.Site.default_ui>`) to use
-        on new sites.
+    Which front end (:attr:`default_ui <lino.core.Site.default_ui>`) to use
+    on new sites.
 
-    .. option:: --languages
+.. option:: --languages
 
-        Default value for :attr:`languages <lino.core.site.Site.languages>` of
-        new sites.
+    Default value for :attr:`languages <lino.core.site.Site.languages>` of
+    new sites.
 
-    .. option:: --linod
+.. option:: --linod
 
-        Whether new sites should have a :xfile:`linod.sh` script which runs the
-        :manage:`linod` command.
+    Whether new sites should have a :xfile:`linod.sh` script which runs the
+    :manage:`linod` command.
 
-        When running as root, this will also add a :mod:`supervisor`
-        configuration file which runs the :manage:`linod` command automatically.
+    When running as root, this will also add a :mod:`supervisor`
+    configuration file which runs the :manage:`linod` command automatically.
 
-    .. option:: --db-engine
+.. option:: --db-engine
 
-        Default value is 'mysql' when running as root or 'sqlite3' otherwise.
+    Default value is 'mysql' when running as root or 'sqlite3' otherwise.
 
-    .. option:: --db-user
+.. option:: --db-user
 
-        A database username to use for all sites on this server.
+    A database username to use for all sites on this server.
 
-        If this is set, you should also set :option:`--db-password`.
+    If this is set, you should also set :option:`--db-password`.
 
-        Used during development and testing when you prefer to have a single
-        database user for all databases. For security reasons these options
-        should not be used on a production server.
+    Used during development and testing when you prefer to have a single
+    database user for all databases. For security reasons these options
+    should not be used on a production server.
 
-    .. option:: --db-password
+.. option:: --db-password
 
-        The password for the :option:`--db-user`.
+    The password for the :option:`--db-user`.
 
-    .. option:: --db-port
+.. option:: --db-port
 
-        The port to use for connecting to the database server when
-        :option:`--db-engine` is ``mysql`` or ``postgresql``.
+    The port to use for connecting to the database server when
+    :option:`--db-engine` is ``mysql`` or ``postgresql``.
 
-    .. rubric:: Server features
+.. rubric:: Server features
 
-    .. option:: --appy
+.. option:: --appy
 
-        Whether this server provides LibreOffice service needed by sites which
-        use :mod:`lino_xl.lib.appypod`.
+    Whether this server provides LibreOffice service needed by sites which
+    use :mod:`lino_xl.lib.appypod`.
 
-    .. option:: --webdav
+.. option:: --webdav
 
-        Whether new sites should have webdav.
+    Whether new sites should have webdav.
 
-    .. option:: --https
+.. option:: --https
 
-        Whether this server provides secure http.
+    Whether this server provides secure http.
 
-        This option will cause getlino to install certbot.
+    This option will cause getlino to install certbot.
 
-        When you use this option, you must have your domain name
-        (:option:`--server-domain`) registered so that it points to the server.
-        If your server has a dynamic IP address, you may use some dynamic DNS
-        service like `FreedomBox
-        <https://wiki.debian.org/FreedomBox/Manual/DynamicDNS>`__ or `dynu.com
-        <https://www.dynu.com/DynamicDNS/IPUpdateClient/Linux>`__.
+    When you use this option, you must have your domain name
+    (:option:`--server-domain`) registered so that it points to the server.
+    If your server has a dynamic IP address, you may use some dynamic DNS
+    service like `FreedomBox
+    <https://wiki.debian.org/FreedomBox/Manual/DynamicDNS>`__ or `dynu.com
+    <https://www.dynu.com/DynamicDNS/IPUpdateClient/Linux>`__.
 
 
 ..
@@ -224,59 +224,40 @@ without being root, because only then it will also write a
 The :cmd:`getlino startsite` command
 ====================================
 
+.. command:: getlino startsite
+
 .. program:: getlino startsite
-
-Usage::
-
-   $ sudo -H getlino startsite appname prjname [options]
-
-The ``-H`` option instructs :cmd:`sudo` to use your home directory for caching
-its downloads.  You will appreciate this when you run the command a second
-time.
 
 The script will ask you some questions:
 
-- appname is the Lino application to run
+.. rubric:: Run-time behaviour options:
 
-- prjname is the internal name, it must be unique for this Lino server. We
-  recommend lower-case only and no "-" or "_", maybe a number.  Examples:  foo,
-  foo2, mysite, first,
+.. option:: --batch
 
+  Whether to run in batch mode, i.e. without asking any questions.  Assume
+  yes to all questions. Don't use this on a machine that is already being
+  used.
 
-.. command:: getlino startsite
+.. rubric:: Settings for the new site
 
-    Create a new Lino site.
+.. option:: --dev-repos
 
-    Usage: getlino startsite [OPTIONS] APPNAME PRJNAME
+    A space-separated list of repositories for which this site uses the
+    development version (i.e. not the PyPI release).
 
-    Arguments:
+    Usage example::
 
-    APPNAME : The application to run on the new site.
+        $ getlino startsite avanti mysite --dev-repos "lino xl"
 
-    SITENAME : The name for the new site.
+    Not that the sort order is important. The following would not work::
 
-    .. option:: --batch
+        $ getlino startsite avanti mysite --dev-repos "xl lino"
 
-        Don't ask anything. Assume yes to all questions.
+.. option:: --shared-env
 
-    .. option:: --dev-repos
-
-        A space-separated list of repositories for which this site uses the
-        development version (i.e. not the PyPI release).
-
-        Usage example::
-
-            $ getlino startsite avanti mysite --dev-repos "lino xl"
-
-        Not that the sort order is important. The following would not work::
-
-            $ getlino startsite avanti mysite --dev-repos "xl lino"
-
-    .. option:: --shared-env
-
-        Full path to the shared virtualenv to use for this site.
-        Default value is the value specified during :option:`getlino configure --shared-env`
-        If this is empty, the new site will get its own virgin environment.
+    Full path to the shared virtualenv to use for this site.
+    Default value is the value specified during :option:`getlino configure --shared-env`
+    If this is empty, the new site will get its own virgin environment.
 
 
 Configuration files

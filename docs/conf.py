@@ -24,6 +24,9 @@ configure(globals())
 extensions += ['sphinx.ext.autosummary']
 extensions += ['sphinx.ext.intersphinx']
 
+# intersphinx_mapping = {}
+# from atelier.sphinxconf import interproject
+# interproject.configure(globals(), 'atelier lino_book')
 intersphinx_mapping['cg'] = ('http://community.lino-framework.org/', None)
 
 

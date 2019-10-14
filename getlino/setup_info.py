@@ -5,7 +5,7 @@ SETUP_INFO = dict(
     test_suite='tests',
     description="Lino installer",
     long_description="""
-A tool to install and configure Lino on your machine.
+A tool to install and configure Lino in different environments.
 
 The central project homepage is http://getlino.lino-framework.org
 

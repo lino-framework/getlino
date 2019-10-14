@@ -58,11 +58,14 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     """
     Create a new Lino site.
 
-    Arguments:
+    Two mandatory arguments must be given:
 
     APPNAME : The application to run on the new site.
 
-    SITENAME : The name for the new site.
+    SITENAME : The internal name for the new site. It must be unique for this
+    Lino server. We recommend lower-case only and maybe digits but no "-" or
+    "_". Examples:  foo, foo2, mysite, first,
+
 
     """ # .format(appnames=' '.join(APPNAMES))
 
