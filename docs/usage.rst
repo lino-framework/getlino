@@ -6,7 +6,7 @@ Usage
 
 This page is rather for reference.
 The full process of installing Lino using :ref:`getlino` is documented
-in the `Lino Book <http://www.lino-framework.org/install/index.html>`__.
+in the `Lino Book <http://www.lino-framework.org/dev/install>`__.
 
 The :cmd:`getlino configure` command
 ====================================
@@ -55,7 +55,8 @@ without being root, because only then it will also write a
 
 .. option:: --shared-env
 
-    Full path to your default virtualenv.
+    Full path to your default :term:`virtualenv`.
+
     Default value is taken from :envvar:`VIRTUAL_ENV` environment value.
     If this is empty, every new site  will get its own virgin environment.
 
@@ -66,7 +67,7 @@ without being root, because only then it will also write a
     ("development version") specified by :option:`getlino startsite --dev-repos`.
 
     If this is empty and a site requests a development version, this will
-    be stored in a directory named :option:`--repos-link` below the virtualenv dir.
+    be stored in a directory named :option:`--repos-link` below the :term:`virtualenv` dir.
 
 .. option:: --clone
 
@@ -321,3 +322,34 @@ repositories into the default shared env.
 
 :cmd:`getlino startsite` does not install any Python packages when a shared env
 is used.
+
+
+
+Concepts
+========
+
+.. glossary::
+
+  virtualenv
+
+    A virtual Python environment.
+
+  Developer environment
+
+    A set of tools configured on the desktop computer of a Lino developer who
+    wants to develop their own :term:`Lino application`.
+
+  Contributor environment
+
+    An extended :term:`developer environment` suitable for developers who plan
+    to potentially contribute to the :term:`Lino framework`.  A bit more work to
+    install, but more future-proof.
+
+  Production server
+
+    A dedicated server designed to host one or several :term:`production sites
+    <production site>`.
+
+  Demo server
+
+    A dedicated server designed to host a series of demo sites.
