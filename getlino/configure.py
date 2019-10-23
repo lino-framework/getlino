@@ -20,7 +20,6 @@ from .utils import CONFIG, CONF_FILES, FOUND_CONFIG_FILES, DEFAULTSECTION
 from .utils import KNOWN_REPOS, DB_ENGINES, BATCH_HELP, FRONT_ENDS
 from .utils import Installer, ifroot
 
-
 CERTBOT_AUTO_RENEW = """
 echo "0 0,12 * * * root python -c 'import random; import time; time.sleep(random.random() * 3600)' && /usr/local/bin/certbot-auto renew" | tee -a /etc/crontab > /dev/null
 """
@@ -86,7 +85,6 @@ alias pp='per_project'
 alias ci='inv ci'
 """
 
-
 # The configure command will be decorated below. We cannot use decorators
 # because we define the list of options in CONFIGURE_OPTIONS because we need
 # that list also for asking questions using the help text.
@@ -94,68 +92,79 @@ alias ci='inv ci'
 CONFIGURE_OPTIONS = []
 
 
-def add(spec, default, help, type=None):
+def add(spec, default, help, type=None, root_only=False):
+    """
+    :param root_only: if user is not root, do not ask for the user for the choice.
+
+    """
     kwargs = dict()
     kwargs.update(help=help)
     if type is not None:
         kwargs.update(type=type)
     o = click.Option([spec], **kwargs)
-    o.default = DEFAULTSECTION.get(o.name, default)
+    o.root_only = root_only
+    o.default = DEFAULTSECTION.get(o.name, default)  # ~/.getlino.conf
     CONFIGURE_OPTIONS.append(o)
+
 
 def default_sites_base():
     return ifroot('/usr/local/lino', os.path.expanduser('~/lino'))
 
+
 def default_shared_env():
     return os.environ.get('VIRTUAL_ENV', '')
     # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
+
 
 def default_repos_base():
     if default_shared_env():
         return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
     return ''
 
+
 def default_db_engine():
     return ifroot("mysql", 'sqlite3')
+
 
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
-add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages")
+add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages", root_only=True)
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
-add('--repos-base', default_repos_base, "Base directory for shared code repositories")
+add('--repos-base', default_repos_base, "Base directory for shared code repositories", root_only=True)
 add('--clone/--no-clone', False, "Clone all contributor repositories and install them to the shared-env")
 add('--branch', 'master', "The git branch to use for --clone")
-add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites")
-add('--backups-base', '/var/backups/lino', 'Base directory for backups')
-add('--log-base', '/var/log/lino', 'Base directory for log files')
+add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites", root_only=True)
+add('--backups-base', '/var/backups/lino', 'Base directory for backups', root_only=True)
+add('--log-base', '/var/log/lino', 'Base directory for log files', root_only=True)
 add('--usergroup', 'www-data', "User group for files to be shared with the web server")
-add('--supervisor-dir', '/etc/supervisor/conf.d', "Directory for supervisor config files")
+add('--supervisor-dir', '/etc/supervisor/conf.d', "Directory for supervisor config files", root_only=True)
 add('--env-link', 'env', "link to virtualenv (relative to project dir)")
 add('--repos-link', 'repositories', "link to code repositories (relative to virtualenv)")
-add('--appy/--no-appy', ifroot, "Whether this server provides appypod and LibreOffice")
-add('--redis/--no-redis', ifroot, "Whether this server provides redis")
-add('--devtools/--no-devtools', lambda : not ifroot(),
+add('--appy/--no-appy', ifroot, "Whether this server provides appypod and LibreOffice", root_only=True)
+add('--redis/--no-redis', ifroot, "Whether this server provides redis", root_only=True)
+add('--devtools/--no-devtools', lambda: not ifroot(),
     "Whether to install development tools (build docs and run tests)")
 add('--server-domain', 'localhost', "Domain name of this server")
-add('--https/--no-https', False, "Whether this server uses secure http")
-add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server")
+add('--https/--no-https', False, "Whether this server uses secure http", root_only=True)
+add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server", root_only=True)
 # disable monit by default as it is not included in debian buster.
-add('--monit/--no-monit', False, "Whether this server uses monit")
+add('--monit/--no-monit', False, "Whether this server uses monit", root_only=True)
 add('--db-engine', default_db_engine, "Default database engine for new sites.",
-    click.Choice([e.name for e in DB_ENGINES]))
-add('--db-port', '', "Default database port to use for new sites.")
-add('--db-host', 'localhost', "Default database host name for new sites.")
-add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.")
-add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.")
-add('--admin-name', 'Joe Dow', "The full name of the server administrator")
+    click.Choice([e.name for e in DB_ENGINES]), root_only=True)
+add('--db-port', '', "Default database port to use for new sites.", root_only=True)
+add('--db-host', 'localhost', "Default database host name for new sites.", root_only=True)
+add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.", root_only=True)
+add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.", root_only=True)
+add('--admin-name', 'Joe Dow', "The full name of the server administrator", root_only=True)
 add('--admin-email', 'joe@example.com',
-    "The email address of the server administrator")
+    "The email address of the server administrator", root_only=True)
 add('--time-zone', 'Europe/Brussels', "The TIME_ZONE to set on new sites")
-add('--linod/--no-linod', True, "Whether new sites use linod")
-add('--languages', 'en', "The languages to set on new sites")
+add('--linod/--no-linod', True, "Whether new sites use linod", root_only=True)
+add('--languages', 'en', "The languages to set on new sites", root_only=True)
 add('--front-end', 'lino.modlib.extjs', "The front end to use on new sites",
-    click.Choice([r.front_end for r in FRONT_ENDS]))
+    click.Choice([r.front_end for r in FRONT_ENDS]), root_only=True)
+
 
 def configure(ctx, batch,
               sites_base, local_prefix, shared_env, repos_base,
@@ -199,12 +208,18 @@ def configure(ctx, batch,
         v = locals()[k]
         if batch:
             CONFIG.set(CONFIG.default_section, k, str(v))
+
+        if p.root_only and not ifroot():
+            continue
+
         else:
             msg = "- {} ({})".format(k, p.help)
             kwargs = dict(default=v)
             if p.type is not None:
                 kwargs.update(type=p.type)
             answer = click.prompt(msg, **kwargs)
+            if type(answer) == type("string"):
+                answer = answer.rstrip("/")
             # conf_values[k] = answer
             CONFIG.set(CONFIG.default_section, k, str(answer))
 
@@ -223,8 +238,8 @@ def configure(ctx, batch,
 
     i.apt_install(
         "git subversion python3 python3-dev python3-setuptools python3-pip supervisor")
-    i.apt_install("libffi-dev libssl-dev") # maybe needed for weasyprint
-    i.apt_install("build-essential") # maybe needed for installing Python extensions
+    i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
+    i.apt_install("build-essential")  # maybe needed for installing Python extensions
 
     if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
@@ -262,10 +277,9 @@ def configure(ctx, batch,
                 continue
             if not os.path.exists(pth):
                 if batch or i.yes_or_no(
-                    "Create {} {} ?".format(k, pth), default=True):
+                        "Create {} {} ?".format(k, pth), default=True):
                     os.makedirs(pth, exist_ok=True)
             i.check_permissions(pth)
-
 
     i.finish()
 
@@ -283,8 +297,8 @@ def configure(ctx, batch,
             repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
         if not os.path.exists(repos_base):
             if batch or i.yes_or_no(
-                "Create base directory for repositories {} ?".format(repos_base),
-                default=True):
+                    "Create base directory for repositories {} ?".format(repos_base),
+                    default=True):
                 os.makedirs(repos_base, exist_ok=True)
         i.check_permissions(repos_base)
         os.chdir(repos_base)
@@ -320,7 +334,7 @@ def configure(ctx, batch,
     go_bases.append(pth)
 
     if not ifroot():
-        pth = os.path.expanduser('~/.bash_aliases')
+        pth = os.path.expanduser('~/.lino_bash_aliases')
         ctx = dict(DEFAULTSECTION)
         content = BASH_ALIASES.format(**ctx)
         if len(go_bases):
@@ -328,6 +342,7 @@ def configure(ctx, batch,
             content += BASH_ALIASES_GO.format(**ctx)
         i.write_file(pth, content)
         i.check_permissions(pth)
+        # click.echo("add ~/.lino_bash_aliases to your bashrc file for some cool bash shortcut commands")
 
     if ifroot():
         i.write_logrotate_conf(
@@ -367,9 +382,10 @@ def configure(ctx, batch,
 
     click.echo("getlino configure completed.")
 
+
 params = [
-    click.Option(['--batch/--no-batch'], default=False, help=BATCH_HELP),
-] + CONFIGURE_OPTIONS
+             click.Option(['--batch/--no-batch'], default=False, help=BATCH_HELP),
+         ] + CONFIGURE_OPTIONS
 configure = click.pass_context(configure)
 configure = click.Command('configure', callback=configure,
                           params=params, help=configure.__doc__)

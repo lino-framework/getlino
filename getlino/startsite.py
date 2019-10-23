@@ -218,6 +218,10 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     cookiecutter(
         COOKIECUTTER_URL,
         no_input=True, extra_context=context, output_dir=python_path_root)
+    # /home/tonis/.cookiecutter_replay/ .cookiecutter_replay
+    if ifroot():
+        i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"), ask=False)
+        i.check_permissions(os.path.expanduser("~/.cookiecutter"),ask=False )
 
     if ifroot():
         logdir = join(DEFAULTSECTION.get("log_base"), prjname)
@@ -306,6 +310,8 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     i.setup_database(prjname, db_user, db_password, db_engine)
     i.run_in_env(envdir, "python manage.py migrate --noinput")
     i.run_in_env(envdir, "python manage.py prep --noinput")
+    if db_engine.name == "sqlite3":
+        i.check_permissions(os.path.join(project_dir, prjname),ask=False)
 
     if ifroot():
         i.run_in_env(envdir, "python manage.py collectstatic --noinput")

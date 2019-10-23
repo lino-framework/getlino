@@ -211,6 +211,7 @@ class Installer(object):
 
     def apt_install(self, packages):
         for pkg in packages.split():
+            # no check for if package is already installed:
             self._system_packages.add(pkg)
 
     def run_in_env(self, env, cmd):
@@ -219,14 +220,14 @@ class Installer(object):
         cmd = ". {}/bin/activate && {}".format(env, cmd)
         self.runcmd(cmd)
 
-    def check_permissions(self, pth, executable=False):
+    def check_permissions(self, pth, executable=False, ask=True):
         si = os.stat(pth)
 
         if ifroot():
             # check whether group owner is what we want
             usergroup = DEFAULTSECTION.get('usergroup')
             if grp.getgrgid(si.st_gid).gr_name != usergroup:
-                if self.batch or self.yes_or_no("Set group owner for {}".format(pth),
+                if self.batch or not ask or self.yes_or_no("Set group owner for {}".format(pth),
                                                 default=True):
                     shutil.chown(pth, group=usergroup)
 
@@ -243,7 +244,7 @@ class Installer(object):
             msg = "Set mode for {} from {} to {}".format(
                 pth, imode, mode)
             # pth, stat.filemode(imode), stat.filemode(mode))
-            if self.batch or self.yes_or_no(msg, default=True):
+            if self.batch or not ask or self.yes_or_no(msg, default=True):
                 os.chmod(pth, mode)
 
     @contextmanager
