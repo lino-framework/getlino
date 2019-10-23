@@ -342,7 +342,7 @@ def configure(ctx, batch,
             content += BASH_ALIASES_GO.format(**ctx)
         i.write_file(pth, content)
         i.check_permissions(pth)
-        # click.echo("add ~/.lino_bash_aliases to your bashrc file for some cool bash shortcut commands")
+        click.echo("add ~/.lino_bash_aliases to your bashrc file for some cool bash shortcut commands")
 
     if ifroot():
         i.write_logrotate_conf(
