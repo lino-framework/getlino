@@ -131,7 +131,7 @@ def default_db_engine():
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages", root_only=True)
 add('--shared-env', default_shared_env, "Directory with shared virtualenv")
-add('--repos-base', default_repos_base, "Base directory for shared code repositories", root_only=True)
+add('--repos-base', default_repos_base, "Base directory for shared code repositories")
 add('--clone/--no-clone', False, "Clone all contributor repositories and install them to the shared-env")
 add('--branch', 'master', "The git branch to use for --clone")
 add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites", root_only=True)
@@ -151,19 +151,19 @@ add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server", ro
 # disable monit by default as it is not included in debian buster.
 add('--monit/--no-monit', False, "Whether this server uses monit", root_only=True)
 add('--db-engine', default_db_engine, "Default database engine for new sites.",
-    click.Choice([e.name for e in DB_ENGINES]), root_only=True)
-add('--db-port', '', "Default database port to use for new sites.", root_only=True)
-add('--db-host', 'localhost', "Default database host name for new sites.", root_only=True)
-add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.", root_only=True)
-add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.", root_only=True)
-add('--admin-name', 'Joe Dow', "The full name of the server administrator", root_only=True)
+    click.Choice([e.name for e in DB_ENGINES]))
+add('--db-port', '', "Default database port to use for new sites.")
+add('--db-host', 'localhost', "Default database host name for new sites.")
+add('--db-user', '', "Default database user name for new sites. Leave empty to use the project name.")
+add('--db-password', '', "Default database password for new sites. Leave empty to generate a secure password.")
+add('--admin-name', 'Joe Dow', "The full name of the server administrator")
 add('--admin-email', 'joe@example.com',
-    "The email address of the server administrator", root_only=True)
+    "The email address of the server administrator")
 add('--time-zone', 'Europe/Brussels', "The TIME_ZONE to set on new sites")
 add('--linod/--no-linod', True, "Whether new sites use linod", root_only=True)
-add('--languages', 'en', "The languages to set on new sites", root_only=True)
+add('--languages', 'en', "The languages to set on new sites")
 add('--front-end', 'lino.modlib.extjs', "The front end to use on new sites",
-    click.Choice([r.front_end for r in FRONT_ENDS]), root_only=True)
+    click.Choice([r.front_end for r in FRONT_ENDS]))
 
 
 def configure(ctx, batch,
