@@ -219,10 +219,10 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         COOKIECUTTER_URL,
         no_input=True, extra_context=context, output_dir=python_path_root)
     # /home/tonis/.cookiecutter_replay/ .cookiecutter_replay
-    if ifroot():
-        with i.override_batch(True):
-            i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"))
-            i.check_permissions(os.path.expanduser("~/.cookiecutter"))
+    # if ifroot():
+    #     with i.override_batch(True):
+    #         i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"))
+    #         i.check_permissions(os.path.expanduser("~/.cookiecutter"))
 
     if ifroot():
         logdir = join(DEFAULTSECTION.get("log_base"), prjname)
