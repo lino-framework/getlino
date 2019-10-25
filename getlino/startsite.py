@@ -213,16 +213,27 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     os.umask(0o002)
 
-    # click.echo("cookiecutter context is {}...".format(extra_context))
-    click.echo("Running cookiecutter {}...".format(COOKIECUTTER_URL))
-    cookiecutter(
-        COOKIECUTTER_URL,
-        no_input=True, extra_context=context, output_dir=python_path_root)
-    # /home/tonis/.cookiecutter_replay/ .cookiecutter_replay
-    # if ifroot():
-    #     with i.override_batch(True):
-    #         i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"))
-    #         i.check_permissions(os.path.expanduser("~/.cookiecutter"))
+    if True:
+        os.makedirs(join(project_dir, "nginx"), exist_ok=True)
+        i.jinja_write(join(project_dir, "settings.py"), **context)
+        i.jinja_write(join(project_dir, "manage.py"), **context)
+        i.jinja_write(join(project_dir, "pull.sh"), **context)
+        i.jinja_write(join(project_dir, "make_snapshot.sh"), **context)
+        i.jinja_write(join(project_dir, "wsgi.py"), **context)
+        i.jinja_write(join(project_dir, "nginx", "uwsgi.ini"), **context)
+        i.jinja_write(join(project_dir, "nginx", "uwsgi_params"), **context)
+
+    else:
+        # click.echo("cookiecutter context is {}...".format(extra_context))
+        click.echo("Running cookiecutter {}...".format(COOKIECUTTER_URL))
+        cookiecutter(
+            COOKIECUTTER_URL,
+            no_input=True, extra_context=context, output_dir=python_path_root)
+        # /home/tonis/.cookiecutter_replay/ .cookiecutter_replay
+        # if ifroot():
+        #     with i.override_batch(True):
+        #         i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"))
+        #         i.check_permissions(os.path.expanduser("~/.cookiecutter"))
 
     if ifroot():
         logdir = join(DEFAULTSECTION.get("log_base"), prjname)
@@ -289,22 +300,20 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     if ifroot():
         if USE_NGINX:
-
-            if batch or i.yes_or_no("Configure nginx? ", default=True):
-                filename = "{}.conf".format(prjname)
-                avpth = join(SITES_AVAILABLE, filename)
-                enpth = join(SITES_ENABLED, filename)
-                with i.override_batch(True):
-                    if i.check_overwrite(avpth):
-                        shutil.copyfile(join(project_dir, 'nginx', filename), avpth)
+            filename = "{}.conf".format(prjname)
+            avpth = join(SITES_AVAILABLE, filename)
+            enpth = join(SITES_ENABLED, filename)
+            # shutil.copyfile(join(project_dir, 'nginx', filename), avpth)
+            if i.jinja_write(avpth, "nginx.conf", **context):
+                if i.override_batch(True):
                     if i.check_overwrite(enpth):
                         os.symlink(avpth, enpth)
-                    i.must_restart("nginx")
-                    i.write_supervisor_conf('{}-uwsgi.conf'.format(prjname),
-                         UWSGI_SUPERVISOR_CONF.format(**context))
-                if DEFAULTSECTION.getboolean('https'):
-                    i.runcmd("certbot-auto --nginx -d {} -d www.{}".format(server_domain,server_domain))
-                    i.must_restart("nginx")
+            i.write_supervisor_conf('{}-uwsgi.conf'.format(prjname),
+                 UWSGI_SUPERVISOR_CONF.format(**context))
+            i.must_restart("nginx")
+            if DEFAULTSECTION.getboolean('https'):
+                i.runcmd("certbot-auto --nginx -d {} -d www.{}".format(server_domain,server_domain))
+                i.must_restart("nginx")
 
     os.chdir(project_dir)
     i.run_in_env(envdir, "python manage.py install --noinput")

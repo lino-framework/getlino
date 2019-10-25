@@ -17,6 +17,9 @@ import platform
 import collections
 from contextlib import contextmanager
 import virtualenv
+from jinja2 import Environment, PackageLoader
+
+JINJA_ENV = Environment(loader=PackageLoader('getlino', 'templates'))
 
 # currently getlino supports only nginx, maybe we might add other web servers
 USE_NGINX = True
@@ -343,6 +346,23 @@ sudo adduser `whoami` {0}"""
         self.write_file(
             '/etc/logrotate.d/' + conffile,
             LOGROTATE_CONF.format(**ctx))
+
+
+    def jinja_write(self, pth, tplname=None, **context):
+        """
+        pth : the full path of the file to generate.
+        tplname : name of the template file to render.  If tplname is not specified, use the tail of the output file.
+        """
+        if not self.check_overwrite(pth):
+            return False
+        if tplname is None:
+            head, tplname = os.path.split(pth)
+        tpl = JINJA_ENV.get_template(tplname)
+        s = tpl.render(**context)
+        with open(pth, 'w') as fh:
+            fh.write(s)
+        return True
+
 
     def finish(self):
         if not ifroot():

@@ -1,7 +1,7 @@
 SETUP_INFO = dict(
     name='getlino',
     version='19.10.3',
-    install_requires=['setuptools', 'click', 'virtualenv', 'cookiecutter', 'atelier'],
+    install_requires=['setuptools', 'click', 'virtualenv', 'jinja2', 'atelier'],
     test_suite='tests',
     description="Lino installer",
     long_description="""

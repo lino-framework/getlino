@@ -9,7 +9,6 @@ import grp
 import platform
 import configparser
 import subprocess
-import virtualenv
 import click
 import collections
 from contextlib import contextmanager

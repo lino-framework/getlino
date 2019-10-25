@@ -7,8 +7,10 @@ Changes in `getlino`
 2019-10-25
 ==========
 
-Released version 19.10.3 to PyPI.  Update is required because older getlino
-versions won't work with the new master of cookiecutter-startsite.
+cookiecutter-startsite is no longer used as template. All template files are now below :file:`getlino/templates`
+getlino itself no longer depends on cookiecutter.
+
+Released version 19.10.4 to PyPI (note: 19.10.3 is a broken version, don't use it)
 
 
 2019-10-08
