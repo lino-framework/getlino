@@ -4,10 +4,17 @@
 Changes in `getlino`
 =======================
 
+2019-10-25
+==========
+
+Released version 19.10.3 to PyPI.  Update is required because older getlino
+versions won't work with the new master of cookiecutter-startsite.
+
+
 2019-10-08
 ==========
 
-Released version 19.10.0 to PyPI,
+Released version 19.10.0 to PyPI.
 
 .. program:: getlino configure
 
