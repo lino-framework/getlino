@@ -7,10 +7,12 @@ Changes in `getlino`
 2019-10-25
 ==========
 
-cookiecutter-startsite is no longer used as template. All template files are now below :file:`getlino/templates`
-getlino itself no longer depends on cookiecutter.
+getlino no longer depends on cookiecutter. The separate cookiecutter-startsite
+repository is no longer used because all templates are now below
+:file:`getlino/templates`.
 
-Released version 19.10.4 to PyPI (note: 19.10.3 is a broken version, don't use it)
+Released version 19.10.6 to PyPI (versions 19.10.3 to 19.10.5 are broken
+versions, don't use them).
 
 
 2019-10-08
