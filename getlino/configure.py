@@ -239,6 +239,7 @@ def configure(ctx, batch,
         "git subversion python3 python3-dev python3-setuptools python3-pip supervisor")
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
+    i.apt_install("swig")  # required to install eidreader
 
     if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
