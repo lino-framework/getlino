@@ -208,7 +208,7 @@ def configure(ctx, batch,
         if batch:
             CONFIG.set(CONFIG.default_section, k, str(v))
 
-        if p.root_only and not ifroot():
+        elif p.root_only and not ifroot():
             continue
 
         else:
