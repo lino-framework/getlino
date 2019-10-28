@@ -8,5 +8,5 @@ class PackagesTests(TestCase):
         self.run_packages_test(SETUP_INFO['packages'])
 
     def test_developer_mode(self):
-        self.run_subprocess(['sudo','getlino','-H env PATH=$PATH','configure','--batch' ,'--db-engine', 'postgresql' ,'--db-port' ,'5432'])
-        self.run_subprocess(['sudo','getlino','-H env PATH=$PATH', 'startsite', '--batch', 'noi', 'mysite1', '--dev-repos', '"lino noi xl"'])
+        self.run_subprocess(['getlino','-H env PATH=$PATH','configure','--batch' ,'--db-engine', 'postgresql' ,'--db-port' ,'5432'])
+        self.run_subprocess(['getlino','-H env PATH=$PATH', 'startsite', '--batch', 'noi', 'mysite1', '--dev-repos', '"lino noi xl"'])
