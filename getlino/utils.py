@@ -15,6 +15,7 @@ import subprocess
 import click
 import platform
 import collections
+import getpass
 from contextlib import contextmanager
 import virtualenv
 from jinja2 import Environment, PackageLoader
@@ -335,9 +336,9 @@ class Installer(object):
             if grp.getgrgid(gid).gr_name == usergroup:
                 return
         msg = """\
-You don't belong to the {0} user group.  Maybe you want to run:
-sudo adduser `whoami` {0}"""
-        raise click.ClickException(msg.format(usergroup))
+You {0} don't belong to the {1} user group.  Maybe you want to run:
+sudo adduser `whoami` {1}"""
+        raise click.ClickException(msg.format(getpass.getuser(),usergroup))
 
     def write_logrotate_conf(self, conffile, logfile):
         ctx = {}
