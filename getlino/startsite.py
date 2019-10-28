@@ -7,7 +7,6 @@ import secrets
 import click
 
 from os.path import join
-from cookiecutter.main import cookiecutter
 
 from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
 from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
@@ -224,6 +223,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         i.jinja_write(join(project_dir, "nginx", "uwsgi_params"), **context)
 
     else:
+        from cookiecutter.main import cookiecutter
         # click.echo("cookiecutter context is {}...".format(extra_context))
         click.echo("Running cookiecutter {}...".format(COOKIECUTTER_URL))
         cookiecutter(
