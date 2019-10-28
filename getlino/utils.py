@@ -311,7 +311,7 @@ class Installer(object):
         msg = "Create virtualenv in {}"
         if self.batch or self.yes_or_no(msg.format(envdir), default=True):
             # create an empty directory and fix permissions
-            os.mkdir(envdir)
+            os.makedirs(envdir)
             self.check_permissions(envdir)
             virtualenv.create_environment(envdir)
             return True
