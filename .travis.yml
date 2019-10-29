@@ -9,6 +9,7 @@ sudo: required
 
 before_install:
   - sudo apt update -y
+  - sudo apt upgrade
   - sudo adduser travis www-data
   - sudo apt install -y python3-pip
   - groups
