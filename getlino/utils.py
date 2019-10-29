@@ -387,3 +387,4 @@ sudo adduser `whoami` {1}"""
                 with self.override_batch(True):
                     for srv in self._services:
                         self.runcmd("sudo service {} restart".format(srv))
+                        self.runcmd("journalctl -xe")
