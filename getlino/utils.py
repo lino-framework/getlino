@@ -298,7 +298,7 @@ class Installer(object):
             return
         # click.echo("Must install {} system packages: {}".format(
         #     len(self._system_packages), ' '.join(self._system_packages)))
-        cmd = "apt-get install "
+        cmd = "sudo apt-get install "
         if self.batch:
             cmd += "-y "
         self.runcmd(cmd + ' '.join(self._system_packages))
@@ -386,4 +386,4 @@ sudo adduser `whoami` {1}"""
             if self.batch or self.yes_or_no(msg, default=True):
                 with self.override_batch(True):
                     for srv in self._services:
-                        self.runcmd("service {} restart".format(srv))
+                        self.runcmd("sudo service {} restart".format(srv))
