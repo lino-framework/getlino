@@ -78,7 +78,7 @@ mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
 # apt_packages = "mysql-server libmysqlclient-dev"
 # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
 # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-if platform.dist()[0].lower() == "debian":
+if platform.dist()[0].lower() == "debian" and False:
     DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient", "3306"))
 else:
     DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient", "3306"))
