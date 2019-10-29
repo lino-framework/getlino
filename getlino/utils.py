@@ -210,7 +210,7 @@ class Installer(object):
             click.echo(cmd)
             cp = subprocess.run(cmd, **kw)
             if cp.returncode != 0:
-                subprocess.run("journalctl -xe", **kw)
+                subprocess.run("sudo journalctl -xe", **kw)
                 raise click.ClickException(
                 "{} ended with return code {}".format(cmd, cp.returncode))
 
