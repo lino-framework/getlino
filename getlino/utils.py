@@ -210,7 +210,7 @@ class Installer(object):
             click.echo(cmd)
             cp = subprocess.run(cmd, **kw)
             if cp.returncode != 0:
-                subprocess.run("sudo journalctl -xe", **kw)
+                # subprocess.run("sudo journalctl -xe", **kw)
                 raise click.ClickException(
                 "{} ended with return code {}".format(cmd, cp.returncode))
 
@@ -387,4 +387,7 @@ sudo adduser `whoami` {1}"""
             if self.batch or self.yes_or_no(msg, default=True):
                 with self.override_batch(True):
                     for srv in self._services:
-                        self.runcmd("sudo service {} restart".format(srv))
+                        try:
+                            self.runcmd("sudo service {} restart".format(srv))
+                        except Exception:
+                            continue
