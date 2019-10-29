@@ -390,4 +390,7 @@ sudo adduser `whoami` {1}"""
                         try:
                             self.runcmd("sudo service {} restart".format(srv))
                         except Exception:
-                            continue
+                            try:
+                                self.runcmd("sudo /etc/init.d/{}  restart".format(srv))
+                            except Exception:
+                                continue

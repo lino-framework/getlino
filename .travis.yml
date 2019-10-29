@@ -39,6 +39,4 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - if [[ $mode == 'developer' ]]; then python setup.py test -s tests.PackagesTests.test_developer_mode; fi;
-  - if [[ $mode == 'contributor' ]]; then python setup.py test -s tests.PackagesTests.test_contributor_mode; fi;
-  - if [[ $mode == 'prod' ]]; then python setup.py test -s tests.PackagesTests.test_prod_mode; fi;
+  - if [[ $mode == 'developer' ]]; then python setup.py test -s tests.PackagesTests.test_developer_mode; else if [[ $mode == 'contributor' ]]; then python setup.py test -s tests.PackagesTests.test_contributor_mode; else if [[ $mode == 'prod' ]]; then python setup.py test -s tests.PackagesTests.test_prod_mode; fi;
