@@ -366,7 +366,7 @@ sudo adduser `whoami` {1}"""
 
 
     def finish(self):
-        if not ifroot():
+        if not ifroot() and False:
             if len(self._system_packages):
                 click.echo(
                     "Note that the following system packages were not "
