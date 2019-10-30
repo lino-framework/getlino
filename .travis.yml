@@ -20,17 +20,17 @@ before_install:
 env:
   matrix:
     - dist: bionic
-      mode: developer
+      case: 01
     - dist: bionic
-      mode: contributor
+      case: 02
     - dist: bionic
-      mode: prod
+      case: 03
     - dist: xenial
-      mode: developer
+      case: 01
     - dist: xenial
-      mode: contributor
+      case: 02
     - dist: xenial
-      mode: prod
+      case: 03
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
@@ -39,6 +39,4 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - if [[ $mode == 'developer' ]]; then python setup.py test -s tests.PackagesTests.test_developer_mode; fi;
-  - if [[ $mode == 'contributor' ]]; then python setup.py test -s tests.PackagesTests.test_contributor_mode; fi;
-  - if [[ $mode == 'prod' ]]; then python setup.py test -s tests.PackagesTests.test_prod_mode; fi;
+  - python setup.py test

@@ -2,7 +2,8 @@ from os.path import dirname, join
 from atelier.test import TestCase
 import getlino
 
-class DockerTests(TestCase):
+if False:  # no sure whether we will need it again
+  class DockerTests(TestCase):
     def test_prod_debian(self):
         args = ['docker', 'run', 'prod_debian', "ls -l"]
         self.run_subprocess(args)
