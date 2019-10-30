@@ -25,7 +25,7 @@ class CaseTests(TestCase):
                 return out
         self.fail("{} ended with exit code {} (expected {})".format(cmd, expected_exit_code, ))
 
-    def case01(self):
+    def case1(self):
         s = self.run_shell(
         'getlino configure --batch --devtools --db-engine postgresql --usergroup travis --clone')
         self.assertEqual(s, "")
@@ -33,12 +33,12 @@ class CaseTests(TestCase):
         # self.run_subprocess(['getlino', 'startsite', '--batch',
         #                      'noi', 'mysite1', '--dev-repos', 'lino noi xl'])
 
-    def case02(self):
+    def case2(self):
         self.run_shell("getlino configure --batch --db-engine postgresql --usergroup travis --clone")
         self.run_shell(['getlino', 'startsite', '--batch',
                              'noi', 'mysite1', '--dev-repos', 'lino noi xl'])
 
-    def case03(self):
+    def case3(self):
         self.run_shell(['getlino', 'configure', '--batch', '--appy', '--log-base', '--linod', '--webdav',
                              '--languages', 'en,fr,de', '--db-engine', 'mysql', '--db-port', '3306', '--usergroup', 'travis', '--clone'])
         self.run_shell(['getlino', 'startsite', '--batch',
