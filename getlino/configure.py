@@ -232,8 +232,8 @@ def configure(ctx, batch,
     if ifroot():
         if batch or i.yes_or_no("Upgrade the system?", default=True):
             with i.override_batch(True):
-                i.runcmd("apt-get update")
-                i.runcmd("apt-get upgrade")
+                i.runcmd("apt-get update -y")
+                i.runcmd("apt-get upgrade -y")
 
     i.apt_install(
         "git subversion python3 python3-dev python3-setuptools python3-pip supervisor")
