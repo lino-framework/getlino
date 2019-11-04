@@ -216,8 +216,10 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         os.makedirs(join(project_dir, "nginx"), exist_ok=True)
         i.jinja_write(join(project_dir, "settings.py"), **context)
         i.jinja_write(join(project_dir, "manage.py"), **context)
-        i.jinja_write(join(project_dir, "pull.sh"), **context)
+        # pull.sh script is now in the virtualenv's bin folder
+        #i.jinja_write(join(project_dir, "pull.sh"), **context)
         i.jinja_write(join(project_dir, "make_snapshot.sh"), **context)
+        i.make_file_executable(join(project_dir, "make_snapshot.sh"))
         i.jinja_write(join(project_dir, "wsgi.py"), **context)
         i.jinja_write(join(project_dir, "nginx", "uwsgi.ini"), **context)
         i.jinja_write(join(project_dir, "nginx", "uwsgi_params"), **context)
@@ -262,7 +264,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     else:
         envdir = join(project_dir, DEFAULTSECTION.get('env_link'))
 
-    i.check_virtualenv(envdir)
+    i.check_virtualenv(envdir,context)
 
     if shared_env:
         os.symlink(envdir, join(project_dir, DEFAULTSECTION.get('env_link')))

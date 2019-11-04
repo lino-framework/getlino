@@ -304,8 +304,17 @@ class Installer(object):
             cmd += "-y "
         self.runcmd(cmd + ' '.join(self._system_packages))
 
-    def check_virtualenv(self, envdir):
+    def make_file_executable(self,file_path):
+        """ Make a file executable """
+        st = os.stat(file_path)
+        os.chmod(file_path, st.st_mode | stat.S_IEXEC)
+
+    def check_virtualenv(self, envdir, context):
         if os.path.exists(envdir):
+            pull_sh_path = join(envdir,'bin','pull.sh')
+            if not os.path.exists(pull_sh_path):
+                self.jinja_write(pull_sh_path, **context)
+            make_file_executable(pull_sh_path)
             return True
             # msg = "Update virtualenv in {}"
             # return self.batch or click.confirm(msg.format(envdir), default=True)
@@ -315,6 +324,10 @@ class Installer(object):
             os.makedirs(envdir)
             self.check_permissions(envdir)
             virtualenv.create_environment(envdir)
+            pull_sh_path = join(envdir,'bin','pull.sh')
+            if not os.path.exists(pull_sh_path):
+                self.jinja_write(pull_sh_path, **context)
+            make_file_executable(pull_sh_path)
             return True
         return False
 
