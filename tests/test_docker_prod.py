@@ -11,7 +11,7 @@ class DockerTests(TestCase):
         self.run_subprocess(
             docker_debian_command + ['cd /usr/local/lino/lino_local/mysite1 && ls -l'])
         self.run_subprocess(
-            docker_debian_command + ['cd /usr/local/lino/lino_local/mysite1 && ./pull.sh '])
+            docker_debian_command + ['. /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh '])
         self.run_subprocess(
             docker_debian_command + ['cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh '])
         self.run_subprocess(
@@ -23,7 +23,7 @@ class DockerTests(TestCase):
         self.run_subprocess(
             docker_ubuntu_command + ['cd /usr/local/lino/lino_local/mysite1 && ls -l'])
         self.run_subprocess(
-            docker_ubuntu_command + ['cd /usr/local/lino/lino_local/mysite1 && ./pull.sh '])
+            docker_ubuntu_command + ['. /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh '])
         self.run_subprocess(
             docker_ubuntu_command + ['cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh '])
         self.run_subprocess(
