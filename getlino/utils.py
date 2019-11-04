@@ -307,7 +307,8 @@ class Installer(object):
     def make_file_executable(self,file_path):
         """ Make a file executable """
         st = os.stat(file_path)
-        os.chmod(file_path, st.st_mode | stat.S_IEXEC)
+        os.chmod(file_path,0o775)
+        #os.chmod(file_path, st.st_mode | stat.S_IEXEC)
 
     def check_virtualenv(self, envdir, context):
         if os.path.exists(envdir):
