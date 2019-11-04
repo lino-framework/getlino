@@ -45,6 +45,7 @@ RUN pip3 install -e .
 RUN apt-get install -y sudo
 RUN adduser --disabled-password --gecos '' lino
 RUN adduser lino sudo
+RUN adduser lino www-data
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
