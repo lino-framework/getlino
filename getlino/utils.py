@@ -314,7 +314,7 @@ class Installer(object):
             pull_sh_path = join(envdir,'bin','pull.sh')
             if not os.path.exists(pull_sh_path):
                 self.jinja_write(pull_sh_path, **context)
-            make_file_executable(pull_sh_path)
+            self.make_file_executable(pull_sh_path)
             return True
             # msg = "Update virtualenv in {}"
             # return self.batch or click.confirm(msg.format(envdir), default=True)
@@ -327,7 +327,7 @@ class Installer(object):
             pull_sh_path = join(envdir,'bin','pull.sh')
             if not os.path.exists(pull_sh_path):
                 self.jinja_write(pull_sh_path, **context)
-            make_file_executable(pull_sh_path)
+            self.make_file_executable(pull_sh_path)
             return True
         return False
 
