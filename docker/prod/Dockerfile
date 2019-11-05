@@ -1,52 +1,20 @@
-# Thanks to https://vsupalov.com/docker-arg-vs-env/
 ARG DEBIAN_FRONTEND=noninteractive
-
-# The first instruction is what image we want to base our container on
-# We Use an official Python runtime as a parent image
-# FROM python:3.7
-# FROM python:3-buster
-# FROM ubuntu:bionic
-# buster doesn't have monit
-FROM debian:buster
-
-# Thanks to https://github.com/phusion/baseimage-docker/issues/58
+#FROM debian:buster
+#FROM https://cloud.docker.com/repository/docker/khchine5/debian_latest
+FROM khchine5:debian_latest
 ENV TERM=linux
-
-# The enviroment variable ensures that the python output is set straight
-# to the terminal with out buffering it first
 ENV PYTHONUNBUFFERED=1
-
-# Thanks to https://stackoverflow.com/questions/51023312/docker-having-issues-installing-apt-utils
-#ENV LC_ALL=C.UTF-8
-#ENV LANG=C.UTF-8
-#ENV TZ=Europe/Brussels
-RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        tzdata
-
-
-RUN apt-get update -y
-# RUN apt-get install -y --no-install-recommends apt-utils
-RUN apt-get upgrade -y
-RUN apt-get install -y python3-pip
-
-# create /src directory and copy required project source files to the image
-RUN mkdir /src
+RUN sudo mkdir /src
 # RUN echo 1; pwd ; ls -l
 WORKDIR /src
 # RUN echo 2; pwd ; ls -l
 #ADD . src/
 ADD setup.py .
 ADD getlino getlino/
+RUN sudo chown lino:lino -R /src
 # RUN echo 3; pwd ; ls -l src
-RUN pip3 install -e .
+RUN sudo pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
-
-# Install sudo package and create a user lino
-RUN apt-get install -y sudo
-RUN adduser --disabled-password --gecos '' lino
-RUN adduser lino sudo
-RUN adduser lino www-data
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
 
