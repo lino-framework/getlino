@@ -15,6 +15,11 @@ RUN sudo chown lino:lino -R /src
 # RUN echo 3; pwd ; ls -l src
 RUN sudo pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+RUN apt-get install -y sudo
+RUN adduser --disabled-password --gecos '' lino
+RUN adduser lino sudo
+RUN adduser lino www-data
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# USER lino
+USER lino
 # RUN sudo -H getlino configure --batch --db-engine postgresql  && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"
