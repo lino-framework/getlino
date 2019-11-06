@@ -1,7 +1,7 @@
 ARG DEBIAN_FRONTEND=noninteractive
-#FROM debian:buster
+FROM debian:buster
 #FROM https://cloud.docker.com/repository/docker/khchine5/debian_latest
-FROM khchine5:debian_latest
+#FROM khchine5:debian_latest
 ENV TERM=linux
 ENV PYTHONUNBUFFERED=1
 RUN sudo mkdir /src
@@ -16,6 +16,5 @@ RUN sudo chown lino:lino -R /src
 RUN sudo pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
 
-USER lino
-
-RUN sudo -H getlino configure --batch --db-engine postgresql  && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"
+# USER lino
+# RUN sudo -H getlino configure --batch --db-engine postgresql  && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"

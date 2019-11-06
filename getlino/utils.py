@@ -104,7 +104,8 @@ class MySQL(DbEngine):
 class PostgreSQL(DbEngine):
     name = 'postgresql'
     service = 'postgresql'
-    python_packages = "psycopg2"
+    # python_packages = "psycopg2"
+    python_packages = "psycopg2-binary"
     default_port = "5432"
 
     def run(self, i, cmd):
