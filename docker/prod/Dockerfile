@@ -1,20 +1,29 @@
+# Thanks to https://vsupalov.com/docker-arg-vs-env/
 ARG DEBIAN_FRONTEND=noninteractive
-FROM debian:buster
-#FROM https://cloud.docker.com/repository/docker/khchine5/debian_latest
-#FROM khchine5:debian_latest
+FROM ubuntu:buster
 ENV TERM=linux
 ENV PYTHONUNBUFFERED=1
-RUN sudo mkdir /src
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV TZ=Europe/Brussels
+RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        tzdata
+RUN apt-get update -y
+RUN apt-get upgrade -y
+RUN apt-get install -y python3-pip
+
+# create /src directory and copy required project source files to the image
+RUN mkdir /src
 # RUN echo 1; pwd ; ls -l
 WORKDIR /src
 # RUN echo 2; pwd ; ls -l
-#ADD . src/
 ADD setup.py .
 ADD getlino getlino/
-RUN sudo chown lino:lino -R /src
-# RUN echo 3; pwd ; ls -l src
-RUN sudo pip3 install -e .
+# RUN echo 3; pwd ; ls -l
+RUN pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
+
+# Install sudo package and create a user lino
 RUN apt-get install -y sudo
 RUN adduser --disabled-password --gecos '' lino
 RUN adduser lino sudo
@@ -22,4 +31,5 @@ RUN adduser lino www-data
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
-# RUN sudo -H getlino configure --batch --db-engine postgresql  && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"
+
+# RUN sudo -H getlino configure --batch --db-engine postgresql --db-port 5432 && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"
