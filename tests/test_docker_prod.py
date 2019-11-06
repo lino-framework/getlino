@@ -5,6 +5,16 @@ import getlino
 docker_debian_command = 'docker run prod_debian /bin/bash -c '.split()
 docker_ubuntu_command = 'docker run prod_ubuntu /bin/bash -c '.split()
 
+"""
+>>> from atelier.sheller import Sheller
+>>> shell = Sheller('docs/dev/hello')
+>>> shell("whoami")
+linox
+>>> shell("sudo -H env PATH=$PATH getlino configure --batch")
+... #doctest: +ELLIPSIS +REPORT_UDIFF
+
+"""
+
 
 class DockerTests(TestCase):
     def test_prod_debian(self):
