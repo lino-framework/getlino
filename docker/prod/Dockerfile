@@ -1,6 +1,6 @@
 # Thanks to https://vsupalov.com/docker-arg-vs-env/
 ARG DEBIAN_FRONTEND=noninteractive
-FROM ubuntu:buster
+FROM debian:buster
 ENV TERM=linux
 ENV PYTHONUNBUFFERED=1
 ENV LC_ALL=C.UTF-8
