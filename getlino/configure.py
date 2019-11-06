@@ -222,6 +222,18 @@ def configure(ctx, batch,
             # conf_values[k] = answer
             CONFIG.set(CONFIG.default_section, k, str(answer))
 
+    db_engine = None
+    for e in DB_ENGINES:
+        if DEFAULTSECTION.get('db_engine') == e.name:
+            db_engine = e
+            break
+    if db_engine is None:
+        raise click.ClickException(
+            "Invalid --db-engine '{}'.".format(DEFAULTSECTION.get('db_engine')))
+
+    if db_user and not db_password:
+        raise click.Error("If you set a shared --db-user you must also set a shared --db-password")
+
     if not i.yes_or_no("Start configuring your system using above options?"):
         raise click.Abort()
 
@@ -255,11 +267,12 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('redis'):
         i.apt_install("redis-server")
 
-    for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name:
-            i.apt_install(e.apt_packages)
-            if e.service:
-                i.must_restart(e.service)
+    i.apt_install(db_engine.apt_packages)
+    if db_engine.service:
+        i.must_restart(e.service)
+
+    if db_user:
+        db_engine.setup_user(i, context)
 
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")

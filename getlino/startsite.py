@@ -90,6 +90,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     server_url = ("https://" if DEFAULTSECTION.getboolean('https') else "http://") \
                  + server_domain
     secret_key = secrets.token_urlsafe(20)
+
     db_engine = None
     for e in DB_ENGINES:
         if DEFAULTSECTION.get('db_engine') == e.name:
@@ -176,8 +177,10 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             **context))
 
     db_user = DEFAULTSECTION.get('db_user')
+    shared_user = False
     if db_user:
         db_password = DEFAULTSECTION.get('db_password')
+        shared_user = True
     else:
         db_user = prjname
         db_password = secrets.token_urlsafe(8)
@@ -199,9 +202,6 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         #     admin_email = click.prompt("Administrator's full name", default=admin_email)
         secret_key = click.prompt("Site's secret key", default=secret_key)
 
-    if not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
-        raise click.Abort()
-
     context.update({
         "db_host": db_host,
         "db_port": db_port,
@@ -209,6 +209,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         "db_password": db_password,
         "secret_key": secret_key,
     })
+
+    if not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
+        raise click.Abort()
 
     os.umask(0o002)
 
@@ -258,13 +261,12 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     os.makedirs(join(project_dir, 'media'), exist_ok=True)
 
-
     if shared_env:
         envdir = shared_env
     else:
         envdir = join(project_dir, DEFAULTSECTION.get('env_link'))
 
-    i.check_virtualenv(envdir,context)
+    i.check_virtualenv(envdir, context)
 
     if shared_env:
         os.symlink(envdir, join(project_dir, DEFAULTSECTION.get('env_link')))
@@ -319,13 +321,12 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     os.chdir(project_dir)
     i.run_in_env(envdir, "python manage.py install --noinput")
-    i.setup_database(prjname, db_user, db_password, db_engine)
+    if not shared_user:
+        db_engine.setup_user(i, context)
+    db_engine.setup_database(i, prjname, db_user)
     i.run_in_env(envdir, "python manage.py migrate --noinput")
     i.run_in_env(envdir, "python manage.py prep --noinput")
-    if db_engine.name == "sqlite3":
-        with i.override_batch(True):
-            i.check_permissions(os.path.join(project_dir, prjname))
-
+    db_engine.after_prep(i, context)
     if ifroot():
         i.run_in_env(envdir, "python manage.py collectstatic --noinput")
 

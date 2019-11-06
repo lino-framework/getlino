@@ -44,45 +44,103 @@ LOGROTATE_CONF = """
 }}
 """
 
-if False:
-    class DbEngine(object):
-        def __init__(self):
-            self.name
-            self.service
-            self.apt_packages
-            self.python_packages
 
-        def get_apt_packages(self):
-            return self.apt_packages.split()
+class DbEngine(object):
+    name = None  # Note that the DbEngine.name field must match the Django engine name
+    service = None
+    apt_packages = ''
+    python_packages = ''
 
-    class MySQL(DbEngine):
-        def get_apt_packages(self):
-            if platform.dist()[0] == "Debian":
-                return "mariadb..."
-            else:
-                return "mysql-server..."
+    def runcmd(self, i, sqlcmd):
+        pass
+
+    def setup_database(self, i, database, user):
+        click.echo("No setup needed for " + self.name)
+
+    def setup_user(self, i, context):
+        click.echo("Warning: Don't know how to setup user for " + self.name)
+
+    def after_prep(self, i, context):
+        pass
+
+class SQLite(DbEngine):
+    name = 'sqlite3'
+
+    def after_prep(self, i, context):
+        project_dir = context['project_dir']
+        prjname = context['prjname']
+        with i.override_batch(True):
+            i.check_permissions(os.path.join(project_dir, prjname))
 
 
-# Note that the DbEngine.name field must match the Django engine name
-DbEngine = collections.namedtuple(
-    'DbEngine', ('name service apt_packages python_packages default_port'))
-DB_ENGINES = []
-DB_ENGINES.append(
-    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev python-dev", "psycopg2", "5432"))
-    # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
-    # practical choice for development and testing but in production it is
-    # advised to use the package built from sources."
 
-mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
-    "python-dev libffi-dev libssl-dev python-mysqldb"
-# apt_packages = "mysql-server libmysqlclient-dev"
-# TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
-# apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-if platform.dist()[0].lower() == "debian" and False:
-    DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient", "3306"))
-else:
-    DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient", "3306"))
-DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", "", "0"))
+class MySQL(DbEngine):
+    name = 'mysql'
+    service = 'mysql'
+    default_port = "3306"
+    packages = "mysql-server libmysqlclient-dev"
+    python_packages = "mysqlclient"
+
+    def __init__(self):
+        super(MySQL, self).__init__()
+        # apt_packages = "mysql-server libmysqlclient-dev"
+        # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
+        # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
+        if platform.dist()[0].lower() == "debian" and False:
+            self.service = 'mariadb'
+            self.packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
+                "python-dev libffi-dev libssl-dev python-mysqldb"
+
+    def run(self, i, sqlcmd):
+        return i.runcmd('mysql -u root -p -e "{};"'.format(sqlcmd))
+
+    def setup_user(self, i, context):
+        self.run(i, "create user '{db_user}'@'db_host' identified by '{db_password}'".format(**context))
+
+    def setup_database(self, i, database, user):
+        self.run(i, "create database {database} charset 'utf8'".format(**locals()))
+        self.run(i, "grant all PRIVILEGES on {database}.* to '{user}'@'localhost'".format(**locals()))
+
+class PostgreSQL(DbEngine):
+    name = 'postgresql'
+    service = 'postgresql'
+    python_packages = "psycopg2"
+    default_port = "5432"
+
+    def run(self, i, cmd):
+        assert '"' not in cmd
+        # self.runcmd('sudo -u postgres bash -c "psql -c \\\"{}\\\""'.format(cmd))
+        i.runcmd('sudo -u postgres psql -c "{}"'.format(cmd))
+
+    def setup_user(self, i, context):
+        self.run(i, "CREATE USER {db_user} WITH PASSWORD '{db_password}';".format(**context))
+
+    def setup_database(self, i, database, user):
+        self.run(i, "CREATE DATABASE {database};".format(**locals()))
+        self.run(i, "GRANT ALL PRIVILEGES ON DATABASE {database} TO {user};".format(**locals()))
+
+
+DB_ENGINES = [MySQL(), PostgreSQL(), SQLite()]
+
+# DbEngine = collections.namedtuple(
+#     'DbEngine', ('name service apt_packages python_packages default_port'))
+# DB_ENGINES = []
+# DB_ENGINES.append(
+#     DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev python-dev", "psycopg2", "5432"))
+#     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
+#     # practical choice for development and testing but in production it is
+#     # advised to use the package built from sources."
+#
+# mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
+#     "python-dev libffi-dev libssl-dev python-mysqldb"
+# # apt_packages = "mysql-server libmysqlclient-dev"
+# # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
+# # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
+# if platform.dist()[0].lower() == "debian" and False:
+#     DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient", "3306"))
+# else:
+#     DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient", "3306"))
+# DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", "", "0"))
 
 
 Repo = collections.namedtuple(
@@ -273,26 +331,6 @@ class Installer(object):
         self.write_file(
             join(DEFAULTSECTION.get('supervisor_dir'), filename), content)
         self.must_restart('supervisor')
-
-    def setup_database(self, database, user, pwd, db_engine):
-        if db_engine.name == 'sqlite3':
-            click.echo("No setup needed for " + db_engine.name)
-        elif db_engine.name == 'mysql':
-            def run(cmd):
-                self.runcmd('mysql -u root -p -e "{};"'.format(cmd))
-            run("create user '{user}'@'localhost' identified by '{pwd}'".format(**locals()))
-            run("create database {database} charset 'utf8'".format(**locals()))
-            run("grant all PRIVILEGES on {database}.* to '{user}'@'localhost'".format(**locals()))
-        elif db_engine.name == 'postgresql':
-            def run(cmd):
-                assert '"' not in cmd
-                # self.runcmd('sudo -u postgres bash -c "psql -c \\\"{}\\\""'.format(cmd))
-                self.runcmd('sudo -u postgres psql -c "{}"'.format(cmd))
-            run("CREATE USER {user} WITH PASSWORD '{pwd}';".format(**locals()))
-            run("CREATE DATABASE {database};".format(**locals()))
-            run("GRANT ALL PRIVILEGES ON DATABASE {database} TO {user};".format(**locals()))
-        else:
-            click.echo("Warning: Don't know how to setup " + db_engine.name)
 
     def run_apt_install(self):
         if len(self._system_packages) == 0:
