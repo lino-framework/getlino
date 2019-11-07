@@ -22,7 +22,8 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER lino
 
 # create /src directory and copy required project source files to the image
-RUN mkdir /src
+RUN sudo  mkdir /src
+RUN sudo chown lino:lino -R /src
 # RUN echo 1; pwd ; ls -l
 WORKDIR /src
 # RUN echo 2; pwd ; ls -l
