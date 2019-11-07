@@ -12,7 +12,6 @@ docker_ubuntu_command = 'docker run prod_ubuntu /bin/bash -c '.split()
 linox
 >>> shell("sudo -H env PATH=$PATH getlino configure --batch")
 ... #doctest: +ELLIPSIS +REPORT_UDIFF
-
 """
 
 
