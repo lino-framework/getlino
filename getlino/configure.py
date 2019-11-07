@@ -20,7 +20,7 @@ from .utils import KNOWN_REPOS, DB_ENGINES, BATCH_HELP, FRONT_ENDS
 from .utils import Installer, ifroot
 
 CERTBOT_AUTO_RENEW = """
-echo "0 0,12 * * * root python -c 'import random; import time; time.sleep(random.random() * 3600)' && /usr/local/bin/certbot-auto renew" | tee -a /etc/crontab > /dev/null
+0 0,12 * * * root python -c 'import random; import time; time.sleep(random.random() * 3600)' && /usr/local/bin/certbot-auto renew
 """
 HEALTHCHECK_SH = """
 #!/bin/bash
@@ -388,7 +388,7 @@ def configure(ctx, batch,
                     i.runcmd("certbot-auto -n")
                     i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
             if batch or i.yes_or_no("Set up automatic certificate renewal?", default=True):
-                i.runcmd(CERTBOT_AUTO_RENEW)
+                i.write_file('/etc/cron.d/getlino-certbot.conf', CERTBOT_AUTO_RENEW)
 
         if DEFAULTSECTION.getboolean('ldap'):
             i.runcmd("dpkg-reconfigure slapd")
