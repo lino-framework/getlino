@@ -18,8 +18,7 @@ linox
 class DockerTests(TestCase):
     def run_commands_for(self, docker_tag):
         if docker_tag:
-            client.containers.run(docker_tag, "sudo -H getlino configure --batch --db-engine postgresql")
-            client.containers.run(docker_tag, "sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'")
+            client.containers.run(docker_tag, "sudo -H getlino configure --batch --db-engine postgresql && sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'")
             client.containers.run(docker_tag, "cd /usr/local/lino/lino_local/mysite1 && ls -l")
             client.containers.run(docker_tag, ". /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh")
             client.containers.run(docker_tag, "cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh")
