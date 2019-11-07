@@ -12,6 +12,15 @@ RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y python3-pip
 
+# Install sudo package and create a user lino
+RUN apt-get install -y sudo
+RUN adduser --disabled-password --gecos '' lino
+RUN adduser lino sudo
+RUN adduser lino www-data
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER lino
+
 # create /src directory and copy required project source files to the image
 RUN mkdir /src
 # RUN echo 1; pwd ; ls -l
@@ -23,13 +32,5 @@ ADD getlino getlino/
 # RUN pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
 
-# Install sudo package and create a user lino
-RUN apt-get install -y sudo
-RUN adduser --disabled-password --gecos '' lino
-RUN adduser lino sudo
-RUN adduser lino www-data
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-USER lino
 
 # RUN sudo -H getlino configure --batch --db-engine postgresql --db-port 5432 && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"
