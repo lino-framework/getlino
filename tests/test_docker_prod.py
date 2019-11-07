@@ -22,7 +22,7 @@ class DockerTests(TestCase):
             self.run_subprocess(
                 docker_command + ['sudo -H getlino configure --batch --db-engine postgresql'])
             self.run_subprocess(
-                docker_command + ["sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' "])
+                docker_command + [""" "sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'" """])
             self.run_subprocess(
                 docker_command + ['cd /usr/local/lino/lino_local/mysite1 && ls -l'])
             self.run_subprocess(
