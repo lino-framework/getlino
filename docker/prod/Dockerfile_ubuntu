@@ -37,7 +37,7 @@ WORKDIR /src
 ADD setup.py .
 ADD getlino getlino/
 # RUN echo 3; pwd ; ls -l
-RUN pip3 install -e .
+# RUN pip3 install -e .
 #RUN pip3 install -e git+https://github.com/lino-framework/getlino.git#egg=getlino
 
 # Install sudo package and create a user lino
