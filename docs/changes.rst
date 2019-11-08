@@ -10,7 +10,9 @@ Changes in `getlino`
 The :cmd:`getlino configure --https` option was appending directly to
 the main :file:`/etc/crontab` file. Fixed.
 
-Fixed some minor bugs.  For example --redis was ignored when not running as root. 
+Fixed some minor bugs.  For example --redis was ignored when not running as root.
+
+Released 19.11.0 to PyPI.
 
 2019-10-25
 ==========
