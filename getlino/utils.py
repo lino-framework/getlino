@@ -58,7 +58,7 @@ class DbEngine(object):
         click.echo("No setup needed for " + self.name)
 
     def setup_user(self, i, context):
-        click.echo("Warning: Don't know how to setup user for " + self.name)
+        click.echo("No need to setup user for " + self.name)
 
     def after_prep(self, i, context):
         pass
@@ -350,26 +350,25 @@ class Installer(object):
         #os.chmod(file_path, st.st_mode | stat.S_IEXEC)
 
     def check_virtualenv(self, envdir, context):
+        pull_sh_path = join(envdir, 'bin', 'pull.sh')
+        ok = False
         if os.path.exists(envdir):
-            pull_sh_path = join(envdir,'bin','pull.sh')
-            if not os.path.exists(pull_sh_path):
-                self.jinja_write(pull_sh_path, **context)
-            self.make_file_executable(pull_sh_path)
-            return True
+            ok = True
             # msg = "Update virtualenv in {}"
             # return self.batch or click.confirm(msg.format(envdir), default=True)
-        msg = "Create virtualenv in {}"
-        if self.batch or self.yes_or_no(msg.format(envdir), default=True):
-            # create an empty directory and fix permissions
-            os.makedirs(envdir)
-            self.check_permissions(envdir)
-            virtualenv.create_environment(envdir)
-            pull_sh_path = join(envdir,'bin','pull.sh')
+        else:
+            msg = "Create virtualenv in {}"
+            if self.batch or self.yes_or_no(msg.format(envdir), default=True):
+                # create an empty directory and fix permissions
+                os.makedirs(envdir)
+                self.check_permissions(envdir)
+                virtualenv.create_environment(envdir)
+                ok = True
+        if ok:
             if not os.path.exists(pull_sh_path):
                 self.jinja_write(pull_sh_path, **context)
             self.make_file_executable(pull_sh_path)
-            return True
-        return False
+        return ok
 
     def clone_repo(self, repo):
         branch = DEFAULTSECTION.get('branch')

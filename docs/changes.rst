@@ -4,6 +4,14 @@
 Changes in `getlino`
 =======================
 
+2019-11-07
+==========
+
+The :cmd:`getlino configure --https` option was appending directly to
+the main :file:`/etc/crontab` file. Fixed.
+
+Fixed some minor bugs.  For example --redis was ignored when not running as root. 
+
 2019-10-25
 ==========
 

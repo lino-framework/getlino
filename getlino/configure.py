@@ -142,7 +142,7 @@ add('--supervisor-dir', '/etc/supervisor/conf.d', "Directory for supervisor conf
 add('--env-link', 'env', "link to virtualenv (relative to project dir)")
 add('--repos-link', 'repositories', "link to code repositories (relative to virtualenv)")
 add('--appy/--no-appy', ifroot, "Whether this server provides appypod and LibreOffice", root_only=True)
-add('--redis/--no-redis', ifroot, "Whether this server provides redis", root_only=True)
+add('--redis/--no-redis', ifroot, "Whether this server provides redis")
 add('--devtools/--no-devtools', lambda: not ifroot(),
     "Whether to install development tools (build docs and run tests)")
 add('--server-domain', 'localhost', "Domain name of this server")
@@ -273,7 +273,7 @@ def configure(ctx, batch,
         i.must_restart(e.service)
 
     if db_user:
-        db_engine.setup_user(i, context)
+        db_engine.setup_user(i, DEFAULTSECTION)
 
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
@@ -304,8 +304,21 @@ def configure(ctx, batch,
         envdir = DEFAULTSECTION.get('shared_env')
         if not envdir:
             raise click.ClickException("Cannot --clone without --shared-env")
-        i.check_virtualenv(envdir)
-
+        context = {}
+        context.update(DEFAULTSECTION)
+        context.update({
+            "prjname": '',
+            "appname": '',
+            "project_dir": '',
+            "repo_nickname": '',
+            "app_package": '',
+            "app_settings_module": '',
+            "django_settings_module": '',
+            "dev_packages": ' '.join([a.nickname for a in KNOWN_REPOS if a.git_repo]),
+            "pip_packages": '',
+            "python_path": ''
+        })
+        i.check_virtualenv(envdir, context)
         repos_base = DEFAULTSECTION.get('repos_base')
         if not repos_base:
             repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
