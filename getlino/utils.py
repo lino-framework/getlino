@@ -365,6 +365,7 @@ class Installer(object):
                 virtualenv.create_environment(envdir)
                 ok = True
         if ok:
+            context.update(envdir=envdir)
             if not os.path.exists(pull_sh_path):
                 self.jinja_write(pull_sh_path, **context)
             self.make_file_executable(pull_sh_path)

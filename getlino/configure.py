@@ -187,6 +187,20 @@ def configure(ctx, batch,
     #         FOUND_CONFIG_FILES))
 
     i = Installer(batch)
+    context = {}
+    context.update(DEFAULTSECTION)
+    context.update({
+        "prjname": '',
+        "appname": '',
+        "project_dir": '',
+        "repo_nickname": '',
+        "app_package": '',
+        "app_settings_module": '',
+        "django_settings_module": '',
+        "dev_packages": ' '.join([a.nickname for a in KNOWN_REPOS if a.git_repo]),
+        "pip_packages": '',
+        "python_path": ''
+    })
 
     conffile = ifroot(CONF_FILES[0], CONF_FILES[1])
     click.echo("This will write to configuration file {}".format(conffile))
@@ -273,7 +287,7 @@ def configure(ctx, batch,
         i.must_restart(e.service)
 
     if db_user:
-        db_engine.setup_user(i, DEFAULTSECTION)
+        db_engine.setup_user(i, context)
 
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
@@ -304,20 +318,6 @@ def configure(ctx, batch,
         envdir = DEFAULTSECTION.get('shared_env')
         if not envdir:
             raise click.ClickException("Cannot --clone without --shared-env")
-        context = {}
-        context.update(DEFAULTSECTION)
-        context.update({
-            "prjname": '',
-            "appname": '',
-            "project_dir": '',
-            "repo_nickname": '',
-            "app_package": '',
-            "app_settings_module": '',
-            "django_settings_module": '',
-            "dev_packages": ' '.join([a.nickname for a in KNOWN_REPOS if a.git_repo]),
-            "pip_packages": '',
-            "python_path": ''
-        })
         i.check_virtualenv(envdir, context)
         repos_base = DEFAULTSECTION.get('repos_base')
         if not repos_base:

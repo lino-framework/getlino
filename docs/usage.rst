@@ -150,13 +150,13 @@ without being root, because only then it will also write a
 
 .. option:: --db-user
 
-    A database username to use for all sites on this server.
+    A shared database username to use for all sites on this server.
 
-    If this is set, you should also set :option:`--db-password`.
+    If this is set, you must also set :option:`--db-password`.
 
     Used during development and testing when you prefer to have a single
-    database user for all databases. For security reasons these options
-    should not be used on a production server.
+    database user for all databases.  For security reasons these options should
+    not be used on a :term:`production server`.
 
 .. option:: --db-password
 
@@ -171,8 +171,13 @@ without being root, because only then it will also write a
 
 .. option:: --appy
 
-    Whether this server provides LibreOffice service needed by sites which
-    use :mod:`lino_xl.lib.appypod`.
+    Whether this server provides LibreOffice service needed by sites that use
+    :mod:`lino_xl.lib.appypod`.
+
+.. option:: --redis
+
+    Whether this server provides redis service needed by sites that use
+    :mod:`lino.modlib.notify`.
 
 .. option:: --webdav
 
@@ -290,20 +295,20 @@ between startsite invocations.
 The ``startsite`` template
 ==========================
 
-The `cookiecutter-startsite
-<https://github.com/lino-framework/cookiecutter-startsite>`__ project contains
-a cookiecutter template used by :cmd:`getlino startsite`.
+No longer used: the `cookiecutter-startsite
+<https://github.com/lino-framework/cookiecutter-startsite>`__ project contains a
+cookiecutter template used by :cmd:`getlino startsite`.
 
 
 Shared virtual environments
 ===========================
 
-You can run multiple sites on a same virtualenv.  That virtualenv is then called
-a shared environment.
+You can run multiple sites on a same :term:`virtualenv`.  That virtualenv is
+then called a shared environment.
 
-Note that if you update a shared virtualenv (by activating it and running some
-pip command), the change will affect all sites and you must take special care
-for migrating their data if needed.
+If you update a shared virtualenv (by activating it and running :xfile:`pull.sh`
+of some pip command), the change will affect all sites and you must take special
+care for migrating their data if needed.
 
 In a :term:`developer environment` and a :term:`contributor environment` you
 usually have a single shared env used by all your sites.  On a :term:`production

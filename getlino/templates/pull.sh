@@ -9,8 +9,8 @@
 set -e
 umask 0007
 
-PRJDIR={{project_dir}}
-ENVDIR=$PRJDIR/{{env_link}}
+PRJDIR=`pwd`
+ENVDIR={{envdir}}
 REPOS=$ENVDIR/{{repos_link}}
 
 function pull() {
@@ -20,7 +20,6 @@ function pull() {
     cd $PRJDIR
 }
 
-cd $PRJDIR
 . $ENVDIR/bin/activate
 LOGFILE=$VIRTUAL_ENV/freeze.log
 echo "Run pull.sh in $PRJDIR ($VIRTUAL_ENV)" >> $LOGFILE
