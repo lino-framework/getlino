@@ -19,14 +19,16 @@ class DockerTests(TestCase):
     def run_commands_for(self, docker_tag):
         if docker_tag:
             if True:
-                container  = client.containers.run(docker_tag,detach=True)
+                container  = client.containers.run(docker_tag,command="/bin/bash", user='lino',tty=True,detach=True)
                 container.logs()
                 print(container)
-                container.exec_run( "ls -l")
-                container.exec_run( "sudo -H pip3 install -e .")
-                container.exec_run( "sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql")
-                container.exec_run( "sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'")
-                container.exec_run( ["cd /usr/local/lino/lino_local/mysite1", "ls -l"])
+                print(container.exec_run( "bash -c 'ls -l'",user='lino'))
+                print(container.exec_run( "bash -c 'sudo -H pip3 install -e . '",user='lino'))
+                print(container.exec_run( "bash -c 'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql '",user='lino'))
+                print(container.exec_run( """ bash -c 'sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' '"""))
+                print(container.exec_run( "bash -c  'cd /usr/local/lino/lino_local/mysite1 && ls -l'"))
+                print(container.exec_run( "bash -c  '. /usr/local/lino/lino_local/mysite1/env/bin/activate && ./pull.sh'"))
+                print(container.exec_run( "bash -c  'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh' "))
             if False:
                 self.run_subprocess("docker run --name {} --rm -i -t -d {} bash".format(docker_tag,docker_tag).split())
                 docker_run_command = """docker exec -ti {} sh -c "{}" """.format(docker_tag,"{}")
@@ -41,7 +43,8 @@ class DockerTests(TestCase):
 
 
     def test_prod_debian(self):
-        self.run_commands_for("prod_debian")
+        self.run_commands_for("getlino")
 
     def test_prod_ubuntu(self):
+        return
         self.run_commands_for("prod_ubuntu")
