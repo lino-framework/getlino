@@ -17,17 +17,34 @@ linox
 
 class DockerTests(TestCase):
     def run_commands_for(self, docker_tag):
+        self.run_subprocess("docker run --name {} --rm -i -t {} bash".format(docker_tag,docker_tag).split())
+        docker_run_command = "docker exec -d {}".format(docker_tag)
         if docker_tag:
-            client.containers.run(docker_tag, "sudo -H pip3 install -e .")
-            client.containers.run(docker_tag,"sudo -H getlino configure --batch --db-engine postgresql")
-            client.containers.run(docker_tag,"sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'")
-            client.containers.run(docker_tag,["cd /usr/local/lino/lino_local/mysite1","ls -l"])
-            client.containers.run(docker_tag,[". /usr/local/lino/lino_local/mysite1/env/bin/activate","pull.sh"])
-            client.containers.run(docker_tag,["cd /usr/local/lino/lino_local/mysite1","./make_snapshot.sh"])
-            client.containers.run(docker_tag,[". /usr/local/lino/lino_local/mysite1/env/bin/activate","cd /usr/local/lino/lino_local/mysite1" , "exec python manage.py runserver"])
+            if False:
+                client.containers.run(docker_tag, "sudo -H pip3 install -e .")
+                client.containers.run(
+                    docker_tag, "sudo -H env getlino configure --batch --db-engine postgresql")
+                client.containers.run(
+                    docker_tag, "sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'")
+                client.containers.run(
+                    docker_tag, ["cd /usr/local/lino/lino_local/mysite1", "ls -l"])
+                client.containers.run(
+                    docker_tag, [". /usr/local/lino/lino_local/mysite1/env/bin/activate", "pull.sh"])
+                client.containers.run(
+                    docker_tag, ["cd /usr/local/lino/lino_local/mysite1", "./make_snapshot.sh"])
+                client.containers.run(docker_tag, [". /usr/local/lino/lino_local/mysite1/env/bin/activate",
+                                                "cd /usr/local/lino/lino_local/mysite1", "exec python manage.py runserver"])
+            self.run_subprocess((docker_run_command + "' sudo -H pip3 install -e . '").split())
+            self.run_subprocess(docker_run_command.split() + ["' sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql'"])
+            self.run_subprocess(docker_run_command.split() + [" sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'"])
+            self.run_subprocess(docker_run_command.split() + [" cd /usr/local/lino/lino_local/mysite1 && ls -l"])
+            self.run_subprocess(docker_run_command.split() + [" . /usr/local/lino/lino_local/mysite1/env/bin/activate && ./pull.sh"])
+            self.run_subprocess(docker_run_command.split() + [" cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh"])
+
 
     def test_prod_debian(self):
-        self.run_commands_for("prod_debian")
+        self.run_commands_for("getlino")
 
     def test_prod_ubuntu(self):
-        self.run_commands_for("prod_ubuntu")
+        pass
+        #self.run_commands_for("prod_ubuntu")
