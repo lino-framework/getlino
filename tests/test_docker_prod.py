@@ -43,8 +43,7 @@ class DockerTests(TestCase):
 
 
     def test_prod_debian(self):
-        self.run_commands_for("getlino")
+        self.run_commands_for("prod_debian")
 
     def test_prod_ubuntu(self):
-        pass
-        #self.run_commands_for("prod_ubuntu")
+        self.run_commands_for("prod_ubuntu")
