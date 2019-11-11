@@ -17,8 +17,8 @@ linox
 
 class DockerTests(TestCase):
     def run_commands_for(self, docker_tag):
-        self.run_subprocess("docker run --name {} --rm -i -t {} bash".format(docker_tag,docker_tag).split())
-        docker_run_command = "docker exec -d {}".format(docker_tag)
+        self.run_subprocess("docker run --name {} --rm -i -t -d {} bash".format(docker_tag,docker_tag).split())
+        docker_run_command = "docker exec -ti {} sh -c ".format(docker_tag)
         if docker_tag:
             if False:
                 client.containers.run(docker_tag, "sudo -H pip3 install -e .")
