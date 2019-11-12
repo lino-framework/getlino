@@ -28,7 +28,7 @@ class DockerTests(TestCase):
 
         d = container.exec_run("bash -c '{}'".format(command), user='lino')
 
-    def run_commands_for(self, docker_tag):
+    def run_production_tests(self, docker_tag):
         if docker_tag:
             if True:
                 container = client.containers.run(
@@ -37,9 +37,11 @@ class DockerTests(TestCase):
                 self.run_docker_command(
                     container, 'sudo -H env PATH=$PATH pip3 install -e . ')
                 self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql ')
+                    container, 'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql --monit ')
                 self.run_docker_command(
-                    container, "sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
+                    container, "sudo -H env PATH=$PATH getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
+                self.run_docker_command(
+                    container, "sudo -H env PATH=$PATH getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
                 self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
                 self.run_docker_command(
@@ -66,8 +68,33 @@ class DockerTests(TestCase):
                 self.run_subprocess(docker_run_command.split(
                 ) + ["bash -c 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh' "])
 
-    def test_prod_debian(self):
-        self.run_commands_for("prod_debian")
 
-    def test_prod_ubuntu(self):
-        self.run_commands_for("prod_ubuntu")
+    def run_dev_tests(self, docker_tag):
+        if docker_tag:
+            if True:
+                container = client.containers.run(
+                    docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
+                self.run_docker_command(container, 'ls -l')
+                self.run_docker_command(
+                    container, 'pip3 install -e . ')
+                self.run_docker_command(
+                    container, 'getlino configure --batch --db-engine postgresql --monit ')
+                self.run_docker_command(
+                    container, "getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
+                self.run_docker_command(
+                    container, "getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
+                self.run_docker_command(
+                    container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
+                self.run_docker_command(
+                    container, '. /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh')
+                self.run_docker_command(
+                    container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+
+    def test_prod(self):
+        self.run_production_tests("prod_debian")
+        self.run_production_tests("prod_ubuntu")
+
+    def test_dev(self):
+        self.run_dev_tests("dev_debian")
+        self.run_dev_tests("dev_ubuntu")
+        
