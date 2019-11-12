@@ -43,9 +43,9 @@ class DockerTests(TestCase):
                 self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
                 self.run_docker_command(
-                    container, '. /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh')
+                    container, 'sudo -H env PATH=$PATH . /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh')
                 self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+                    container, 'sudo -H env PATH=$PATH cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
             if False:
                 self.run_subprocess(
                     "docker run --name {} --rm -i -t -d {} bash".format(docker_tag, docker_tag).split())
