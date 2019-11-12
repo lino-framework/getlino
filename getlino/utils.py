@@ -104,6 +104,7 @@ class MySQL(DbEngine):
 class PostgreSQL(DbEngine):
     name = 'postgresql'
     service = 'postgresql'
+    apt_packages = "postgresql postgresql-contrib libpq-dev python-dev"
     # python_packages = "psycopg2"
     python_packages = "psycopg2-binary"
     default_port = "5432"
