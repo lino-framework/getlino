@@ -43,7 +43,7 @@ class DockerTests(TestCase):
                 self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
                 self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && . /usr/local/lino/lino_local/mysite1/env/bin/activate && ./pull.sh')
+                    container, '. /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh')
                 self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
             if False:
