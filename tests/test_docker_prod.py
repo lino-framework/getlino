@@ -46,7 +46,7 @@ class DockerTests(TestCase):
                 self.assertIn('The new site mysite1 has been created.',res)
                 res = self.run_docker_command(
                     container, "sudo -H env PATH=$PATH getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
-                res.assertIn('Th5e new site mycosi1 has been created.',res)
+                self.assertIn('The new site mycosi1 has been created.',res)
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
                 res = self.run_docker_command(
@@ -90,7 +90,7 @@ class DockerTests(TestCase):
                 self.assertIn('getlino configure completed',res)
                 res = self.run_docker_command(
                     container, "getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
-                res.assertIn('The new site mysite1 has been created.',res)
+                self.assertIn('The new site mysite1 has been created.',res)
                 res = self.run_docker_command(
                     container, "getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
                 self.assertIn('The new site mycosi1 has been created.',res)
