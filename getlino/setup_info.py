@@ -1,9 +1,9 @@
 SETUP_INFO = dict(
     name='getlino',
     version='19.11.0',
-    install_requires=['setuptools', 'click', 'virtualenv', 'jinja2', 'atelier'],
-    tests_require=['docker'],
-    test_suite='tests',
+    install_requires=['click', 'virtualenv', 'jinja2'],
+    # tests_require=['docker', 'atelier'],
+    # test_suite='tests',
     description="Lino installer",
     long_description="""
 A tool to install and configure Lino in different environments.
