@@ -78,7 +78,7 @@ class MySQL(DbEngine):
     name = 'mysql'
     service = 'mysql'
     default_port = "3306"
-    packages = "mysql-server libmysqlclient-dev"
+    apt_packages = "mysql-server libmysqlclient-dev"
     python_packages = "mysqlclient"
 
     def __init__(self):
