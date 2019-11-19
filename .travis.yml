@@ -13,10 +13,11 @@ before_install:
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip3 install -U setuptools
+  # - pip3 install -U setuptools
   - pip3 install -e .
-  - bash prep.sh
+  - pip3 install tox docker atelier
 
 # command to run tests, e.g. python setup.py test
 script:
-  - inv test
+  - bash prep.sh
+  - inv cov
