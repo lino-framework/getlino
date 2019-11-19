@@ -331,3 +331,4 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         i.run_in_env(envdir, "python manage.py collectstatic --noinput")
 
     i.finish()
+    click.echo("The new site {} has been created.".format(prjname))
