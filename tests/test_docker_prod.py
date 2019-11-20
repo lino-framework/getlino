@@ -27,94 +27,85 @@ class DockerTests(TestCase):
         else:
             return output
 
-    def run_production_tests(self, docker_tag):
-        if docker_tag:
-            if True:
-                container = client.containers.run(
-                    docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
-                res = self.run_docker_command(
-                    container, 'ls -l')
-                self.assertIn('setup.py',res)
-                res = self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH pip3 install -e . ')
-                self.assertIn("Installing collected packages:",res)
-                res = self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql')
-                self.assertIn('getlino configure completed',res)
-                res = self.run_docker_command(
-                    container, "sudo -H env PATH=$PATH getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
-                self.assertIn('The new site mysite1 has been created.',res)
-                res = self.run_docker_command(
-                    container, "sudo -H env PATH=$PATH getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
-                self.assertIn('The new site mycosi1 has been created.',res)
-                res = self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
-                print(res)
-                res = self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
-                print(res)
-                res = self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
-                print(res)
-                container.stop()
-            if False:
-                self.run_subprocess(
-                    "docker run --name {} --rm -i -t -d {} bash".format(docker_tag, docker_tag).split())
-                docker_run_command = """docker exec -ti {} sh -c "{}" """.format(
-                    docker_tag, "{}")
-                import subprocess
-                subprocess.run(docker_run_command.format("bash -c ls -l"))
-                self.run_subprocess(docker_run_command.split(
-                ) + ['bash -c  "sudo -H pip3 install -e . "'])
-                self.run_subprocess(docker_run_command.split(
-                ) + ["bash -c  'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql' "])
-                self.run_subprocess(docker_run_command.split(
-                ) + [""" bash -c  "sudo -H getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl'" """])
-                self.run_subprocess(docker_run_command.split(
-                ) + ["bash -c  'cd /usr/local/lino/lino_local/mysite1 && ls -l' "])
-                self.run_subprocess(docker_run_command.split(
-                ) + ["bash -c . /usr/local/lino/lino_local/mysite1/env/bin/activate && cd /usr/local/lino/lino_local/mysite1 && ./pull.sh' "])
-                self.run_subprocess(docker_run_command.split(
-                ) + ["bash -c 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh' "])
+    def setup_production_server(self, docker_tag):
+        """
 
-    def run_dev_tests(self, docker_tag):
-        if docker_tag:
-            if True:
-                container = client.containers.run(
-                    docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
-                res = self.run_docker_command(
-                    container, 'ls -l')
-                self.assertIn('setup.py',res)
-                res = self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH pip3 install -e . ')
-                self.assertIn("Installing collected packages:",res)
-                res = self.run_docker_command(
-                    container, 'getlino configure --batch --db-engine postgresql')
-                self.assertIn('getlino configure completed',res)
-                res = self.run_docker_command(
-                    container, "getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
-                self.assertIn('The new site mysite1 has been created.',res)
-                res = self.run_docker_command(
-                    container, "getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
-                self.assertIn('The new site mycosi1 has been created.',res)
-                res = self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
-                print(res)
-                res = self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
-                print(res)
-                res = self.run_docker_command(
-                    container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
-                print(res)
+        Test the instrucations written on
+        https://www.lino-framework.org/admin/install.html
+
+        """
+        container = client.containers.run(
+            docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
+        res = self.run_docker_command(
+            container, 'ls -l')
+        self.assertIn('setup.py',res)
+        res = self.run_docker_command(
+            container, 'sudo -H env PATH=$PATH pip3 install -e . ')
+        self.assertIn("Installing collected packages:",res)
+        res = self.run_docker_command(
+            container, 'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql')
+        self.assertIn('getlino configure completed',res)
+        res = self.run_docker_command(
+            container, "sudo -H env PATH=$PATH getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
+        self.assertIn('The new site noi1 has been created.',res)
+        res = self.run_docker_command(
+            container, "sudo -H env PATH=$PATH getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
+        self.assertIn('The new site cosi1 has been created.',res)
+        res = self.run_docker_command(
+            container, '. /etc/getlino/lino_bash_aliases')
+        res = self.run_docker_command(
+            container, 'go noi1 && ls -l')
+        print(res)
+        res = self.run_docker_command(
+            container, 'a && pull.sh')
+        print(res)
+        res = self.run_docker_command(
+            container, './make_snapshot.sh')
+        print(res)
+        container.stop()
+
+    def setup_developer_env(self, docker_tag):
+        """
+
+        Test the instrucations written on
+        https://www.lino-framework.org/dev/install/index.html
+
+        """
+        container = client.containers.run(
+            docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
+        res = self.run_docker_command(
+            container, 'ls -l')
+        self.assertIn('setup.py',res)
+        res = self.run_docker_command(
+            container, 'sudo -H env PATH=$PATH pip3 install -e . ')
+        self.assertIn("Installing collected packages:",res)
+        res = self.run_docker_command(
+            container, 'getlino configure --batch --db-engine postgresql')
+        self.assertIn('getlino configure completed',res)
+        res = self.run_docker_command(
+            container, "getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
+        self.assertIn('The new site mysite1 has been created.',res)
+        res = self.run_docker_command(
+            container, "getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
+        self.assertIn('The new site mycosi1 has been created.',res)
+        res = self.run_docker_command(
+            container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
+        print(res)
+        res = self.run_docker_command(
+            container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
+        print(res)
+        res = self.run_docker_command(
+            container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+        print(res)
 
     def test_prod_debian(self):
-        self.run_production_tests("prod_debian")
+        self.setup_production_server("getlino_debian")
 
     def test_prod_ubuntu(self):
-        self.run_production_tests("prod_ubuntu")
+        self.setup_production_server("getlino_ubuntu")
 
     def test_dev_debian(self):
-        self.run_dev_tests("dev_debian")
+        self.setup_developer_env("getlino_debian")
 
     def test_dev_ubuntu(self):
-        self.run_dev_tests("dev_ubuntu")
+        self.setup_developer_env("getlino_ubuntu")

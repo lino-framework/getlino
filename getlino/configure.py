@@ -360,16 +360,15 @@ def configure(ctx, batch,
                  LOCAL_SETTINGS.format(**DEFAULTSECTION))
     go_bases.append(pth)
 
-    if not ifroot():
-        pth = os.path.expanduser('~/.lino_bash_aliases')
-        ctx = dict(DEFAULTSECTION)
-        content = BASH_ALIASES.format(**ctx)
-        if len(go_bases):
-            ctx.update(go_bases=" ".join(go_bases))
-            content += BASH_ALIASES_GO.format(**ctx)
-        i.write_file(pth, content)
-        i.check_permissions(pth)
-        click.echo("add ~/.lino_bash_aliases to your bashrc file for some cool bash shortcut commands")
+    pth = ifroot('/etc/getlino/lino_bash_aliases', os.path.expanduser('~/.lino_bash_aliases')):
+    ctx = dict(DEFAULTSECTION)
+    content = BASH_ALIASES.format(**ctx)
+    if len(go_bases):
+        ctx.update(go_bases=" ".join(go_bases))
+        content += BASH_ALIASES_GO.format(**ctx)
+    i.write_file(pth, content)
+    i.check_permissions(pth)
+    click.echo("add '. {}' to your bashrc file for some cool bash shortcut commands".format(pth))
 
     if ifroot():
         i.write_logrotate_conf(
