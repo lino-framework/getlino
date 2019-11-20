@@ -360,7 +360,7 @@ def configure(ctx, batch,
                  LOCAL_SETTINGS.format(**DEFAULTSECTION))
     go_bases.append(pth)
 
-    pth = ifroot('/etc/getlino/lino_bash_aliases', os.path.expanduser('~/.lino_bash_aliases')):
+    pth = ifroot('/etc/getlino/lino_bash_aliases', os.path.expanduser('~/.lino_bash_aliases'))
     ctx = dict(DEFAULTSECTION)
     content = BASH_ALIASES.format(**ctx)
     if len(go_bases):
