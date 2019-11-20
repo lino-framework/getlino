@@ -50,7 +50,7 @@ class DockerTests(TestCase):
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
                 res = self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH . /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh')
+                    container, 'sudo -H env PATH=$PATH cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
                 res = self.run_docker_command(
                     container, 'sudo -H env PATH=$PATH cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
                 container.stop()
@@ -97,14 +97,18 @@ class DockerTests(TestCase):
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
                 res = self.run_docker_command(
-                    container, '. /usr/local/lino/lino_local/mysite1/env/bin/activate && pull.sh')
+                    container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
 
-    def test_prod(self):
+    def test_prod_debian(self):
         self.run_production_tests("prod_debian")
+
+    def test_prod_ubuntu(self):
         self.run_production_tests("prod_ubuntu")
 
-    def test_dev(self):
+    def test_dev_debian(self):
         self.run_dev_tests("dev_debian")
+
+    def test_dev_ubuntu(self):
         self.run_dev_tests("dev_ubuntu")
