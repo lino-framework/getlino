@@ -297,7 +297,7 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('ldap'):
         i.apt_install("slapd ldap-utils")
 
-    if ifroot() or True :
+    if ifroot():
         for k in ("log_base", "backups_base"):
             pth = DEFAULTSECTION.get(k)
             if not pth:
