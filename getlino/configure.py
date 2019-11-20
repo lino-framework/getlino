@@ -313,6 +313,8 @@ def configure(ctx, batch,
 
     go_bases = []
 
+    envdir = DEFAULTSECTION.get('shared_env')
+
     repos_base = DEFAULTSECTION.get('repos_base')
     if not repos_base:
         repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
@@ -325,7 +327,6 @@ def configure(ctx, batch,
 
     if clone:
         click.echo("Installing repositories for shared-env...")
-        envdir = DEFAULTSECTION.get('shared_env')
         if not envdir:
             raise click.ClickException("Cannot --clone without --shared-env")
         i.check_virtualenv(envdir, context)
