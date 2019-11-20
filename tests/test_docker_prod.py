@@ -39,25 +39,25 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py',res)
+        self.run_docker_command(
+            container, 'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
-            container, 'sudo -H env PATH=$PATH pip3 install -e . ')
+            container, '. ~/lino/env/bin/activate && sudo -H env PATH=$PATH pip3 install -e . ')
         self.assertIn("Installing collected packages:",res)
         res = self.run_docker_command(
-            container, 'sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql')
+            container, '. ~/lino/env/bin/activate && sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql')
         self.assertIn('getlino configure completed',res)
         res = self.run_docker_command(
-            container, "sudo -H env PATH=$PATH getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
+            container, ". ~/lino/env/bin/activate && sudo -H env PATH=$PATH getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
         self.assertIn('The new site noi1 has been created.',res)
         res = self.run_docker_command(
-            container, "sudo -H env PATH=$PATH getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
+            container, ". ~/lino/env/bin/activate && sudo -H env PATH=$PATH getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site cosi1 has been created.',res)
         res = self.run_docker_command(
-            container, '. /etc/getlino/lino_bash_aliases')
-        res = self.run_docker_command(
-            container, 'go noi1 && ls -l')
+            container, '. /etc/getlino/lino_bash_aliases && go noi1 && ls -l')
         print(res)
         res = self.run_docker_command(
-            container, 'a && pull.sh')
+            container, '. /etc/getlino/lino_bash_aliases && a && pull.sh')
         print(res)
         res = self.run_docker_command(
             container, './make_snapshot.sh')
@@ -76,26 +76,28 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py',res)
+        self.run_docker_command(
+            container, 'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
-            container, 'sudo -H env PATH=$PATH pip3 install -e . ')
+            container, '. ~/lino/env/bin/activate && pip3 install -e . ')
         self.assertIn("Installing collected packages:",res)
         res = self.run_docker_command(
-            container, 'getlino configure --batch --db-engine postgresql')
+            container, '. ~/lino/env/bin/activate && getlino configure --batch --db-engine postgresql ')
         self.assertIn('getlino configure completed',res)
         res = self.run_docker_command(
-            container, "getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
+            container, ". ~/lino/env/bin/activate && getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
         self.assertIn('The new site mysite1 has been created.',res)
         res = self.run_docker_command(
             container, "getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site mycosi1 has been created.',res)
         res = self.run_docker_command(
-            container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
+            container, '. ~/.lino_bash_aliases && go mycosi1 && ls -l')
         print(res)
         res = self.run_docker_command(
-            container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
+            container, '. ~/.lino_bash_aliases && go mycosi1  && a && pull.sh')
         print(res)
         res = self.run_docker_command(
-            container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+            container, '. ~/.lino_bash_aliases && go mycosi1 && ./make_snapshot.sh')
         print(res)
 
     def test_prod_debian(self):
