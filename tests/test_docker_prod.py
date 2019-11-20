@@ -36,22 +36,22 @@ class DockerTests(TestCase):
         """
         container = client.containers.run(
             docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
-        res = self.run_docker_command(
-            container, 'ls -l')
-        self.assertIn('setup.py',res)
         self.run_docker_command(
             container, 'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
-            container, '. ~/lino/env/bin/activate && sudo -H env PATH=$PATH pip3 install -e . ')
+            container, 'ls -l')
+        self.assertIn('setup.py',res)
+        res = self.run_docker_command(
+            container, '. ~/lino/env/bin/activate && sudo pip3 install -e . ')
         self.assertIn("Installing collected packages:",res)
         res = self.run_docker_command(
-            container, '. ~/lino/env/bin/activate && sudo -H env PATH=$PATH getlino configure --batch --db-engine postgresql')
+            container, '. ~/lino/env/bin/activate && sudo getlino configure --batch --db-engine postgresql')
         self.assertIn('getlino configure completed',res)
         res = self.run_docker_command(
-            container, ". ~/lino/env/bin/activate && sudo -H env PATH=$PATH getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
+            container, ". ~/lino/env/bin/activate && sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
         self.assertIn('The new site noi1 has been created.',res)
         res = self.run_docker_command(
-            container, ". ~/lino/env/bin/activate && sudo -H env PATH=$PATH getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
+            container, ". ~/lino/env/bin/activate && sudo getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site cosi1 has been created.',res)
         res = self.run_docker_command(
             container, '. /etc/getlino/lino_bash_aliases && go noi1 && ls -l')
@@ -73,11 +73,11 @@ class DockerTests(TestCase):
         """
         container = client.containers.run(
             docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
+        self.run_docker_command(
+            container, 'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py',res)
-        self.run_docker_command(
-            container, 'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
             container, '. ~/lino/env/bin/activate && pip3 install -e . ')
         self.assertIn("Installing collected packages:",res)
