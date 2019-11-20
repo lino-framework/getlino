@@ -11,6 +11,7 @@ RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install -y python3-pip
+RUN pip3 install virtualenv
 
 # Install sudo package and create a user lino
 RUN apt-get install -y sudo
