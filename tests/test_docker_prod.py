@@ -49,10 +49,13 @@ class DockerTests(TestCase):
                 self.assertIn('The new site mycosi1 has been created.',res)
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
+                print(res)
                 res = self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
+                    container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
+                print(res)
                 res = self.run_docker_command(
-                    container, 'sudo -H env PATH=$PATH cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+                    container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+                print(res)
                 container.stop()
             if False:
                 self.run_subprocess(
@@ -96,10 +99,13 @@ class DockerTests(TestCase):
                 self.assertIn('The new site mycosi1 has been created.',res)
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ls -l')
+                print(res)
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && a && pull.sh')
+                print(res)
                 res = self.run_docker_command(
                     container, 'cd /usr/local/lino/lino_local/mysite1 && ./make_snapshot.sh')
+                print(res)
 
     def test_prod_debian(self):
         self.run_production_tests("prod_debian")
