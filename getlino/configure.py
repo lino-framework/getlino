@@ -117,9 +117,9 @@ def default_shared_env():
 
 
 def default_repos_base():
-    if default_shared_env():
-        return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
-    return ''
+    #if default_shared_env():
+    return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
+    #return ''
 
 
 def default_db_engine():
