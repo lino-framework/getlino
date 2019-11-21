@@ -41,6 +41,7 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py',res)
+        print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
             container, 'source ~/lino/env/bin/activate ; sudo pip3 install -e . ')
         self.assertIn("Installing collected packages:",res)
@@ -81,6 +82,7 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'source ~/lino/env/bin/activate ; pip3 install -e . ')
         self.assertIn("Installing collected packages:",res)
+        print(self.run_docker_command(container, "cat ~/.lino_bash_aliases"))
         res = self.run_docker_command(
             container, 'source ~/lino/env/bin/activate ; getlino configure --batch --db-engine postgresql ')
         self.assertIn('getlino configure completed',res)
