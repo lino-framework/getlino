@@ -54,10 +54,10 @@ class DockerTests(TestCase):
             container, "source ~/lino/env/bin/activate ; sudo getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site cosi1 has been created.',res)
         res = self.run_docker_command(
-            container, 'source /etc/getlino/lino_bash_aliases ; go noi1 ; ll')
+            container, 'source /etc/getlino/lino_bash_aliases ; go noi1 ; source /etc/getlino/lino_bash_aliases ;  ll')
         print(res)
         res = self.run_docker_command(
-            container, 'source /etc/getlino/lino_bash_aliases ; go noi1 ; sudo a ; pull.sh')
+            container, 'source /etc/getlino/lino_bash_aliases ; go noi1 ; source /etc/getlino/lino_bash_aliases ; a ; pull.sh')
         print(res)
         res = self.run_docker_command(
             container, './make_snapshot.sh')
@@ -91,10 +91,10 @@ class DockerTests(TestCase):
             container, "source ~/lino/env/bin/activate ; getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site mycosi1 has been created.',res)
         res = self.run_docker_command(
-            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; ll')
+            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; source ~/.lino_bash_aliases ; ll')
         print(res)
         res = self.run_docker_command(
-            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; a ; pull.sh')
+            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; source ~/.lino_bash_aliases ; a ; pull.sh')
         print(res)
         res = self.run_docker_command(
             container, 'source ~/.lino_bash_aliases ; go mycosi1 ; ./make_snapshot.sh')
