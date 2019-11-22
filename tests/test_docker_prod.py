@@ -8,8 +8,9 @@ client = docker.from_env()
 
 class DockerTests(TestCase):
     def run_docker_command(self, container, command):
-        exit_code, output = container.exec_run(command, user='lino')
-        # """bash -c '{}'""".format(command), user='lino')
+        #exit_code, output = container.exec_run(command, user='lino')
+        exit_code, output = container.exec_run(command,)
+        """//bin//bash -c '{}'""".format(command), user='lino')
         output = output.decode('utf-8')
         if exit_code != 0:
             msg = "%s  returned %d:\n-----\n%s\n-----" % (
@@ -29,19 +30,18 @@ class DockerTests(TestCase):
             docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
 
         # load bash aliases
+        #res = self.run_docker_command(
+        #    container, 'source /etc/getlino/lino_bash_aliases')
+        
         res = self.run_docker_command(
-            container, 'source /etc/getlino/lino_bash_aliases')
-
+            container, 'll')
+        self.assertIn('setup.py',res)
         # create and activate a virtualenv
         self.run_docker_command(
             container, 'mkdir ~/lino ; virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
-            container, 'source ~/lino/env/bin/activate')
+            container, 'source ~/lino/env/bin/activate; sudo  pip3 install -e . ')
 
-        res = self.run_docker_command(
-            container, 'll')
-        self.assertIn('setup.py',res)
-        
         res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py',res)
@@ -49,7 +49,7 @@ class DockerTests(TestCase):
         self.assertIn("Installing collected packages:",res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
-            container, 'sudo getlino configure --batch --db-engine postgresql')
+            container, 'source ~/lino/env/bin/activate; sudo getlino configure --batch --db-engine postgresql')
         self.assertIn('getlino configure completed',res)
         res = self.run_docker_command(
             container, "source ~/lino/env/bin/activate ; sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
@@ -58,13 +58,13 @@ class DockerTests(TestCase):
             container, "source ~/lino/env/bin/activate ; sudo getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site cosi1 has been created.',res)
         res = self.run_docker_command(
-            container, 'cd /usr/local/lino/lino_local/cosi1 ; . env/bin/activate ;  ls -l')
+            container, 'source  /etc/getlino/lino_bash_aliases ; go cosi1 ; . env/bin/activate ;  ls -l')
         print(res)
         res = self.run_docker_command(
-            container, 'cd /usr/local/lino/lino_local/cosi1 ; . env/bin/activate ;  pull.sh')
+            container, 'source  /etc/getlino/lino_bash_aliases ; go cosi1 ; source  /etc/getlino/lino_bash_aliases ; a  ;  pull.sh')
         print(res)
         res = self.run_docker_command(
-            container, 'cd /usr/local/lino/lino_local/cosi1 ; ./make_snapshot.sh')
+            container, 'source  /etc/getlino/lino_bash_aliases ; go cosi1 ; ./make_snapshot.sh')
         print(res)
         container.stop()
 
@@ -76,7 +76,7 @@ class DockerTests(TestCase):
 
         """
         container = client.containers.run(
-            docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
+            docker_tag, command="/bin/bash", user='lino', tty=True)
         self.run_docker_command(
             container, 'mkdir ~/lino ; virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
@@ -96,13 +96,13 @@ class DockerTests(TestCase):
             container, "source ~/lino/env/bin/activate ; getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site mycosi1 has been created.',res)
         res = self.run_docker_command(
-            container, 'cd /home/lino/lino/lino_local/mycosi1 ; . env/bin/activate ; ls -l')
+            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; source ~/.lino_bash_aliases ; a ; ls -l')
         print(res)
         res = self.run_docker_command(
-            container, 'cd /home/lino/lino/lino_local/mycosi1 ; . env/bin/activate ; pull.sh')
+            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; source ~/.lino_bash_aliases ; a ; pull.sh')
         print(res)
         res = self.run_docker_command(
-            container, 'cd /home/lino/lino/lino_local/mycosi1 ; ./make_snapshot.sh')
+            container, 'source ~/.lino_bash_aliases ; go mycosi1 ; ./make_snapshot.sh')
         print(res)
 
     def test_prod_debian(self):
