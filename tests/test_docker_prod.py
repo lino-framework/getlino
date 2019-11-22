@@ -9,8 +9,8 @@ client = docker.from_env()
 class DockerTests(TestCase):
     def run_docker_command(self, container, command):
         #exit_code, output = container.exec_run(command, user='lino')
-        exit_code, output = container.exec_run(command,
-        """sbash -c '{}'""".format(command), user='lino')
+        exit_code, output = container.exec_run(
+            """sbash -c '{}'""".format(command), user='lino')
         output = output.decode('utf-8')
         if exit_code != 0:
             msg = "%s  returned %d:\n-----\n%s\n-----" % (
@@ -30,12 +30,12 @@ class DockerTests(TestCase):
             docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
 
         # load bash aliases
-        #res = self.run_docker_command(
+        # res = self.run_docker_command(
         #    container, 'source /etc/getlino/lino_bash_aliases')
-        
+
         res = self.run_docker_command(
             container, 'll')
-        self.assertIn('setup.py',res)
+        self.assertIn('setup.py', res)
         # create and activate a virtualenv
         self.run_docker_command(
             container, 'mkdir ~/lino ; virtualenv -p python3 ~/lino/env')
@@ -44,19 +44,19 @@ class DockerTests(TestCase):
 
         res = self.run_docker_command(
             container, 'ls -l')
-        self.assertIn('setup.py',res)
+        self.assertIn('setup.py', res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
-        self.assertIn("Installing collected packages:",res)
+        self.assertIn("Installing collected packages:", res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
             container, 'source ~/lino/env/bin/activate; sudo getlino configure --batch --db-engine postgresql')
-        self.assertIn('getlino configure completed',res)
+        self.assertIn('getlino configure completed', res)
         res = self.run_docker_command(
             container, "source ~/lino/env/bin/activate ; sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
-        self.assertIn('The new site noi1 has been created.',res)
+        self.assertIn('The new site noi1 has been created.', res)
         res = self.run_docker_command(
             container, "source ~/lino/env/bin/activate ; sudo getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
-        self.assertIn('The new site cosi1 has been created.',res)
+        self.assertIn('The new site cosi1 has been created.', res)
         res = self.run_docker_command(
             container, 'source  /etc/getlino/lino_bash_aliases ; go cosi1 ; . env/bin/activate ;  ls -l')
         print(res)
@@ -81,20 +81,20 @@ class DockerTests(TestCase):
             container, 'mkdir ~/lino ; virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
             container, 'ls -l')
-        self.assertIn('setup.py',res)
+        self.assertIn('setup.py', res)
         res = self.run_docker_command(
             container, 'source ~/lino/env/bin/activate ; pip3 install -e . ')
-        self.assertIn("Installing collected packages:",res)
+        self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command(
             container, 'source ~/lino/env/bin/activate ; getlino configure --batch --db-engine postgresql ')
-        self.assertIn('getlino configure completed',res)
+        self.assertIn('getlino configure completed', res)
         # print(self.run_docker_command(container, "cat ~/.lino_bash_aliases"))
         res = self.run_docker_command(
             container, "source ~/lino/env/bin/activate ; getlino startsite noi mysite1 --batch --dev-repos 'lino noi xl' ")
-        self.assertIn('The new site mysite1 has been created.',res)
+        self.assertIn('The new site mysite1 has been created.', res)
         res = self.run_docker_command(
             container, "source ~/lino/env/bin/activate ; getlino startsite cosi mycosi1 --batch --dev-repos 'lino cosi xl' ")
-        self.assertIn('The new site mycosi1 has been created.',res)
+        self.assertIn('The new site mycosi1 has been created.', res)
         res = self.run_docker_command(
             container, 'source ~/.lino_bash_aliases ; go mycosi1 ; source ~/.lino_bash_aliases ; a ; ls -l')
         print(res)
