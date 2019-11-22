@@ -17,8 +17,8 @@ linox
 
 class DockerTests(TestCase):
     def run_docker_command(self, container, command):
-        exit_code, output = container.exec_run(
-            """bash -c '{}'""".format(command), user='lino')
+        exit_code, output = container.exec_run(command, user='lino')
+        # """bash -c '{}'""".format(command), user='lino')
         output = output.decode('utf-8')
         if exit_code != 0:
             msg = "%s  returned %d:\n-----\n%s\n-----" % (
@@ -36,17 +36,29 @@ class DockerTests(TestCase):
         """
         container = client.containers.run(
             docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
+
+        # load bash aliases
+        res = self.run_docker_command(
+            container, 'source /etc/getlino/lino_bash_aliases')
+
+        # create and activate a virtualenv
         self.run_docker_command(
             container, 'mkdir ~/lino ; virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
+            container, 'source ~/lino/env/bin/activate')
+
+        res = self.run_docker_command(
+            container, 'll')
+        self.assertIn('setup.py',res)
+
+
+        res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py',res)
-        print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
-        res = self.run_docker_command(
-            container, 'source ~/lino/env/bin/activate ; sudo pip3 install -e . ')
+        # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         self.assertIn("Installing collected packages:",res)
         res = self.run_docker_command(
-            container, 'source ~/lino/env/bin/activate ; sudo getlino configure --batch --db-engine postgresql')
+            container, 'sudo getlino configure --batch --db-engine postgresql')
         self.assertIn('getlino configure completed',res)
         res = self.run_docker_command(
             container, "source ~/lino/env/bin/activate ; sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
