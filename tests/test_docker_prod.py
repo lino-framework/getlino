@@ -10,7 +10,7 @@ class DockerTests(TestCase):
     def run_docker_command(self, container, command):
         #exit_code, output = container.exec_run(command, user='lino')
         exit_code, output = container.exec_run(
-            """sbash -c '{}'""".format(command), user='lino')
+            """bash -c '{}'""".format(command), user='lino')
         output = output.decode('utf-8')
         if exit_code != 0:
             msg = "%s  returned %d:\n-----\n%s\n-----" % (
