@@ -76,7 +76,7 @@ class DockerTests(TestCase):
 
         """
         container = client.containers.run(
-            docker_tag, command="/bin/bash", user='lino', tty=True)
+            docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
         self.run_docker_command(
             container, 'mkdir ~/lino ; virtualenv -p python3 ~/lino/env')
         res = self.run_docker_command(
