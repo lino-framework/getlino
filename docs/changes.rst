@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2019-11-23
+==========
+When the user is not root , the :cmd:`getlino startsite` command doesn't create 
+the :xfile:`make_snapshot.sh` and the directory `nginx`. 
+
+
 2019-11-09
 ==========
 

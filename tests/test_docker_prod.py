@@ -101,9 +101,9 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'source ~/.lino_bash_aliases && go mycosi1 && source ~/.lino_bash_aliases && . env/bin/activate && pull.sh')
         print(res)
-        res = self.run_docker_command(
-            container, 'source ~/.lino_bash_aliases && go mycosi1 && ./make_snapshot.sh')
-        print(res)
+        #res = self.run_docker_command(
+        #    container, 'source ~/.lino_bash_aliases && go mycosi1 && ./make_snapshot.sh')
+        #print(res)
 
     def test_prod_debian(self):
         self.setup_production_server("getlino_debian")

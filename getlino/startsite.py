@@ -215,32 +215,18 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     os.umask(0o002)
 
-    if True:
-        os.makedirs(join(project_dir, "nginx"), exist_ok=True)
-        i.jinja_write(join(project_dir, "settings.py"), **context)
-        i.jinja_write(join(project_dir, "manage.py"), **context)
-        # pull.sh script is now in the virtualenv's bin folder
-        #i.jinja_write(join(project_dir, "pull.sh"), **context)
+    i.jinja_write(join(project_dir, "settings.py"), **context)
+    i.jinja_write(join(project_dir, "manage.py"), **context)
+    # pull.sh script is now in the virtualenv's bin folder
+    #i.jinja_write(join(project_dir, "pull.sh"), **context)
+    if ifroot():
         i.jinja_write(join(project_dir, "make_snapshot.sh"), **context)
         i.make_file_executable(join(project_dir, "make_snapshot.sh"))
+        os.makedirs(join(project_dir, "nginx"), exist_ok=True)
         i.jinja_write(join(project_dir, "wsgi.py"), **context)
         i.jinja_write(join(project_dir, "nginx", "uwsgi.ini"), **context)
         i.jinja_write(join(project_dir, "nginx", "uwsgi_params"), **context)
 
-    else:
-        from cookiecutter.main import cookiecutter
-        # click.echo("cookiecutter context is {}...".format(extra_context))
-        click.echo("Running cookiecutter {}...".format(COOKIECUTTER_URL))
-        cookiecutter(
-            COOKIECUTTER_URL,
-            no_input=True, extra_context=context, output_dir=python_path_root)
-        # /home/tonis/.cookiecutter_replay/ .cookiecutter_replay
-        # if ifroot():
-        #     with i.override_batch(True):
-        #         i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"))
-        #         i.check_permissions(os.path.expanduser("~/.cookiecutter"))
-
-    if ifroot():
         logdir = join(DEFAULTSECTION.get("log_base"), prjname)
         os.makedirs(logdir, exist_ok=True)
         with i.override_batch(True):
@@ -249,6 +235,12 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             i.write_logrotate_conf(
                 'lino-{}.conf'.format(prjname),
                 join(logdir, "lino.log"))
+
+        backups_base_dir = join(DEFAULTSECTION.get("backups_base"), prjname)
+        os.makedirs(backups_base_dir, exist_ok=True)
+        with i.override_batch(True):
+            i.check_permissions(backups_base_dir)
+
 
     if DEFAULTSECTION.getboolean('linod'):
         i.write_file(
