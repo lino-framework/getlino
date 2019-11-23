@@ -42,20 +42,20 @@ class DockerTests(TestCase):
         self.run_docker_command(
             container, 'cd /usr/local/lino/shared/env && sudo chown root:www-data .  && sudo chmod g+ws . && virtualenv -p python3 master ')
         res = self.run_docker_command(
-            container, 'source /usr/local/lino/shared/master/bin/activate && sudo  pip3 install -e . ')
+            container, 'source /usr/local/lino/shared/env/master/bin/activate && sudo  pip3 install -e . ')
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command(
             container, 'ls -l')
         self.assertIn('setup.py', res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
-            container, 'source /usr/local/lino/shared/master/bin/activate &&  sudo getlino configure --batch --db-engine postgresql')
+            container, 'source /usr/local/lino/shared/env/master/bin/activate &&  sudo getlino configure --batch --db-engine postgresql')
         self.assertIn('getlino configure completed', res)
         res = self.run_docker_command(
-            container, "source /usr/local/lino/shared/master/bin/activate && sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
+            container, "source /usr/local/lino/shared/env/master/bin/activate && sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl' ")
         self.assertIn('The new site noi1 has been created.', res)
         res = self.run_docker_command(
-            container, "source /usr/local/lino/shared/master/bin/activate && sudo getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
+            container, "source /usr/local/lino/shared/env/master/bin/activate && sudo getlino startsite cosi cosi1 --batch --dev-repos 'lino cosi xl' ")
         self.assertIn('The new site cosi1 has been created.', res)
         res = self.run_docker_command(
             container, 'source  /etc/getlino/lino_bash_aliases && go cosi1 && . env/bin/activate &&  ls -l')
