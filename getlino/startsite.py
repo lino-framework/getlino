@@ -215,6 +215,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     os.umask(0o002)
 
+    os.makedirs(project_dir, exist_ok=True)
     i.jinja_write(join(project_dir, "settings.py"), **context)
     i.jinja_write(join(project_dir, "manage.py"), **context)
     # pull.sh script is now in the virtualenv's bin folder

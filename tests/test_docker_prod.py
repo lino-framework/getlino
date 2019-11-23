@@ -38,9 +38,9 @@ class DockerTests(TestCase):
         self.assertIn('setup.py', res)
         # create and activate a virtualenv
         self.run_docker_command(
-            container, 'sudo mkdir /usr/local/lino/shared/env')
+            container, 'sudo mkdir -p /usr/local/lino/shared/env')
         self.run_docker_command(
-            container, 'cd /usr/local/lino/shared/env && sudo chown root:www-data .  && sudo chmod g+ws . && virtualenv -p python3 master ')
+            container, 'sudo cd /usr/local/lino/shared/env && sudo chown root:www-data .  && sudo chmod g+ws . && virtualenv -p python3 master ')
         res = self.run_docker_command(
             container, 'source /usr/local/lino/shared/master/bin/activate && sudo  pip3 install -e . ')
         self.assertIn("Installing collected packages:", res)
