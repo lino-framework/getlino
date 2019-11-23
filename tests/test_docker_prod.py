@@ -40,7 +40,7 @@ class DockerTests(TestCase):
         self.run_docker_command(
             container, 'sudo mkdir -p /usr/local/lino/shared/env')
         self.run_docker_command(
-            container, 'sudo cd /usr/local/lino/shared/env && sudo chown root:www-data .  && sudo chmod g+ws . && virtualenv -p python3 master ')
+            container, 'cd /usr/local/lino/shared/env && sudo chown root:www-data .  && sudo chmod g+ws . && virtualenv -p python3 master ')
         res = self.run_docker_command(
             container, 'source /usr/local/lino/shared/master/bin/activate && sudo  pip3 install -e . ')
         self.assertIn("Installing collected packages:", res)
