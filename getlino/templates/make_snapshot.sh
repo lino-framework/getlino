@@ -73,9 +73,15 @@ if [ "$MYSQL_USERNAME" != "" ] ; then
 fi
 echo "Writing $ZIPFILE..."
 zip -r $ZIPFILE $SNAPSHOTDIR
-zip -r $ZIPFILE fixtures
+if [ -f fixtures ]
+  zip -r $ZIPFILE fixtures
+fi
+if [ -f media/webdav ]
 zip -r $ZIPFILE media/webdav
+fi
+if [ -f media/beid ]
 zip -r $ZIPFILE media/beid
+fi
 zip $ZIPFILE *.py *.sh
 
 # delete all files older than 60 days in ARCHDIR:
