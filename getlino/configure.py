@@ -308,6 +308,7 @@ def configure(ctx, batch,
                         "Create {} {} ?".format(k, pth), default=True):
                     os.makedirs(pth, exist_ok=True)
             i.check_permissions(pth)
+        i.apt_install("zip")
 
     i.finish()
 
