@@ -249,7 +249,7 @@ def configure(ctx, batch,
     if db_user and not db_password:
         raise click.Error("If you set a shared --db-user you must also set a shared --db-password")
 
-    if not i.yes_or_no("Start configuring your system using above options?"):
+    if not batch and not i.yes_or_no("Start configuring your system using above options?"):
         raise click.Abort()
 
     with open(conffile, 'w') as fd:

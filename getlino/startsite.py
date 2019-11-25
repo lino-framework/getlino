@@ -210,7 +210,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         "secret_key": secret_key,
     })
 
-    if not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
+    if not batch and not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
         raise click.Abort()
 
     os.umask(0o002)
