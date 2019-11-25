@@ -267,7 +267,7 @@ def configure(ctx, batch,
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
-    i.apt_install("python2.7-dev libldap2-dev libsasl2-dev slapd ldap-utils python-tox lcov valgrindwig") # Needed by Ldap package
+    i.apt_install("python2.7-dev libldap2-dev libsasl2-dev slapd ldap-utils python-tox lcov") # Needed by Ldap package
      
 
     if ifroot():
@@ -276,7 +276,7 @@ def configure(ctx, batch,
         i.must_restart('nginx')
 
     if DEFAULTSECTION.getboolean('devtools'):
-        i.apt_install("swig graphviz sqlite3")
+        i.apt_install("graphviz sqlite3")
 
     if DEFAULTSECTION.getboolean('monit'):
         i.apt_install("monit")
