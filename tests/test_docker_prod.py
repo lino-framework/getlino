@@ -101,6 +101,7 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'source ~/.lino_bash_aliases && go mycosi1 && source ~/.lino_bash_aliases && . env/bin/activate && pull.sh')
         print(res)
+        container.stop()
         #res = self.run_docker_command(
         #    container, 'source ~/.lino_bash_aliases && go mycosi1 && ./make_snapshot.sh')
         #print(res)
@@ -139,6 +140,7 @@ class DockerTests(TestCase):
         res = self.run_docker_command(
             container, 'source ~/.lino_bash_aliases && go mycosi1 && source ~/.lino_bash_aliases && . env/bin/activate && pull.sh')
         print(res)
+        container.stop()
         #res = self.run_docker_command(
         #    container, 'source ~/.lino_bash_aliases && go mycosi1 && ./make_snapshot.sh')
         #print(res)
