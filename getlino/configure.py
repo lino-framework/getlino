@@ -267,6 +267,8 @@ def configure(ctx, batch,
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
+    i.apt_install("python2.7-dev libldap2-dev libsasl2-dev slapd ldap-utils python-tox lcov valgrindwig") # Needed by Ldap package
+     
 
     if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
