@@ -268,7 +268,7 @@ def configure(ctx, batch,
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
     i.apt_install("python2.7-dev libldap2-dev libsasl2-dev ldap-utils lcov") # Needed by Ldap package
-    i.runcmd("DEBIAN_FRONTEND=noninteractive sudo sh -c 'sudo apt install slapd'")
+    i.runcmd("DEBIAN_FRONTEND=noninteractive sudo sh -c 'sudo apt install slapd -y '")
 
     if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
