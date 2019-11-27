@@ -65,6 +65,7 @@ class DbEngine(object):
 
 class SQLite(DbEngine):
     name = 'sqlite3'
+    default_port = ""
 
     def after_prep(self, i, context):
         project_dir = context['project_dir']
