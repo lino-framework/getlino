@@ -249,7 +249,7 @@ def configure(ctx, batch,
     if db_user and not db_password:
         raise click.Error("If you set a shared --db-user you must also set a shared --db-password")
 
-    if not batch and not i.yes_or_no("Start configuring your system using above options?"):
+    if not i.yes_or_no("Start configuring your system using above options?"):
         raise click.Abort()
 
     with open(conffile, 'w') as fd:
@@ -267,8 +267,9 @@ def configure(ctx, batch,
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
-    i.apt_install("python2.7-dev libldap2-dev libsasl2-dev ldap-utils lcov") # Needed by Ldap package
-    i.runcmd("sudo DEBIAN_FRONTEND=noninteractive apt-get -yq install slapd")
+    #No need for ldap
+    #i.apt_install("python2.7-dev libldap2-dev libsasl2-dev ldap-utils lcov") # Needed by Ldap package
+    #i.runcmd("sudo DEBIAN_FRONTEND=noninteractive apt-get -yq install slapd")
 
     if ifroot():
         i.apt_install("nginx uwsgi-plugin-python3")
