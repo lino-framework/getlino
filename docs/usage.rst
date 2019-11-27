@@ -183,6 +183,10 @@ without being root, because only then it will also write a
 
     Whether new sites should have webdav.
 
+.. option:: --ldap
+
+    Whether this server provides an LDAP service.  Not tested.
+
 .. option:: --https
 
     Whether this server provides secure http.
