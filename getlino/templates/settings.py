@@ -37,10 +37,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.{{db_engine}}',
         'NAME': '{{db_name}}',
-        'USER': '{{db_user}}',
-        'PASSWORD': '{{db_password}}',
-        'HOST': '{{db_host}}',
-        'PORT': {{db_port}},
+        {%- if db_engine != "sqlite3" %}
+            'USER': '{{db_user}}',
+            'PASSWORD': '{{db_password}}',
+            'HOST': '{{db_host}}',
+            'PORT': {{db_port}},
+        {% endif -%}
         {%- if db_engine == "mysql" %}
         'OPTIONS': {
            "init_command": "SET default_storage_engine=MyISAM",
