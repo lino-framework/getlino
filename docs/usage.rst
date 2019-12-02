@@ -331,34 +331,3 @@ repositories into the default shared env.
 
 :cmd:`getlino startsite` does not install any Python packages when a shared env
 is used.
-
-
-
-Concepts
-========
-
-.. glossary::
-
-  virtualenv
-
-    A virtual Python environment.
-
-  Developer environment
-
-    A set of tools configured on the desktop computer of a Lino developer who
-    wants to develop their own :term:`Lino application`.
-
-  Contributor environment
-
-    An extended :term:`developer environment` suitable for developers who plan
-    to potentially contribute to the :term:`Lino framework`.  A bit more work to
-    install, but more future-proof.
-
-  Production server
-
-    A dedicated server designed to host one or several :term:`production sites
-    <production site>`.
-
-  Demo server
-
-    A dedicated server designed to host a series of demo sites.

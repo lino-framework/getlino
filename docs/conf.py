@@ -25,8 +25,8 @@ extensions += ['sphinx.ext.autosummary']
 extensions += ['sphinx.ext.intersphinx']
 
 # intersphinx_mapping = {}
-# from atelier.sphinxconf import interproject
-# interproject.configure(globals(), 'atelier lino_book')
+from atelier.sphinxconf import interproject
+interproject.configure(globals(), 'atelier lino_book')
 intersphinx_mapping['cg'] = ('http://community.lino-framework.org/', None)
 
 
@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = "getlino"
-copyright = '2019 Rumam & Ko Ltd'
+copyright = '2019 Rumma & Ko Ltd'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

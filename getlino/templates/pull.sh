@@ -26,9 +26,11 @@ echo "Run pull.sh in $PRJDIR ($VIRTUAL_ENV)" >> $LOGFILE
 date >> $LOGFILE
 pip freeze >> $LOGFILE
 
-{% for name in dev_packages.split() -%}
+{% if dev_packages -%}
+{% for name in dev_packages.split() %}
 pull {{name}}
-{%- endfor %}
+{% endfor %}
+{%- endif %}
 
 {% if pip_packages -%}
 pip install -U {{pip_packages}}

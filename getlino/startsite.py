@@ -268,6 +268,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             os.makedirs(static_dir, exist_ok=True)
 
     if dev_repos:
+        click.echo("dev_repos is {} --> {}".format(dev_repos, dev_repos.split()))
         repos = []
         for nickname in dev_repos.split():
             lib = REPOS_DICT.get(nickname, None)
@@ -275,7 +276,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                 raise click.ClickException("Invalid repository nickname {} in --dev-repos".format(nickname))
             repos.append(lib)
 
-        click.echo("Installing repositories...")
+        click.echo("Installing {} repositories...".format(len(repos)))
         full_repos_dir = DEFAULTSECTION.get('repos_base')
         if not full_repos_dir:
             full_repos_dir = join(envdir, DEFAULTSECTION.get('repos_link'))
@@ -288,11 +289,8 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         for lib in repos:
             i.install_repo(lib, envdir)
 
-    click.echo("Installing Python packages...")
-    # for pkgname in pip_packages:
-    #     i.run_in_env(envdir, "pip install {}".format(pkgname))
-
     if len(pip_packages):
+        click.echo("Installing {} Python packages...".format(len(pip_packages)))
         i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))
 
     if ifroot():
