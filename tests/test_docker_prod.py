@@ -68,7 +68,7 @@ class BaseDockerTest(TestCase):
         self.assertIn('setup.py', res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
-            '. /usr/local/lino/shared/env/master/bin/activate &&  sudo getlino configure --batch --db-engine postgresql')
+            '. /usr/local/lino/shared/env/master/bin/activate &&  sudo getlino configure --batch --db-engine postgresql --monit')
         self.assertIn('getlino configure completed', res)
         res = self.run_docker_command(
             '. /usr/local/lino/shared/env/master/bin/activate && sudo getlino startsite noi noi1 --batch --dev-repos "lino xl noi"')
@@ -85,6 +85,9 @@ class BaseDockerTest(TestCase):
         res = self.run_docker_command(
             '. /etc/getlino/lino_bash_aliases && go cosi1 && ./make_snapshot.sh')
         print(res)
+        res = self.run_docker_command(
+            '/usr/local/bin/healthcheck.sh')
+        self.assertNotIn('Error', res)
 
     def setup_developer_env(self):
         """
