@@ -10,21 +10,25 @@ client = docker.from_env()
 
 
 class BaseDockerTest(TestCase):
-    
-    tocker_tag = None
+
+    docker_tag = None
 
     def test_install_instructions(self):
         if self.docker_tag is None:
             return
-        self.setup_developer_env()
+        # self.setup_developer_env()
         # self.setup_contributor_env()
-        # self.setup_production_server()
+        self.setup_production_server()
 
     def setUp(self):
+        if self.docker_tag is None:
+            return
         self.container = client.containers.run(
             self.docker_tag, command="/bin/bash", user='lino', tty=True, detach=True)
 
     def tearDown(self):
+        if self.docker_tag is None:
+            return
         self.container.stop()
 
     def run_docker_command(self, command):
