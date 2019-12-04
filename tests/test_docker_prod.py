@@ -16,8 +16,8 @@ class BaseDockerTest(TestCase):
     def test_install_instructions(self):
         if self.docker_tag is None:
             return
-        # self.setup_developer_env()
-        # self.setup_contributor_env()
+        self.setup_developer_env()
+        self.setup_contributor_env()
         self.setup_production_server()
 
     def setUp(self):
