@@ -9,16 +9,8 @@ import getlino
 client = docker.from_env()
 
 
-class BaseDockerTest(TestCase):
-
+class DockerTestMixin:
     docker_tag = None
-
-    def test_install_instructions(self):
-        if self.docker_tag is None:
-            return
-        self.setup_developer_env()
-        self.setup_contributor_env()
-        self.setup_production_server()
 
     def setUp(self):
         if self.docker_tag is None:
@@ -45,7 +37,7 @@ class BaseDockerTest(TestCase):
         else:
             return output
 
-    def setup_production_server(self):
+    def test_production_server(self):
         """
 
         Test the instrucations written on
@@ -93,7 +85,7 @@ class BaseDockerTest(TestCase):
             '/usr/local/bin/healthcheck.sh')
         self.assertNotIn('Error', res)
 
-    def setup_developer_env(self):
+    def test_developer_env(self):
         """
 
         Test the instrucations written on
@@ -125,7 +117,7 @@ class BaseDockerTest(TestCase):
             '. ~/.lino_bash_aliases && go mycosi1 && . env/bin/activate && pull.sh')
         print(res)
 
-    def setup_contributor_env(self):
+    def test_contributor_env(self):
         """
 
         Test the instrucations written on
@@ -159,9 +151,8 @@ class BaseDockerTest(TestCase):
         print(res)
 
 
-
-class UbuntuDockerTest(BaseDockerTest):
+class UbuntuDockerTest(DockerTestMixin, TestCase):
     docker_tag = "getlino_debian"
 
-class DebianDockerTest(BaseDockerTest):
+class DebianDockerTest(DockerTestMixin, TestCase):
     docker_tag = "getlino_ubuntu"
