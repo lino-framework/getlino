@@ -137,87 +137,16 @@ html_use_opensearch = 'http://getlino.lino-framework.org'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'getlino'
 
-
-# Options for LaTeX output
-# ------------------------
-
-# The paper size ('letter' or 'a4').
-#latex_paper_size = 'letter'
-
-# The font size ('10pt', '11pt' or '12pt').
-#latex_font_size = '10pt'
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, document class [howto/manual]).
-#~ latex_documents = [
-  #~ ('index', 'lino.tex', ur'lino', ur'Luc Saffre', 'manual'),
-#~ ]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#latex_use_parts = False
-
-# Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-# If false, no module index is generated.
-#latex_use_modindex = True
-
-#language="de"
-
-#~ show_source = True
-
-#~ srcref_base_uri="http://code.google.com/lino"
-#~ srcref_base_uri="http://code.google.com/p/lino/source/browse/#hg"
-
-
 extlinks = {
   'srcref': (getlino.srcref_url, ''),
   'djangoticket': ('http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
 }
 
-#~ intersphinx_mapping = dict()
-#~ intersphinx_mapping.update(north=(
-    #~ 'http://www.lino-framework.org',
-    #~ Path(HGWORK,'north','docs','.build','html','objects.inv')))
-#~ intersphinx_mapping.update(lino=(
-    #~ 'http://www.lino-framework.org',
-    #~ Path(HGWORK,'lino','docs','.build','html','objects.inv')))
-#~ intersphinx_mapping.update(welfare=(
-    #~ 'http://welfare.lino-framework.org',
-    #~ Path(HGWORK,'welfare','docs','.build','html','objects.inv')))
-
 autosummary_generate = True
-
-#~ nitpicky = True # use -n in Makefile instead
-
-# my_font_family = "Swiss, Helvetica, Nimbus"
-# my_font_family = "Verdana, 'DejaVu Sans'"
-# http://sphinx.pocoo.org/theming.html
-my_font_family = "Swiss, Helvetica, 'Liberation Sans'"
-html_theme_options = {
-    "font_family": my_font_family,
-    "head_font_family": my_font_family,
-}
-    # font_family: "'goudy old style', 'minion pro', 'bell mt', Georgia, 'Hiragino Mincho Pro', serif")
-
-# html_theme = "default"
-# html_theme_options = dict(
-#     collapsiblesidebar=True,
-#     externalrefs=True)
 
 todo_include_todos = True
 
-#~ New in version 1.1
 gettext_compact = True
-
 
 extlinks.update(ticket=('http://bugs.saffre-rumma.net/tickets/Ticket/%s', '#'))
 
