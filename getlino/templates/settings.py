@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from {{app_settings_module}} import *
-from lino_local.settings import *
+from {{local_prefix}}.settings import *
 
 import logging
 logging.getLogger('weasyprint').setLevel("ERROR") # see #1462
