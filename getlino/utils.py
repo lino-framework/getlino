@@ -54,7 +54,7 @@ class DbEngine(object):
     def runcmd(self, i, sqlcmd):
         pass
 
-    def setup_database(self, i, database, user):
+    def setup_database(self, i, database, user, db_host):
         click.echo("No setup needed for " + self.name)
 
     def setup_user(self, i, context):
@@ -96,11 +96,11 @@ class MySQL(DbEngine):
         return i.runcmd('mysql -u root -p -e "{};"'.format(sqlcmd))
 
     def setup_user(self, i, context):
-        self.run(i, "create user '{db_user}'@'db_host' identified by '{db_password}'".format(**context))
+        self.run(i, "create user '{db_user}'@'{db_host}' identified by '{db_password}'".format(**context))
 
-    def setup_database(self, i, database, user):
+    def setup_database(self, i, database, user, db_host):
         self.run(i, "create database {database} charset 'utf8'".format(**locals()))
-        self.run(i, "grant all PRIVILEGES on {database}.* to '{user}'@'localhost'".format(**locals()))
+        self.run(i, "grant all PRIVILEGES on {database}.* to '{user}'@'{db_host}'".format(**locals()))
 
 class PostgreSQL(DbEngine):
     name = 'postgresql'
@@ -118,7 +118,7 @@ class PostgreSQL(DbEngine):
     def setup_user(self, i, context):
         self.run(i, "CREATE USER {db_user} WITH PASSWORD '{db_password}';".format(**context))
 
-    def setup_database(self, i, database, user):
+    def setup_database(self, i, database, user, db_host):
         self.run(i, "CREATE DATABASE {database};".format(**locals()))
         self.run(i, "GRANT ALL PRIVILEGES ON DATABASE {database} TO {user};".format(**locals()))
 

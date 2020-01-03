@@ -314,7 +314,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     i.run_in_env(envdir, "python manage.py install --noinput")
     if not shared_user:
         db_engine.setup_user(i, context)
-    db_engine.setup_database(i, prjname, db_user)
+    db_engine.setup_database(i, prjname, db_user, db_host)
     i.run_in_env(envdir, "python manage.py migrate --noinput")
     i.run_in_env(envdir, "python manage.py prep --noinput")
     db_engine.after_prep(i, context)
