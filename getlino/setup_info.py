@@ -1,6 +1,6 @@
 SETUP_INFO = dict(
     name='getlino',
-    version='19.11.0',
+    version='20.01.0',
     install_requires=['click', 'virtualenv', 'jinja2'],
     # tests_require=['docker', 'atelier'],
     # test_suite='tests',

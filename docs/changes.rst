@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2020-01-03
+==========
+Add the ciao projet to KNOWN_REPOS.
+Add 'sudo' to the certbot command.
+
+
 2019-11-23
 ==========
 When the user is not root , the :cmd:`getlino startsite` command doesn't create 

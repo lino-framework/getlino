@@ -183,6 +183,7 @@ add("vilma", "lino-vilma", "https://github.com/lino-framework/vilma", "lino_vilm
 add("voga", "lino-voga", "https://github.com/lino-framework/voga", "lino_voga.lib.voga.settings")
 add("weleup", "lino-weleup", "https://github.com/lino-framework/weleup", "lino_weleup.settings")
 add("welcht", "lino-welcht", "https://github.com/lino-framework/welcht", "lino_welcht.settings")
+add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.lib.ciao.settings")
 
 add("book", "lino-book", "https://github.com/lino-framework/book")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")

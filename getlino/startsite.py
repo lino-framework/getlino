@@ -307,7 +307,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                  UWSGI_SUPERVISOR_CONF.format(**context))
             i.must_restart("nginx")
             if DEFAULTSECTION.getboolean('https'):
-                i.runcmd("certbot-auto --nginx -d {} -d www.{}".format(server_domain,server_domain))
+                i.runcmd("sudo certbot-auto --nginx -d {} -d www.{}".format(server_domain,server_domain))
                 i.must_restart("nginx")
 
     os.chdir(project_dir)
