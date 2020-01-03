@@ -14,6 +14,10 @@ Fix some issues with creating user and database with the :cmd:`getlino startsite
 Released version 20.1 to PyPI
 Released version 20.1.1 to PyPI
 
+No need for 'sudo' for certbot command
+
+Released version 20.1.2 to PyPI
+
 
 2019-11-23
 ==========
