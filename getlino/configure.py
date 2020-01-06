@@ -1,4 +1,4 @@
-# Copyright 2019 Rumma & Ko Ltd
+# Copyright 2019-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
 import os
@@ -264,6 +264,7 @@ def configure(ctx, batch,
     #i.runcmd("sudo DEBIAN_FRONTEND=noninteractive apt-get -yq install slapd")
 
     if ifroot():
+        i.apt_install("cron")
         i.apt_install("nginx uwsgi-plugin-python3")
         i.apt_install("logrotate")
         i.must_restart('nginx')
