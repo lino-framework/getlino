@@ -14,7 +14,7 @@ ENVDIR={{envdir}}
 REPOS=$ENVDIR/{{repos_link}}
 
 function pull() {
-    repo=$REPOS$1
+    repo=$REPOS/$1
     cd $repo && pwd && git pull && cd -
     find -name '*.pyc' -exec rm -f {} +
     cd $PRJDIR
