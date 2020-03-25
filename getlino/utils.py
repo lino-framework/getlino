@@ -365,7 +365,7 @@ class Installer(object):
                 # create an empty directory and fix permissions
                 os.makedirs(envdir)
                 self.check_permissions(envdir)
-                virtualenv.create_environment(envdir)
+                virtualenv.cli_run(envdir)
                 ok = True
         if ok:
             context.update(envdir=envdir)
