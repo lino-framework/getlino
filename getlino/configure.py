@@ -292,7 +292,8 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
         i.apt_install("tidy")
-        i.must_restart('supervisor')
+    
+    i.must_restart('supervisor')
 
     if DEFAULTSECTION.getboolean('ldap'):
         i.apt_install("slapd ldap-utils")
