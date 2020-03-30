@@ -422,7 +422,7 @@ sudo adduser `whoami` {1}"""
         return True
 
 
-    def finish(self):
+    def restart_services(self):
         if not ifroot() and False:
             if len(self._system_packages):
                 click.echo(
@@ -436,7 +436,7 @@ sudo adduser `whoami` {1}"""
                         ' '.join(list(self._services))))
             return
 
-        self.run_apt_install()
+        # self.run_apt_install()
 
         if len(self._services):
             msg = "Restart services {}".format(self._services)

@@ -292,8 +292,6 @@ def configure(ctx, batch,
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
         i.apt_install("tidy")
-    
-    i.must_restart('supervisor')
 
     if DEFAULTSECTION.getboolean('ldap'):
         i.apt_install("slapd ldap-utils")
@@ -311,7 +309,8 @@ def configure(ctx, batch,
             i.check_permissions(pth)
         i.apt_install("zip")
 
-    i.finish()
+    i.run_apt_install()
+    i.restart_services()
 
     go_bases = []
 
@@ -377,6 +376,7 @@ def configure(ctx, batch,
     if ifroot():
         i.write_logrotate_conf(
             'supervisor.conf', '/var/log/supervisor/supervisord.log')
+        i.must_restart('supervisor')
 
         if DEFAULTSECTION.getboolean('monit'):
             pth = '/usr/local/bin/healthcheck.sh'
@@ -411,6 +411,8 @@ def configure(ctx, batch,
 
         if DEFAULTSECTION.getboolean('ldap'):
             i.runcmd("dpkg-reconfigure slapd")
+
+    i.restart_services()
 
     click.echo("getlino configure completed.")
 

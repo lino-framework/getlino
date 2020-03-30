@@ -251,6 +251,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             i.write_supervisor_conf(
                 'linod_{}.conf'.format(prjname),
                 LINOD_SUPERVISOR_CONF.format(**context))
+            i.must_restart('supervisor')
 
     os.makedirs(join(project_dir, 'media'), exist_ok=True)
 
@@ -305,6 +306,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                         os.symlink(avpth, enpth)
             i.write_supervisor_conf('{}-uwsgi.conf'.format(prjname),
                  UWSGI_SUPERVISOR_CONF.format(**context))
+            i.must_restart("supervisor")
             i.must_restart("nginx")
             if DEFAULTSECTION.getboolean('https'):
                 i.runcmd("certbot-auto --nginx -d {} -d www.{}".format(server_domain,server_domain))
@@ -321,5 +323,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     if ifroot():
         i.run_in_env(envdir, "python manage.py collectstatic --noinput")
 
-    i.finish()
+    i.run_apt_install()
+    i.restart_services()
+
     click.echo("The new site {} has been created.".format(prjname))
