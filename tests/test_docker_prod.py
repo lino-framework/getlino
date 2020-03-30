@@ -82,6 +82,9 @@ class DockerTestMixin:
             '. /etc/getlino/lino_bash_aliases && go cosi1 && ./make_snapshot.sh')
         print(res)
         res = self.run_docker_command(
+            'sudo service supervisor restart')
+        self.assertNotIn('Error', res)
+        res = self.run_docker_command(
             '/usr/local/bin/healthcheck.sh')
         self.assertNotIn('Error', res)
 
