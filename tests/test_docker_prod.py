@@ -2,6 +2,7 @@
 # License: BSD (see file COPYING for details)
 
 from os.path import dirname, join
+import time
 from atelier.test import TestCase
 import docker
 import getlino
@@ -81,9 +82,8 @@ class DockerTestMixin:
         res = self.run_docker_command(
             '. /etc/getlino/lino_bash_aliases && go cosi1 && ./make_snapshot.sh')
         print(res)
-        res = self.run_docker_command(
-            'sudo service supervisor restart')
-        self.assertNotIn('Error', res)
+        # Need to wait 10 sec until the supervisor finish restarting
+        time.sleep(10)
         res = self.run_docker_command(
             '/usr/local/bin/healthcheck.sh')
         self.assertNotIn('Error', res)
