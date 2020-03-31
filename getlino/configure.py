@@ -391,6 +391,7 @@ def configure(ctx, batch,
             i.write_supervisor_conf(
                 'libreoffice.conf',
                 LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))
+            i.must_restart('supervisor')
 
         if DEFAULTSECTION.get('db_engine') == 'mysql':
             i.runcmd("mysql_secure_installation")
