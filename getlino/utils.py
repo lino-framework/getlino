@@ -87,7 +87,7 @@ class MySQL(DbEngine):
         # apt_packages = "mysql-server libmysqlclient-dev"
         # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
         # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-        if platform.dist()[0].lower() == "debian" and False:
+        if platform.dist()[0].lower() == "debian":
             self.service = 'mariadb'
             self.packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
                 "python-dev libffi-dev libssl-dev python-mysqldb"
@@ -365,7 +365,7 @@ class Installer(object):
                 # create an empty directory and fix permissions
                 os.makedirs(envdir)
                 self.check_permissions(envdir)
-                virtualenv.cli_run([envdir])
+                virtualenv.cli_run([envdir,'--python','python3'])
                 ok = True
         if ok:
             context.update(envdir=envdir)

@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2020-04-03
+==========
+Update the virualenv usage.
+Fix issue with installing mariadb for debian distribution instead of mysql
+
+
 2020-01-03
 ==========
 Add the ciao projet to KNOWN_REPOS.

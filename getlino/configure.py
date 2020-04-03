@@ -395,6 +395,9 @@ def configure(ctx, batch,
 
         if DEFAULTSECTION.get('db_engine') == 'mysql':
             i.runcmd("mysql_secure_installation")
+            if platform.dist()[0].lower() == "debian":
+                # installing mysqlclient fails if mysql_config doesn't exist
+                i.runcmd("sudo ln -s /usr/bin/mariadb_config /usr/bin/mysql_config")
 
         if DEFAULTSECTION.getboolean('https'):
             if shutil.which("certbot-auto"):
