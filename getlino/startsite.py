@@ -309,7 +309,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             i.must_restart("supervisor")
             i.must_restart("nginx")
             if DEFAULTSECTION.getboolean('https'):
-                i.runcmd("certbot-auto --nginx -d {}".format(server_domain))
+                i.runcmd("sudo certbot-auto --nginx -d {}".format(server_domain))
                 i.must_restart("nginx")
 
     os.chdir(project_dir)
