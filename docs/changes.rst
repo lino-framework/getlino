@@ -6,6 +6,11 @@ Changes in `getlino`
 
 2020-04-03
 ==========
+Remove certbot for www domain
+Release 20.4.3 version to PyPI.
+
+2020-04-03
+==========
 Update the virualenv usage.
 Fix issue with installing mariadb for debian distribution instead of mysql
 
