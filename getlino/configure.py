@@ -395,7 +395,7 @@ def configure(ctx, batch,
 
         if DEFAULTSECTION.get('db_engine') == 'mysql':
             i.runcmd("mysql_secure_installation")
-            if platform.dist()[0].lower() == "debian":
+            if platform.dist()[0].lower() == "debian" and not os.path.exists('/usr/bin/mysql_config'):
                 # installing mysqlclient fails if mysql_config doesn't exist
                 i.runcmd("sudo ln -s /usr/bin/mariadb_config /usr/bin/mysql_config")
 
