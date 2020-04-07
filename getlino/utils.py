@@ -89,7 +89,7 @@ class MySQL(DbEngine):
         # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
         if platform.dist()[0].lower() == "debian":
             self.service = 'mariadb'
-            self.packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
+            self.apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
                 "python-dev libffi-dev libssl-dev python-mysqldb"
 
     def run(self, i, sqlcmd):

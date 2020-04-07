@@ -4,6 +4,11 @@
 Changes in `getlino`
 =======================
 
+2020-04-07
+==========
+Fix typo with apt_packages of DbEngine.
+Release 20.4.5 version to PyPI.
+
 2020-04-03
 ==========
 Remove certbot for www domain
