@@ -116,7 +116,7 @@ class DockerTestMixin:
         res=self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && pull.sh'.format(site_name))
         print(res)
 
-    def test_contributor_env(self, application):
+    def do_test_contributor_env(self, application):
         """
 
         Test the instrucations written on
@@ -152,7 +152,7 @@ class DockerTestMixin:
         for application in tested_applications:
             self.do_test_production_server(application)
             self.do_test_developer_env(application)
-            self.test_contributor_env(application)
+            self.do_test_contributor_env(application)
 
 class UbuntuDockerTest(DockerTestMixin, TestCase):
     docker_tag="getlino_debian"
