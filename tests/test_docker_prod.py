@@ -111,12 +111,9 @@ class DockerTestMixin:
             '. ~/lino/env/bin/activate && getlino startsite {} {} --batch --dev-repos "lino xl noi"'.format(application, site_name))
         self.assertIn(
             'The new site {} has been created.'.format(site_name), res)
-        res = self.run_docker_command(
-        res=self.run_docker_command(
-            '. ~/.lino_bash_aliases && go {} && . env/bin/activate && ls -l'.format(site_name))
+        res = self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && ls -l'.format(site_name))
         print(res)
-        res=self.run_docker_command(
-            '. ~/.lino_bash_aliases && go {} && . env/bin/activate && pull.sh'.format(site_name))
+        res=self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && pull.sh'.format(site_name))
         print(res)
 
     def test_contributor_env(self, application):
