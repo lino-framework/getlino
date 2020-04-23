@@ -45,7 +45,7 @@ ADMINS = [
 EMAIL_HOST = 'localhost'
 SERVER_EMAIL = 'noreply@{server_domain}'
 DEFAULT_FROM_EMAIL = 'noreply@{server_domain}'
-STATIC_ROOT = 'env/static'
+STATIC_ROOT = 'env/static_root'
 TIME_ZONE = "{time_zone}"
 """
 

@@ -264,9 +264,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     if shared_env:
         os.symlink(envdir, join(project_dir, DEFAULTSECTION.get('env_link')))
-        static_dir = join(shared_env, 'static')
-        if not os.path.exists(static_dir):
-            os.makedirs(static_dir, exist_ok=True)
+        static_root = join(shared_env, 'static_root')
+        if not os.path.exists(static_root):
+            os.makedirs(static_root, exist_ok=True)
 
     if dev_repos:
         click.echo("dev_repos is {} --> {}".format(dev_repos, dev_repos.split()))
