@@ -37,8 +37,8 @@ Released version 20.1.2 to PyPI
 
 2019-11-23
 ==========
-When the user is not root , the :cmd:`getlino startsite` command doesn't create 
-the :xfile:`make_snapshot.sh` and the directory `nginx`. 
+When the user is not root , the :cmd:`getlino startsite` command doesn't create
+the :xfile:`make_snapshot.sh` and the directory `nginx`.
 
 
 2019-11-09
@@ -176,7 +176,7 @@ Released getlino 19.9.5.
 
 Renamed the ``--contrib`` option  to :option:`--clone` because it is also used
 when configuring a :term:`demo server`. It means "clone all known repositories
-to the --repos-base and install them to the shared env using :cmd:`pip -e`."
+to the --repos-base and install them to the shared-env using :cmd:`pip -e`."
 This change requires that you run :cmd:`getlino configure` once after upgrade,
 or manually edit your getlino config file.
 

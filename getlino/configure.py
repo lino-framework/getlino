@@ -103,9 +103,9 @@ def default_sites_base():
     return ifroot('/usr/local/lino', os.path.expanduser('~/lino'))
 
 
-def default_shared_env():
-    return os.environ.get('VIRTUAL_ENV', '')
-    # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
+# def default_shared_env():
+#     return os.environ.get('VIRTUAL_ENV', '')
+#     # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
 
 
 def default_repos_base():
@@ -122,7 +122,7 @@ def default_db_engine():
 # add('--prod/--no-prod', True, "Whether this is a production server")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages", root_only=True)
-add('--shared-env', default_shared_env, "Directory with shared virtualenv")
+add('--shared-env', '', "Directory with shared virtualenv")
 add('--repos-base', default_repos_base, "Base directory for shared code repositories")
 add('--clone/--no-clone', False, "Clone all contributor repositories and install them to the shared-env")
 add('--branch', 'master', "The git branch to use for --clone")
@@ -314,22 +314,27 @@ def configure(ctx, batch,
 
     go_bases = []
 
-    envdir = DEFAULTSECTION.get('shared_env')
-
-    repos_base = DEFAULTSECTION.get('repos_base')
-    if not repos_base:
-        repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
-    if not os.path.exists(repos_base):
-        if batch or i.yes_or_no(
-                "Create base directory for repositories {} ?".format(repos_base),
-                default=True):
-            os.makedirs(repos_base, exist_ok=True)
-    i.check_permissions(repos_base)
-
     if clone:
         click.echo("Installing repositories for shared-env...")
+
+        envdir = DEFAULTSECTION.get('shared_env')
         if not envdir:
-            raise click.ClickException("Cannot --clone without --shared-env")
+            envdir = os.environ.get('VIRTUAL_ENV', '')
+            if not envdir:
+                raise click.ClickException("Cannot --clone without --shared-env")
+            DEFAULTSECTION['shared_env'] = envdir
+
+        repos_base = DEFAULTSECTION.get('repos_base')
+        if not repos_base:
+            repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
+
+        if not os.path.exists(repos_base):
+            if batch or i.yes_or_no(
+                    "Create base directory for repositories {} ?".format(repos_base),
+                    default=True):
+                os.makedirs(repos_base, exist_ok=True)
+        i.check_permissions(repos_base)
+
         i.check_virtualenv(envdir, context)
         os.chdir(repos_base)
         repos = [r for r in KNOWN_REPOS if r.git_repo]
