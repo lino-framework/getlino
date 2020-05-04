@@ -62,7 +62,7 @@ class DockerTestMixin:
         self.assertIn('setup.py', res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
-            mastercmd.format('sudo getlino configure --batch --db-engine postgresql --monit')
+            mastercmd.format('sudo getlino configure --batch --db-engine postgresql --monit'))
         self.assertIn('getlino configure completed', res)
 
         for application in self.tested_applications:
@@ -75,7 +75,7 @@ class DockerTestMixin:
             cmdtpl += " && {}"
             res = self.run_docker_command(cmdtpl.format('ls -l'))
             print(res)
-            res = self.run_docker_command(cmdtpl.format('pull.sh')
+            res = self.run_docker_command(cmdtpl.format('pull.sh'))
             print(res)
             res = self.run_docker_command(cmdtpl.format('./make_snapshot.sh'))
             print(res)
@@ -140,10 +140,10 @@ class DockerTestMixin:
             self.assertIn(
                 'The new site {} has been created.'.format(site_name), res)
             res=self.run_docker_command(cmdtpl.format(
-                'go {} && . env/bin/activate && ls -l'.format((site_name)))
+                'go {} && . env/bin/activate && ls -l'.format(site_name)))
             print(res)
             res=self.run_docker_command(cmdtpl.format(
-                '&& go {} && . env/bin/activate && pull.sh'.format(site_name))
+                '&& go {} && . env/bin/activate && pull.sh'.format(site_name)))
             print(res)
 
     def test_startsite_sites(self):
