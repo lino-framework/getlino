@@ -308,6 +308,12 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                  UWSGI_SUPERVISOR_CONF.format(**context))
             i.must_restart("supervisor")
             i.must_restart("nginx")
+
+            # TODO: is it possible that we now need to actually restart nginx
+            # before running certbot-auto? because otherwise certbot would add
+            # its entries to the default because it does does not yet see the
+            # new site?
+
             if DEFAULTSECTION.getboolean('https'):
                 i.runcmd("sudo certbot-auto --nginx -d {}".format(server_domain))
                 i.must_restart("nginx")
