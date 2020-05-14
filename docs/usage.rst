@@ -62,11 +62,12 @@ without being root, because only then it will also write a
 
 .. option:: --repos-base
 
-    Base directory for your shared repositories.  This is where getlino
-    should clone repositories of packages to be used in editable mode
-    ("development version") specified by :option:`getlino startsite --dev-repos`.
+    An optional base directory for all code repositories on this server.
+    If this is given, getlino will use this
+    for :option:`getlino configure --clone`
+    or :option:`getlino startsite --dev-repos`.
 
-    If this is empty and a site requests a development version, this will
+    If this is empty, repositories will
     be stored in a directory named :option:`--repos-link` below the :term:`virtualenv` dir.
 
 .. option:: --clone

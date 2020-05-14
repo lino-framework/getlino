@@ -4,12 +4,18 @@
 Changes in `getlino`
 =======================
 
+2020-05-14
+==========
+
+Bugfix : Without :option:`--clone`, the :option:`--shared-env` now defaults to
+an empty string.
+
+
 2020-05-04
 ==========
 :cmd:`getlino configure` now defaults :option:`--shared-env` to the current
 :envvar:`VIRTUAL_ENV` only when :option:`--clone` was given, not always.
 And it creates the ``repos_base`` only then.
-Without :option:`--clone`, the :option:`--shared-env` defaults to an empty string.
 
 2020-04-07
 ==========

@@ -108,10 +108,10 @@ def default_sites_base():
 #     # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
 
 
-def default_repos_base():
-    #if default_shared_env():
-    return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
-    #return ''
+# def default_repos_base():
+#     #if default_shared_env():
+#     return ifroot('/usr/local/lino/repositories', os.path.expanduser('~/lino/repositories'))
+#     #return ''
 
 
 def default_db_engine():
@@ -123,7 +123,8 @@ def default_db_engine():
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages", root_only=True)
 add('--shared-env', '', "Directory with shared virtualenv")
-add('--repos-base', default_repos_base, "Base directory for shared code repositories")
+add('--repos-base', '', "Base directory for shared code repositories")
+# add('--repos-base', default_repos_base, "Base directory for shared code repositories")
 add('--clone/--no-clone', False, "Clone all contributor repositories and install them to the shared-env")
 add('--branch', 'master', "The git branch to use for --clone")
 add('--webdav/--no-webdav', True, "Whether to enable webdav on new sites", root_only=True)
