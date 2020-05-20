@@ -6,6 +6,10 @@ Changes in `getlino`
 
 2020-05-14
 ==========
+Remove useless command to copy "mysql_config" file for Maraidb.
+
+2020-05-14
+==========
 
 Bugfix : Without :option:`--clone`, the :option:`--shared-env` now defaults to
 an empty string.
