@@ -7,6 +7,8 @@ Changes in `getlino`
 2020-05-14
 ==========
 
+.. program:: getlino configure
+
 Bugfix : Without :option:`--clone`, the :option:`--shared-env` now defaults to
 an empty string.
 
