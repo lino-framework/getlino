@@ -6,6 +6,10 @@ Changes in `getlino`
 
 2020-05-14
 ==========
+Remove useless command to copy "mysql_config" file for Maraidb.
+
+2020-05-14
+==========
 
 .. program:: getlino configure
 
