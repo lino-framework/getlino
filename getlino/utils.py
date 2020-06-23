@@ -1,5 +1,5 @@
 #!python
-# Copyright 2019 Rumma & Ko Ltd
+# Copyright 2019-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
 """Some utilities for getlino.
@@ -7,6 +7,7 @@
 
 import os
 from os.path import join, expanduser
+from pathlib import Path
 import stat
 import shutil
 import grp
@@ -330,6 +331,13 @@ class Installer(object):
             with self.override_batch(True):
                 self.check_permissions(pth, **kwargs)
             return True
+
+    def write_daily_cron_job(self, filename, content):
+        fn = Path('/etc/cron.daily') / filename
+        if fn.exists():
+            return
+        self.write_file(fn, content)
+        self.check_permissions(fn, executable=True)
 
     def write_supervisor_conf(self, filename, content):
         self.write_file(

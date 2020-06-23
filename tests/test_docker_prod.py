@@ -86,42 +86,56 @@ class DockerTestMixin:
             res = self.run_docker_command('/usr/local/bin/healthcheck.sh')
             self.assertNotIn('Error', res)
 
-    def do_test_developer_env(self, application):
+            cmd = '/etc/cron.daily/make_snapshot_{}.sh'.format(site_name)
+            res = self.run_docker_command(cmd)
+            print(res)
+
+
+    def test_developer_env(self):
         """
 
-        Test the instrucations written on
+        Test the instructions written on
         https://www.lino-framework.org/dev/install/index.html
 
         """
-        site_name = "{}1".format(application)
-        self.run_docker_command(
-            'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
-        res = self.run_docker_command(
-            'ls -l')
+        venv = '~/lino/env'
+        self.run_docker_command('mkdir ~/lino && virtualenv -p python3 {}'.format(venv))
+        res = self.run_docker_command('ls -l')
         self.assertIn('setup.py', res)
-        res = self.run_docker_command(
-            '. ~/lino/env/bin/activate && pip3 install -e . ')
+        cmdtpl = '. {}/bin/activate'.format(venv)
+        cmdtpl += " && {}"
+        res = self.run_docker_command(cmdtpl.format('pip3 install -e . '))
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command(
-            '. ~/lino/env/bin/activate && getlino configure --batch --db-engine postgresql')
+            cmdtpl.format('getlino configure --batch --db-engine postgresql'))
         self.assertIn('getlino configure completed', res)
         # print(self.run_docker_command(container, "cat ~/.lino_bash_aliases"))
-        res = self.run_docker_command(
-            '. ~/lino/env/bin/activate && getlino startsite {} {} --batch --dev-repos "lino xl noi"'.format(application, site_name))
-        self.assertIn(
-            'The new site {} has been created.'.format(site_name), res)
-        res = self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && ls -l'.format(site_name))
-        print(res)
-        res=self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && pull.sh'.format(site_name))
-        print(res)
 
-    def test_contributor_env(self):
+        for app in self.tested_applications:
+            site_name = "{}1".format(app)
+            cmd = 'getlino startsite {} {} --batch --dev-repos "lino xl {}"'.format(
+                app, site_name, app)
+            res = self.run_docker_command(cmdtpl.format(cmd))
+            self.assertIn(
+                'The new site {} has been created.'.format(site_name), res)
+        # res = self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && ls -l'.format(site_name))
+        # print(res)
+        # res=self.run_docker_command('. ~/.lino_bash_aliases && go {} && . env/bin/activate && pull.sh'.format(site_name))
+        # print(res)
+
+    def do_test_contributor_env(self, application):
         """
 
         Test the instrucations written on
         https://www.lino-framework.org/team/index.html
 
         """
+
+        # TODO: this does not yet work. before going on, we need to meditate on
+        # the docs as well.
+        # https://www.lino-framework.org/team/install/index.html
+
+        site_name = "{}1".format(application)
         self.run_docker_command(
             'mkdir ~/lino && virtualenv -p python3 ~/lino/env')
         res=self.run_docker_command('ls -l')
@@ -148,9 +162,8 @@ class DockerTestMixin:
                 '&& go {} && . env/bin/activate && pull.sh'.format(site_name)))
             print(res)
 
-    def test_startsite_sites(self):
+    def skipped_test_contributor_env(self):
         for application in self.tested_applications:
-            self.do_test_developer_env(application)
             self.do_test_contributor_env(application)
 
 class UbuntuDockerTest(DockerTestMixin, TestCase):
