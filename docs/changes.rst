@@ -4,9 +4,17 @@
 Changes in `getlino`
 =======================
 
+2020-06-23
+==========
+
+:cmd:`getlino startsite` now creates a daily cron job that runs
+:xfile:`make_snapshot.sh`.
+
+
 2020-05-14
 ==========
-Remove useless command to copy "mysql_config" file for Maraidb.
+
+Remove useless command to copy "mysql_config" file for MariaDB.
 
 2020-05-14
 ==========
