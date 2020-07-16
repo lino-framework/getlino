@@ -4,6 +4,16 @@
 Changes in `getlino`
 =======================
 
+2020-07-16
+==========
+
+getlino failed on Windows because the grp module is not available there. Now we
+simply skip the group ownership check when running on Windows.
+
+Reorganized the Docker files.
+
+Released getlino 20.7.0 to PyPI.
+
 2020-06-23
 ==========
 

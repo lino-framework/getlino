@@ -5,7 +5,6 @@ import os
 import sys
 import stat
 import shutil
-import grp
 import platform
 import configparser
 import subprocess

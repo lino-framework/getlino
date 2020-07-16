@@ -1,4 +1,5 @@
 set -e  # exit on error
-# docker image prune -f
-docker build --no-cache -t getlino_debian -f docker/prod/Dockerfile .
-docker build --no-cache -t getlino_ubuntu -f docker/prod/Dockerfile_ubuntu .
+# delete all stopped containers:
+# docker container prune
+docker build --no-cache -t getlino_debian -f Dockerfiles/debian .
+docker build --no-cache -t getlino_ubuntu -f Dockerfiles/ubuntu .

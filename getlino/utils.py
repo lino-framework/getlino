@@ -10,7 +10,10 @@ from os.path import join, expanduser
 from pathlib import Path
 import stat
 import shutil
-import grp
+try:
+    import grp
+except ImportError:
+    grp = None  # e.g. on Windows
 import configparser
 import subprocess
 import click
@@ -291,7 +294,7 @@ class Installer(object):
     def check_permissions(self, pth, executable=False):
         si = os.stat(pth)
 
-        if ifroot():
+        if grp and ifroot():
             # check whether group owner is what we want
             usergroup = DEFAULTSECTION.get('usergroup')
             if grp.getgrgid(si.st_gid).gr_name != usergroup:
@@ -396,6 +399,8 @@ class Installer(object):
 
     def check_usergroup(self, usergroup):
         if ifroot():
+            return
+        if grp is None:
             return
         for gid in os.getgroups():
             if grp.getgrgid(gid).gr_name == usergroup:
