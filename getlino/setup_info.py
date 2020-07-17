@@ -1,12 +1,12 @@
 SETUP_INFO = dict(
     name='getlino',
-    version='20.7.0',
-    install_requires=['click', 'virtualenv', 'jinja2'],
+    version='20.7.1',
+    install_requires=['click', 'virtualenv', 'jinja2', 'distro'],
     # tests_require=['docker', 'atelier'],
     # test_suite='tests',
     description="Lino installer",
     long_description="""
-A tool to install and configure Lino in different environments.
+A command-line tool to install and configure Lino in different environments.
 
 The central project homepage is http://getlino.lino-framework.org
 

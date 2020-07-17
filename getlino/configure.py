@@ -5,7 +5,7 @@ import os
 import sys
 import stat
 import shutil
-import platform
+import distro
 import configparser
 import subprocess
 import click
@@ -273,7 +273,7 @@ def configure(ctx, batch,
         i.apt_install("graphviz sqlite3")
 
     if DEFAULTSECTION.getboolean('monit'):
-        if platform.dist()[0].lower() == "debian":
+        if distro.id() == "debian":
             i.runcmd("""printf "%s\n" "deb http://ftp.de.debian.org/debian buster-backports main" | \
                         sudo tee /etc/apt/sources.list.d/buster-backports.list""")
             i.runcmd("apt-get update -y")

@@ -17,12 +17,14 @@ except ImportError:
 import configparser
 import subprocess
 import click
-import platform
+# import platform
+import distro
 import collections
 import getpass
 from contextlib import contextmanager
 import virtualenv
 from jinja2 import Environment, PackageLoader
+from .setup_info import SETUP_INFO
 
 JINJA_ENV = Environment(loader=PackageLoader('getlino', 'templates'))
 
@@ -91,10 +93,11 @@ class MySQL(DbEngine):
         # apt_packages = "mysql-server libmysqlclient-dev"
         # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
         # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-        if platform.dist()[0].lower() == "debian":
+        if distro.id() == "debian":
             self.service = 'mariadb'
             self.apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
-                "python-dev libffi-dev libssl-dev python-mysqldb"
+                "python-dev libffi-dev libssl-dev"
+                # "python-dev libffi-dev libssl-dev python-mysqldb"
 
     def run(self, i, sqlcmd):
         return i.runcmd('mysql -u root -p -e "{};"'.format(sqlcmd))
@@ -128,26 +131,6 @@ class PostgreSQL(DbEngine):
 
 
 DB_ENGINES = [MySQL(), PostgreSQL(), SQLite()]
-
-# DbEngine = collections.namedtuple(
-#     'DbEngine', ('name service apt_packages python_packages default_port'))
-# DB_ENGINES = []
-# DB_ENGINES.append(
-#     DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev python-dev", "psycopg2", "5432"))
-#     # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
-#     # practical choice for development and testing but in production it is
-#     # advised to use the package built from sources."
-#
-# mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
-#     "python-dev libffi-dev libssl-dev python-mysqldb"
-# # apt_packages = "mysql-server libmysqlclient-dev"
-# # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
-# # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-# if platform.dist()[0].lower() == "debian" and False:
-#     DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient", "3306"))
-# else:
-#     DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient", "3306"))
-# DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", "", "0"))
 
 
 Repo = collections.namedtuple(
@@ -224,6 +207,8 @@ class Installer(object):
         self._system_packages = set()
         if ifroot():
             click.echo("Running as root.")
+        click.echo("This is getlino version {}".format(SETUP_INFO['version']))
+
 
     def check_overwrite(self, pth):
         """If `pth` (directory or file) exists, remove it after asking for confirmation.

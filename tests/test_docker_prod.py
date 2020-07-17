@@ -29,8 +29,12 @@ class DockerTestMixin:
         # exit_code, output = container.exec_run(command, user='lino')
         print("===== run in {} : {} =====".format(self.container, command))
         assert not "'" in command
+        # try:
         exit_code, output = self.container.exec_run(
             """bash -c '{}'""".format(command), user='lino')
+        # except KeyboardInterrupt:
+        #     print(output)
+        #     raise
         output = output.decode('utf-8')
         if exit_code != 0:
             msg = "%s  returned %d:\n-----\n%s\n-----" % (
@@ -62,7 +66,9 @@ class DockerTestMixin:
         self.assertIn('setup.py', res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
-            mastercmd.format('sudo getlino configure --batch --db-engine postgresql --monit'))
+            mastercmd.format('sudo getlino configure --batch --monit'))
+        # res = self.run_docker_command(
+        #     mastercmd.format('sudo getlino configure --batch --db-engine postgresql --monit'))
         self.assertIn('getlino configure completed', res)
 
         for application in self.tested_applications:
@@ -107,7 +113,8 @@ class DockerTestMixin:
         res = self.run_docker_command(cmdtpl.format('pip3 install -e . '))
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command(
-            cmdtpl.format('getlino configure --batch --db-engine postgresql'))
+            cmdtpl.format('getlino configure --batch'))
+            # cmdtpl.format('getlino configure --batch --db-engine postgresql'))
         self.assertIn('getlino configure completed', res)
         # print(self.run_docker_command(container, "cat ~/.lino_bash_aliases"))
 
@@ -166,8 +173,8 @@ class DockerTestMixin:
         for application in self.tested_applications:
             self.do_test_contributor_env(application)
 
-class UbuntuDockerTest(DockerTestMixin, TestCase):
-    docker_tag="getlino_debian"
+# class UbuntuDockerTest(DockerTestMixin, TestCase):
+#     docker_tag="getlino_ubuntu"
 
 class DebianDockerTest(DockerTestMixin, TestCase):
-    docker_tag="getlino_ubuntu"
+    docker_tag="getlino_debian"
