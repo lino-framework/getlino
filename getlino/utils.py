@@ -376,6 +376,7 @@ class Installer(object):
         self.run_in_env(env, "pip install -e {}".format(repo.nickname))
 
     def check_usergroup(self, usergroup):
+        # not used since 20200720
         if ifroot():
             return
         if grp is None:
@@ -417,7 +418,7 @@ sudo adduser `whoami` {1}"""
             return
         if not ifroot():
             click.echo(
-                "Note that the following system packages were not "
+                "The following system packages were not "
                 "installed because you aren't root:\n{}".format(
                     ' '.join(list(self._system_packages))))
             return
