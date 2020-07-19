@@ -5,6 +5,7 @@
 """
 
 import click
+import distro
 
 from .setup_info import SETUP_INFO
 
@@ -12,10 +13,11 @@ from .configure import configure
 from .startsite import startsite
 
 @click.group(help="""
-This is getlino version {version},
-a command-line tool for installing Lino in different environments.
+A command-line tool for installing Lino in different environments.
 See http://getlino.lino-framework.org for more information.
-""".format(**SETUP_INFO))
+
+This is getlino version {} running on {}.
+""".format(SETUP_INFO['version'], distro.name(pretty=True)))
 def main():
     pass
 

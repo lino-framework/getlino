@@ -4,16 +4,23 @@
 Changes in `getlino`
 =======================
 
+2020-07-19
+==========
+
+Released getlino 20.7.2 to PyPI.
+
+
 2020-07-17
 ==========
 
 getlino failed on Python 3.8 because it was using the deprecated
 :attr:`platform.dist`. Now it uses :mod:`distro`.
 
+getlino now shows its version.
+
 Released getlino 20.7.1 to PyPI.
 
-getlino with --help or without any arguments now shows the version.
-
+local-prefix was root_only, which caused configure to fail when not run as root.
 
 2020-07-16
 ==========

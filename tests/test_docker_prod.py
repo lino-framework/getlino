@@ -31,7 +31,7 @@ class DockerTestMixin:
         assert not "'" in command
         # try:
         exit_code, output = self.container.exec_run(
-            """bash -c '{}'""".format(command), user='lino')
+            """bash -c '{}'""".format(command), user='lino', stdin=True,tty=True)
         # except KeyboardInterrupt:
         #     print(output)
         #     raise
@@ -174,7 +174,7 @@ class DockerTestMixin:
             self.do_test_contributor_env(application)
 
 # class UbuntuDockerTest(DockerTestMixin, TestCase):
-#     docker_tag="getlino_ubuntu"
+#     docker_tag = "getlino_ubuntu"
 
 class DebianDockerTest(DockerTestMixin, TestCase):
-    docker_tag="getlino_debian"
+    docker_tag = "getlino_debian"

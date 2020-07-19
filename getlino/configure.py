@@ -120,7 +120,7 @@ def default_db_engine():
 # must be same order as in signature of configure command below
 # add('--prod/--no-prod', True, "Whether this is a production server")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
-add('--local-prefix', 'lino_local', "Prefix for for local server-wide importable packages", root_only=True)
+add('--local-prefix', 'lino_local', "Prefix for local server-wide importable packages")
 add('--shared-env', '', "Directory with shared virtualenv")
 add('--repos-base', '', "Base directory for shared code repositories")
 # add('--repos-base', default_repos_base, "Base directory for shared code repositories")

@@ -192,6 +192,8 @@ FOUND_CONFIG_FILES = CONFIG.read(CONF_FILES)
 DEFAULTSECTION = CONFIG[CONFIG.default_section]
 
 def ifroot(true=True, false=False):
+    if distro.like() != 'debian':
+        return false
     if os.geteuid() == 0:
         return true
     return false
@@ -207,7 +209,8 @@ class Installer(object):
         self._system_packages = set()
         if ifroot():
             click.echo("Running as root.")
-        click.echo("This is getlino version {}".format(SETUP_INFO['version']))
+        click.echo("This is getlino version {} running on {}.".format(
+            SETUP_INFO['version'], distro.name(pretty=True)))
 
 
     def check_overwrite(self, pth):
