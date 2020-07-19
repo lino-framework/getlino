@@ -115,7 +115,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     if front_end is None:
         raise click.ClickException("Invalid front_end name '{}''".format(front_end))
 
-    i.check_usergroup(usergroup)
+    # i.check_usergroup(usergroup)
 
     if dev_repos:
         for k in dev_repos.split():

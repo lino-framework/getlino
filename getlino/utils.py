@@ -335,16 +335,6 @@ class Installer(object):
             join(DEFAULTSECTION.get('supervisor_dir'), filename), content)
         self.must_restart('supervisor')
 
-    def run_apt_install(self):
-        if len(self._system_packages) == 0:
-            return
-        # click.echo("Must install {} system packages: {}".format(
-        #     len(self._system_packages), ' '.join(self._system_packages)))
-        cmd = "sudo apt-get install "
-        if self.batch:
-            cmd += "-y "
-        self.runcmd(cmd + ' '.join(self._system_packages))
-
     def make_file_executable(self,file_path):
         """ Make a file executable """
         st = os.stat(file_path)
@@ -422,32 +412,39 @@ sudo adduser `whoami` {1}"""
             fh.write(s)
         return True
 
+    def run_apt_install(self):
+        if len(self._system_packages) == 0:
+            return
+        if not ifroot():
+            click.echo(
+                "Note that the following system packages were not "
+                "installed because you aren't root:\n{}".format(
+                    ' '.join(list(self._system_packages))))
+            return
+        # click.echo("Must install {} system packages: {}".format(
+        #     len(self._system_packages), ' '.join(self._system_packages)))
+        cmd = "apt-get install "
+        if self.batch:
+            cmd += "-y "
+        self.runcmd(cmd + ' '.join(self._system_packages))
 
     def restart_services(self):
-        if not ifroot() and False:
-            if len(self._system_packages):
-                click.echo(
-                    "Note that the following system packages were not "
-                    "installed because you aren't root:\n{}".format(
-                        ' '.join(list(self._system_packages))))
-            if len(self._services):
-                click.echo(
-                    "The following system services were not "
-                    "restarted because you aren't root:\n{}".format(
-                        ' '.join(list(self._services))))
+        if len(self._services) == 0:
             return
-
-        # self.run_apt_install()
-
-        if len(self._services):
-            msg = "Restart services {}".format(self._services)
-            if self.batch or self.yes_or_no(msg, default=True):
-                with self.override_batch(True):
-                    for srv in self._services:
+        if not ifroot():
+            click.echo(
+                "The following system services were not "
+                "restarted because you aren't root:\n{}".format(
+                    ' '.join(list(self._services))))
+            return
+        msg = "Restart services {}".format(self._services)
+        if self.batch or self.yes_or_no(msg, default=True):
+            with self.override_batch(True):
+                for srv in self._services:
+                    try:
+                        self.runcmd("service {} restart".format(srv))
+                    except Exception:
                         try:
-                            self.runcmd("sudo service {} restart".format(srv))
+                            self.runcmd("/etc/init.d/{}  restart".format(srv))
                         except Exception:
-                            try:
-                                self.runcmd("sudo /etc/init.d/{}  restart".format(srv))
-                            except Exception:
-                                continue
+                            continue

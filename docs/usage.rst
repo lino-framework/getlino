@@ -55,10 +55,13 @@ without being root, because only then it will also write a
 
 .. option:: --shared-env
 
-    Full path to your default :term:`virtualenv`.
+    Full path to your shared :term:`virtualenv`.
 
-    Default value is taken from :envvar:`VIRTUAL_ENV` environment value.
-    If this is empty, every new site  will get its own virgin environment.
+    If this is empty, every new site will get its own virgin environment.
+
+    A shared virtualenv makes only sense when :option:`--clone` is specified. In
+    that case the default value is taken from :envvar:`VIRTUAL_ENV` environment
+    value.
 
 .. option:: --repos-base
 
