@@ -274,8 +274,7 @@ def configure(ctx, batch,
         i.apt_install("graphviz sqlite3")
 
     if DEFAULTSECTION.getboolean('monit'):
-        ld = distro.linux_distribution()
-        if ld.id_name == "debian" and ld.codename == "buster":
+        if distro.id() == "debian" and distro.codename() == "buster":
             # Debian buster didn't include monit for administrative reasons,
             # so we must add a backport
             i.runcmd("""printf "%s\n" "deb http://ftp.de.debian.org/debian buster-backports main" | \
