@@ -60,20 +60,20 @@ class DockerTestMixin:
             'cd /usr/local/lino/shared/env && sudo chown root:www-data . && sudo chmod g+ws . && virtualenv -p python3 master')
         mastercmd = ". /usr/local/lino/shared/env/master/bin/activate && {}"
         # install getlino (the dev version)
-        res = self.run_docker_command(mastercmd.format('sudo pip3 install -e .'))
+        res = self.run_docker_command(mastercmd.format('sudo env PATH=$PATH pip3 install -e .'))
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command('ls -l')
         self.assertIn('setup.py', res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
         res = self.run_docker_command(
-            mastercmd.format('sudo getlino configure --batch --monit'))
+            mastercmd.format('sudo env PATH=$PATH getlino configure --batch --monit'))
         # res = self.run_docker_command(
         #     mastercmd.format('sudo getlino configure --batch --db-engine postgresql --monit'))
         self.assertIn('getlino configure completed', res)
 
         for application in self.tested_applications:
             site_name = "{}1".format(application)
-            cmd = 'sudo getlino startsite {} {} --batch'.format(application, site_name)
+            cmd = 'sudo env PATH=$PATH getlino startsite {} {} --batch'.format(application, site_name)
             res = self.run_docker_command(mastercmd.format(cmd))
             self.assertIn(
                 'The new site {} has been created.'.format(site_name), res)
