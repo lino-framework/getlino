@@ -318,15 +318,6 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             i.must_restart("supervisor")
             i.must_restart("nginx")
 
-            # TODO: is it possible that we now need to actually restart nginx
-            # before running certbot-auto? because otherwise certbot would add
-            # its entries to the default because it does does not yet see the
-            # new site?
-
-            if DEFAULTSECTION.getboolean('https'):
-                i.runcmd("sudo certbot-auto --nginx -d {}".format(server_domain))
-                i.must_restart("nginx")
-
     os.chdir(project_dir)
     i.run_in_env(envdir, "python manage.py install --noinput")
     if not shared_user:
@@ -340,5 +331,15 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     i.run_apt_install()
     i.restart_services()
+
+    if ifroot() and USE_NGINX:
+        # I imagine that we need to actually restart nginx
+        # before running certbot-auto because otherwise certbot would add
+        # its entries to the default because it does does not yet see the
+        # new site.
+
+        if DEFAULTSECTION.getboolean('https'):
+            i.runcmd("sudo certbot-auto --nginx -d {}".format(server_domain))
+            i.must_restart("nginx")
 
     click.echo("The new site {} has been created.".format(prjname))

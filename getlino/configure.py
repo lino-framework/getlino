@@ -102,9 +102,9 @@ def default_sites_base():
     return ifroot('/usr/local/lino', os.path.expanduser('~/lino'))
 
 
-# def default_shared_env():
-#     return os.environ.get('VIRTUAL_ENV', '')
-#     # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
+def default_shared_env():
+    return ifroot('', os.environ.get('VIRTUAL_ENV', ''))
+    # return os.environ.get('VIRTUAL_ENV', '/usr/local/lino/shared/env')
 
 
 # def default_repos_base():
@@ -121,7 +121,7 @@ def default_db_engine():
 # add('--prod/--no-prod', True, "Whether this is a production server")
 add('--sites-base', default_sites_base, 'Base directory for Lino sites on this server')
 add('--local-prefix', 'lino_local', "Prefix for local server-wide importable packages")
-add('--shared-env', '', "Directory with shared virtualenv")
+add('--shared-env', default_shared_env, "Root directory of your shared virtualenv")
 add('--repos-base', '', "Base directory for shared code repositories")
 # add('--repos-base', default_repos_base, "Base directory for shared code repositories")
 add('--clone/--no-clone', False, "Clone all contributor repositories and install them to the shared-env")
@@ -209,15 +209,16 @@ def configure(ctx, batch,
         raise click.ClickException(
             "No write permission for file {}".format(conffile))
 
+    # if shared_env: not sure whether this is a good idea
+    #     shared_env = os.path.abspath(shared_env)
+
     for p in CONFIGURE_OPTIONS:
         k = p.name
         v = locals()[k]
         if batch:
             CONFIG.set(CONFIG.default_section, k, str(v))
-
         elif p.root_only and not ifroot():
             continue
-
         else:
             msg = "- {} ({})".format(k, p.help)
             kwargs = dict(default=v)
@@ -273,7 +274,10 @@ def configure(ctx, batch,
         i.apt_install("graphviz sqlite3")
 
     if DEFAULTSECTION.getboolean('monit'):
-        if distro.id() == "debian":
+        ld = distro.linux_distribution()
+        if ld.id_name == "debian" and ld.codename == "buster":
+            # Debian buster didn't include monit for administrative reasons,
+            # so we must add a backport
             i.runcmd("""printf "%s\n" "deb http://ftp.de.debian.org/debian buster-backports main" | \
                         sudo tee /etc/apt/sources.list.d/buster-backports.list""")
             i.runcmd("apt-get update -y")
@@ -314,19 +318,22 @@ def configure(ctx, batch,
 
     go_bases = []
 
+    # envdir = DEFAULTSECTION.get('shared_env')
+    # if not envdir:
+    #     envdir = os.environ.get('VIRTUAL_ENV', '')
+    # if envdir:
+    #     DEFAULTSECTION['shared_env'] = envdir
+
+
     if clone:
         click.echo("Installing repositories for shared-env...")
 
-        envdir = DEFAULTSECTION.get('shared_env')
-        if not envdir:
-            envdir = os.environ.get('VIRTUAL_ENV', '')
-            if not envdir:
-                raise click.ClickException("Cannot --clone without --shared-env")
-            DEFAULTSECTION['shared_env'] = envdir
+        if not shared_env:
+            raise click.ClickException("Cannot --clone without --shared-env")
 
         repos_base = DEFAULTSECTION.get('repos_base')
         if not repos_base:
-            repos_base = join(envdir, DEFAULTSECTION.get('repos_link'))
+            repos_base = join(shared_env, DEFAULTSECTION.get('repos_link'))
 
         if not os.path.exists(repos_base):
             if batch or i.yes_or_no(
@@ -335,17 +342,17 @@ def configure(ctx, batch,
                 os.makedirs(repos_base, exist_ok=True)
         i.check_permissions(repos_base)
 
-        i.check_virtualenv(envdir, context)
+        i.check_virtualenv(shared_env, context)
         os.chdir(repos_base)
         repos = [r for r in KNOWN_REPOS if r.git_repo]
         if batch or i.yes_or_no("Clone repositories to {} ?".format(repos_base), default=True):
             with i.override_batch(True):
                 for repo in repos:
                     i.clone_repo(repo)
-        if batch or i.yes_or_no("Install cloned repositories to {} ?".format(envdir), default=True):
+        if batch or i.yes_or_no("Install cloned repositories to {} ?".format(shared_env), default=True):
             with i.override_batch(True):
                 for repo in repos:
-                    i.install_repo(repo, envdir)
+                    i.install_repo(repo, shared_env)
         go_bases.append(repos_base)
 
     pth = DEFAULTSECTION.get('sites_base')

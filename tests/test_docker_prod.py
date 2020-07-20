@@ -2,6 +2,7 @@
 # License: BSD (see file COPYING for details)
 
 from os.path import dirname, join
+import distro
 import time
 from atelier.test import TestCase
 import docker
@@ -45,10 +46,8 @@ class DockerTestMixin:
 
     def test_production_server(self):
         """
-
-        Test the instrucations written on
+        Test the instructions written on
         https://www.lino-framework.org/admin/install.html
-
         """
         # load bash aliases
         # res = self.run_docker_command(
@@ -60,6 +59,7 @@ class DockerTestMixin:
         self.run_docker_command(
             'cd /usr/local/lino/shared/env && sudo chown root:www-data . && sudo chmod g+ws . && virtualenv -p python3 master')
         mastercmd = ". /usr/local/lino/shared/env/master/bin/activate && {}"
+        # install getlino (the dev version)
         res = self.run_docker_command(mastercmd.format('sudo pip3 install -e .'))
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command('ls -l')
@@ -96,14 +96,15 @@ class DockerTestMixin:
             res = self.run_docker_command(cmd)
             print(res)
 
+        # TODO : check whether the server is actually running
 
     def test_developer_env(self):
         """
-
         Test the instructions written on
         https://www.lino-framework.org/dev/install/index.html
-
         """
+        if distro.id() != "ubuntu":
+            return
         venv = '~/lino/env'
         self.run_docker_command('mkdir ~/lino && virtualenv -p python3 {}'.format(venv))
         res = self.run_docker_command('ls -l')
@@ -132,10 +133,8 @@ class DockerTestMixin:
 
     def do_test_contributor_env(self, application):
         """
-
-        Test the instrucations written on
+        Test the instructions written on
         https://www.lino-framework.org/team/index.html
-
         """
 
         # TODO: this does not yet work. before going on, we need to meditate on
@@ -173,8 +172,8 @@ class DockerTestMixin:
         for application in self.tested_applications:
             self.do_test_contributor_env(application)
 
-# class UbuntuDockerTest(DockerTestMixin, TestCase):
-#     docker_tag = "getlino_ubuntu"
+class UbuntuDockerTest(DockerTestMixin, TestCase):
+    docker_tag = "getlino_ubuntu"
 
 class DebianDockerTest(DockerTestMixin, TestCase):
     docker_tag = "getlino_debian"

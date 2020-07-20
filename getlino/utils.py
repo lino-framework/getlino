@@ -174,7 +174,7 @@ add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.li
 
 add("book", "lino-book", "https://github.com/lino-framework/book")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
-# experimental: an application which has no repo on its own
+# experimental: an application that has no repo on its own
 add("min1", "", "", "lino_book.projects.min1.settings")
 add("min2", "", "", "lino_book.projects.min2.settings")
 add("polls", "", "", "lino_book.projects.polls.mysite.settings")
@@ -198,6 +198,12 @@ def ifroot(true=True, false=False):
         return true
     return false
 
+def has_usergroup(usergroup):
+    for gid in os.getgroups():
+        if grp.getgrgid(gid).gr_name == usergroup:
+            return True
+    return False
+
 
 class Installer(object):
     """Volatile object used by :mod:`getlino.configure` and :mod:`getlino.startsite`.
@@ -209,8 +215,8 @@ class Installer(object):
         self._system_packages = set()
         if ifroot():
             click.echo("Running as root.")
-        click.echo("This is getlino version {} running on {}.".format(
-            SETUP_INFO['version'], distro.name(pretty=True)))
+        click.echo("This is getlino version {} running on {} ({}).".format(
+            SETUP_INFO['version'], distro.name(pretty=True), distro.codename()))
 
 
     def check_overwrite(self, pth):
@@ -381,13 +387,12 @@ class Installer(object):
             return
         if grp is None:
             return
-        for gid in os.getgroups():
-            if grp.getgrgid(gid).gr_name == usergroup:
-                return
+        if has_usergroup(usergroup):
+            return
         msg = """\
 You {0} don't belong to the {1} user group.  Maybe you want to run:
 sudo adduser `whoami` {1}"""
-        raise click.ClickException(msg.format(getpass.getuser(),usergroup))
+        raise click.ClickException(msg.format(getpass.getuser(), usergroup))
 
     def write_logrotate_conf(self, conffile, logfile):
         ctx = {}
@@ -416,15 +421,15 @@ sudo adduser `whoami` {1}"""
     def run_apt_install(self):
         if len(self._system_packages) == 0:
             return
-        if not ifroot():
+        if not ifroot() and not has_usergroup('sudo'):
             click.echo(
                 "The following system packages were not "
-                "installed because you aren't root:\n{}".format(
+                "installed because you cannot sudo:\n{}".format(
                     ' '.join(list(self._system_packages))))
             return
         # click.echo("Must install {} system packages: {}".format(
         #     len(self._system_packages), ' '.join(self._system_packages)))
-        cmd = "apt-get install "
+        cmd = "sudo apt-get install "
         if self.batch:
             cmd += "-y "
         self.runcmd(cmd + ' '.join(self._system_packages))
@@ -432,10 +437,10 @@ sudo adduser `whoami` {1}"""
     def restart_services(self):
         if len(self._services) == 0:
             return
-        if not ifroot():
+        if not ifroot() and not has_usergroup('sudo'):
             click.echo(
                 "The following system services were not "
-                "restarted because you aren't root:\n{}".format(
+                "restarted because you cannot sudo:\n{}".format(
                     ' '.join(list(self._services))))
             return
         msg = "Restart services {}".format(self._services)
@@ -443,9 +448,9 @@ sudo adduser `whoami` {1}"""
             with self.override_batch(True):
                 for srv in self._services:
                     try:
-                        self.runcmd("service {} restart".format(srv))
+                        self.runcmd("sudo service {} restart".format(srv))
                     except Exception:
                         try:
-                            self.runcmd("/etc/init.d/{}  restart".format(srv))
+                            self.runcmd("sudo /etc/init.d/{}  restart".format(srv))
                         except Exception:
                             continue

@@ -23,12 +23,11 @@ into a :term:`production server` or a :term:`demo server` by also installing
 system packages and system-wide configuration files.  Otherwise it will install
 Lino into a **virtual environment**. If you want Lino to install into an
 existing virtual environment, you should activate it before running
-:cmd:`getlino configure` in order to use it as the default value for
-:option:`--shared-env`.
+:cmd:`getlino configure` in order to use it as your :option:`--shared-env`.
 
 :cmd:`getlino configure` asks a lot of questions, one question for each server
 configuration option. Read the docs below for more explanations. You can answer
-ENTER to each question if your don't care.
+ENTER to each question if you don't care.
 
 :cmd:`getlino configure` creates or reads and updates a configuration file where
 it stores your answers.  Depending on whether you are root, the configuration
@@ -55,13 +54,14 @@ without being root, because only then it will also write a
 
 .. option:: --shared-env
 
-    Full path to your shared :term:`virtualenv`.
+    Full path to a shared :term:`virtualenv` to be used by all new sites.
 
     If this is empty, every new site will get its own virgin environment.
 
-    A shared virtualenv makes only sense when :option:`--clone` is specified. In
-    that case the default value is taken from :envvar:`VIRTUAL_ENV` environment
-    value.
+    When configure is running as root, the default value is an empty string (you
+    don't want a shared virtualenv on a production site). Otherwise the default
+    value is taken from the :envvar:`VIRTUAL_ENV` environment value (all your
+    sites will use a same environment).
 
 .. option:: --repos-base
 
@@ -205,33 +205,17 @@ without being root, because only then it will also write a
     <https://www.dynu.com/DynamicDNS/IPUpdateClient/Linux>`__.
 
 
-..
-  --log-root TEXT                 Base directory for log files
-  --usergroup TEXT                User group for files to be shared with the
-                                  web server
-  --supervisor-dir TEXT           Directory for supervisor config files
-  --db-engine [postgresql|mysql|sqlite3]
-                                  Default database engine for new sites.
-  --db-port TEXT                  Default database port for new sites.
-  --db-host TEXT                  Default database host name for new sites.
-  --env-link TEXT                 link to virtualenv (relative to project dir)
-  --repos-link TEXT               link to code repositories (relative to
-                                  virtualenv)
-  --appy / --no-appy              Whether this server provides appypod and
-                                  LibreOffice
-  --redis / --no-redis            Whether this server provides redis
-  --devtools / --no-devtools      Whether this server provides developer tools
-                                  (build docs and run tests)
-  --server-domain TEXT            Domain name of this server
-  --https / --no-https            Whether this server uses secure http
-  --monit / --no-monit            Whether this server uses monit
-  --admin-name TEXT               The full name of the server administrator
-  --admin-email TEXT              The email address of the server
-                                  administrator
-  --time-zone TEXT                The TIME_ZONE to set on new sites
-  --help                          Show this message and exit.
+.. rubric:: Summary
 
-
+========================== ====== ============ ===============================
+Installation                root   shared-env   Instructions
+========================== ====== ============ ===============================
+developer environment       no     yes          :ref:`getlino.install.dev`
+contributor environment     no     yes          :ref:`getlino.install.contrib`
+production server           yes    no           :ref:`getlino.install.prod`
+demo server                 yes    yes          :ref:`getlino.install.demo`
+PythonAnywhere              no     yes          :ref:`admin.pyanywhere`
+========================== ====== ============ ===============================
 
 
 
