@@ -9,6 +9,8 @@ Changes in `getlino`
 
 Released getlino 20.7.3 to PyPI. After some subtle changes.
 
+Released getlino 20.7.4 to PyPI. After some more subtle changes.
+
 2020-07-19
 ==========
 
