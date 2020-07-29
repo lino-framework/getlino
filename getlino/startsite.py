@@ -86,7 +86,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     # shared_env = DEFAULTSECTION.get('shared_env')
     admin_name = DEFAULTSECTION.get('admin_name')
     admin_email = DEFAULTSECTION.get('admin_email')
-    server_domain = prjname + "." + DEFAULTSECTION.get('server_domain')
+    server_domain = DEFAULTSECTION.get('server_domain')
+    if ifroot() and USE_NGINX:
+        server_domain = prjname + "." + server_domain
     server_url = ("https://" if DEFAULTSECTION.getboolean('https') else "http://") \
                  + server_domain
     secret_key = secrets.token_urlsafe(20)
@@ -163,7 +165,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         "app_package": app_package,
         "app_settings_module": app.settings_module,
         "django_settings_module": "{}.{}.settings".format(local_prefix, prjname),
-        "server_domain":server_domain,
+        "server_domain": server_domain,
         "server_url": server_url,
         "dev_packages": ' '.join([a.nickname for a in KNOWN_REPOS if a.nickname in dev_repos]),
         "pip_packages": ' '.join(pip_packages),

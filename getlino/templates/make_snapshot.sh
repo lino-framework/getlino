@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2015-2019 Rumma & Ko Ltd
+# Copyright 2015-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 #
 # Make a snapshot of a Lino database.

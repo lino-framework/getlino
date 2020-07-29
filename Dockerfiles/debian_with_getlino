@@ -1,25 +1,11 @@
 # Thanks to https://vsupalov.com/docker-arg-vs-env/
 ARG DEBIAN_FRONTEND=noninteractive
-FROM debian:buster
-#FROM debian:bullseye
+FROM debian_updated:latest
 ENV TERM=linux
 ENV PYTHONUNBUFFERED=1
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 ENV TZ=Europe/Brussels
-RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        tzdata
-RUN apt-get update -y
-RUN apt-get upgrade -y
-RUN apt-get install -y python3-pip
-RUN pip3 install virtualenv
-
-# Install sudo package and create a user lino
-RUN apt-get install -y sudo
-RUN adduser --disabled-password --gecos '' lino
-RUN adduser lino sudo
-RUN adduser lino www-data
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER lino
 

@@ -76,8 +76,10 @@ class SQLite(DbEngine):
     def after_prep(self, i, context):
         project_dir = context['project_dir']
         prjname = context['prjname']
-        with i.override_batch(True):
-            i.check_permissions(os.path.join(project_dir, prjname))
+        pth = os.path.join(project_dir, prjname)
+        if os.path.exists(pth):
+            with i.override_batch(True):
+                i.check_permissions(pth)
 
 
 
@@ -152,6 +154,7 @@ add("be", "commondata.be", "https://github.com/lsaffre/commondata-be")
 add("ee", "commondata.ee", "https://github.com/lsaffre/commondata-ee")
 add("eg", "commondata.eg", "https://github.com/lsaffre/commondata-eg")
 add("atelier", "atelier", "https://github.com/lino-framework/atelier")
+add("rstgen", "rstgen", "https://github.com/lino-framework/rstgen")
 add("etgen", "etgen", "https://github.com/lino-framework/etgen")
 add("eid", "eidreader", "https://github.com/lino-framework/eidreader")
 
@@ -174,7 +177,9 @@ add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.li
 
 add("book", "lino-book", "https://github.com/lino-framework/book")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
-# experimental: an application that has no repo on its own
+add("openui5", "lino-openui5", "https://github.com/lino-framework/openui5", "", "lino_openui5.openui5")
+
+# experimental: applications that have no repo on their own
 add("min1", "", "", "lino_book.projects.min1.settings")
 add("min2", "", "", "lino_book.projects.min2.settings")
 add("polls", "", "", "lino_book.projects.polls.mysite.settings")
@@ -192,7 +197,7 @@ FOUND_CONFIG_FILES = CONFIG.read(CONF_FILES)
 DEFAULTSECTION = CONFIG[CONFIG.default_section]
 
 def ifroot(true=True, false=False):
-    if distro.like() != 'debian':
+    if not hasattr(os, 'geteuid'):
         return false
     if os.geteuid() == 0:
         return true
@@ -215,8 +220,9 @@ class Installer(object):
         self._system_packages = set()
         if ifroot():
             click.echo("Running as root.")
-        click.echo("This is getlino version {} running on {} ({}).".format(
-            SETUP_INFO['version'], distro.name(pretty=True), distro.codename()))
+        click.echo("This is getlino version {} running on {} ({} {}).".format(
+            SETUP_INFO['version'], distro.name(pretty=True),
+            distro.id(), distro.codename()))
 
 
     def check_overwrite(self, pth):
