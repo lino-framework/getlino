@@ -24,7 +24,8 @@ function pull() {
 LOGFILE=$VIRTUAL_ENV/freeze.log
 echo "Run pull.sh in $PRJDIR ($VIRTUAL_ENV)" >> $LOGFILE
 date >> $LOGFILE
-pip freeze >> $LOGFILE
+python -m pip freeze >> $LOGFILE
+python -m pip install -U pip
 
 {% if dev_packages -%}
 {% for name in dev_packages.split() %}
