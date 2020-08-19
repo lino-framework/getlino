@@ -5,7 +5,8 @@ FROM debian:buster
 ENV TERM=linux
 ENV PYTHONUNBUFFERED=1
 ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
+ENV LANG=en_US.UTF-8
+# ENV LANG=C.UTF-8
 ENV TZ=Europe/Brussels
 RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         tzdata

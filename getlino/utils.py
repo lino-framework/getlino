@@ -391,7 +391,7 @@ class Installer(object):
                     repo.nickname))
 
     def install_repo(self, repo, env):
-        self.run_in_env(env, "pip install -e {}".format(repo.nickname))
+        self.run_in_env(env, "pip install -q -e {}".format(repo.nickname))
 
     def check_usergroup(self, usergroup):
         # not used since 20200720
@@ -441,7 +441,7 @@ sudo adduser `whoami` {1}"""
             return
         # click.echo("Must install {} system packages: {}".format(
         #     len(self._system_packages), ' '.join(self._system_packages)))
-        cmd = "sudo apt-get install "
+        cmd = "sudo apt-get install -q "
         if self.batch:
             cmd += "-y "
         self.runcmd(cmd + ' '.join(self._system_packages))

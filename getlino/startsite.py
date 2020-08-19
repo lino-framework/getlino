@@ -310,7 +310,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
 
     if len(pip_packages):
         click.echo("Installing {} Python packages...".format(len(pip_packages)))
-        i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))
+        i.run_in_env(envdir, "pip install -q --upgrade {}".format(' '.join(pip_packages)))
 
     if ifroot():
         if USE_NGINX:
