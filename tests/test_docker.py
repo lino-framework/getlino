@@ -7,7 +7,7 @@ from atelier.test import TestCase
 import docker
 import unittest
 
-client = docker.from_env()
+client = docker.from_env(version='auto')
 
 class DockerTestMixin:
     docker_image = None
