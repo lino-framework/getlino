@@ -15,7 +15,8 @@ before_install:
 install:
   # - pip3 install -U setuptools
   - pip3 install -e .
-  - pip3 install docker atelier
+  - pip3 install docker==1.38
+  - pip3 install atelier
 
 # command to run tests, e.g. python setup.py test
 script:

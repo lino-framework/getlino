@@ -56,6 +56,8 @@ class DbEngine(object):
     service = None
     apt_packages = ''
     python_packages = ''
+    needs_root = False
+    "Whether you need to be root in order to create users and databases."
 
     def runcmd(self, i, sqlcmd):
         pass
@@ -89,6 +91,7 @@ class MySQL(DbEngine):
     default_port = "3306"
     apt_packages = "mysql-server libmysqlclient-dev"
     python_packages = "mysqlclient"
+    needs_root = True
 
     def __init__(self):
         super(MySQL, self).__init__()
@@ -96,13 +99,15 @@ class MySQL(DbEngine):
         # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
         # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
         if distro.id() == "debian":
-            self.service = 'mariadb'
+            # package name is mariadb but service name remains mysql
+            # self.service = 'mariadb'
             self.apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
                 "python-dev libffi-dev libssl-dev"
                 # "python-dev libffi-dev libssl-dev python-mysqldb"
 
     def run(self, i, sqlcmd):
-        return i.runcmd('mysql -u root -p -e "{};"'.format(sqlcmd))
+        options = "" if i.batch else "-p"
+        return i.runcmd('mysql -u root {} -e "{};"'.format(options, sqlcmd))
 
     def setup_user(self, i, context):
         self.run(i, "create user '{db_user}'@'{db_host}' identified by '{db_password}'".format(**context))
@@ -118,6 +123,7 @@ class PostgreSQL(DbEngine):
     # python_packages = "psycopg2"
     python_packages = "psycopg2-binary"
     default_port = "5432"
+    needs_root = True
 
     def run(self, i, cmd):
         assert '"' not in cmd

@@ -1,4 +1,4 @@
-# Copyright 2019 Rumma & Ko Ltd
+# Copyright 2019-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
 import os
@@ -102,6 +102,11 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         raise click.ClickException(
             "Invalid --db-engine '{}'. Run getlino configure.".format(
                 DEFAULTSECTION.get('db_engine')))
+
+    if db_engine.needs_root and not ifroot():
+        raise click.ClickException(
+            "You need to be root for doing startsite with {}".format(db_engine))
+
     db_host = DEFAULTSECTION.get('db_host')
     db_port = DEFAULTSECTION.get('db_port') or db_engine.default_port
 
@@ -343,7 +348,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         # new site.
 
         if DEFAULTSECTION.getboolean('https'):
-            i.runcmd("sudo certbot-auto --nginx -d {}".format(server_domain))
+            i.runcmd("certbot-auto --nginx -d {}".format(server_domain))
             i.must_restart("nginx")
 
     click.echo("The new site {} has been created.".format(prjname))
