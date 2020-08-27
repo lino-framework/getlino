@@ -128,6 +128,7 @@ class UbuntuDockerTest(DockerTestMixin, TestCase):
 #@unittest.skip("20200727")
 class DebianDockerTest(DockerTestMixin, TestCase):
     docker_image = "debian_with_getlino"
+    tested_applications = ['cosi', 'noi', 'avanti', 'std']
 
     def test_production_server(self):
         """

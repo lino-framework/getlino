@@ -4,6 +4,16 @@
 Changes in `getlino`
 =======================
 
+2020-08-27
+==========
+
+:cmd:`getlino startsite` has now the database options (db-engine, db-user etc)
+so that you can override them per site without needing to run getlino configure.
+Added a new choice :mod:`lino.projects.std` for the `APPNAME` argument of
+:cmd:`getlino startsite`. Fixed a warning :message:`bash: warning: setlocale:
+LC_ALL: cannot change locale (en_US.UTF-8)` during test run.
+
+
 2020-07-29
 ==========
 

@@ -29,7 +29,7 @@ every test suite, only once.
 - ``debian_updated`` = a virgin Debian buster + apt upgrade + create a user "lino"
 - ``debian_with_getlino`` = `debian_updated` + add the current getlino source files
 - ``ubuntu_updated`` : same as `debian_updated` but with Ubuntu
-- ``ubuntu_with_getlino`` : sames as `debian_with_getlino` but with Ubuntu
+- ``ubuntu_with_getlino`` : same as `debian_with_getlino` but with Ubuntu
 
 You can see the available docker images on your computer:
 
@@ -95,16 +95,22 @@ working on this container:
 As you can see, the :file:`hello.txt` from your previous session is still there.
 
 You can start a container in "detached mode", that is, without attaching it to
-your terminal:
+your terminal. The :cmd:`docker start` command returns you immediately to the
+shell prompt and the container continues running in background:
 
 .. code-block::
 
   $ docker start 97621d803236
+
+You can now run one bash command at a time from the command line:
+
+.. code-block::
+
   $ docker exec 97621d803236 /bin/bash -c "cat hello.txt"
   Hello, world!
   $
 
-The difference is that the container now continues to run in the background:
+We can verify that the container is still running in the background:
 
 .. code-block::
 
@@ -143,7 +149,39 @@ the file :file:`tests/test_docker.py`
 
   $ docker run --publish 8000:8080 --detach --name mycont getlino_debian
 
+Docker uses much disk space
+===========================
 
+How to see how much disk space docker is using on your computer::
+
+  $ docker system df
+  TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
+  Images              34                  5                   5.1GB               5.1GB (99%)
+  Containers          11                  2                   17GB                14.13GB (83%)
+  Local Volumes       0                   0                   0B                  0B
+  Build Cache         0                   0                   0B                  0B
+
+To get more details, you can also run::
+
+  $ docker system df -v
+
+
+From time to time I tidy up and remove all rebuildable containers::
+
+  $ docker system prune
+  WARNING! This will remove:
+    - all stopped containers
+    - all networks not used by at least one container
+    - all dangling images
+    - all dangling build cache
+
+  Are you sure you want to continue? [y/N] y
+  Deleted Containers:
+  cdd408dc0ee130d4498c82f0eed6609445b3ae290ef21c7739ef29ceca99fbd4
+  493ae1128f25bc144598661eaf854de527cdc7b4795ba1a34f9e46a0aa852012
+  48f9d5220778b8efd7db4bb041659b9b058f993e234e770e803e4cbeb18e4124
+  ...
+  Total reclaimed space: 27.53GB
 
 
 

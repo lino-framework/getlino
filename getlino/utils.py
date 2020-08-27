@@ -140,6 +140,16 @@ class PostgreSQL(DbEngine):
 
 DB_ENGINES = [MySQL(), PostgreSQL(), SQLite()]
 
+def default_db_engine():
+    return ifroot("mysql", 'sqlite3')
+
+def resolve_db_engine(db_engine):
+    for e in DB_ENGINES:
+        if e.name == db_engine:
+            return e
+    raise click.ClickException("Invalid --db-engine '{}'.".format(db_engine))
+
+
 
 Repo = collections.namedtuple(
     'Repo', 'nickname package_name git_repo settings_module front_end')
@@ -193,6 +203,9 @@ add("cosi_ee", "", "", "lino_book.projects.cosi_ee.settings.demo")
 add("lydia", "", "", "lino_book.projects.lydia.settings.demo")
 add("team", "", "", "lino_book.projects.team.settings.demo")
 add("chatter", "", "", "lino_book.projects.chatter.settings")
+
+# e.g. for installing a non-Lino site like mailman
+add("std", "", "", "lino.projects.std.settings")
 
 APPNAMES = [a.nickname for a in KNOWN_REPOS if a.settings_module]
 FRONT_ENDS = [a for a in KNOWN_REPOS if a.front_end]

@@ -10,7 +10,7 @@ from os.path import join
 
 from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
 from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
-from .utils import Installer, ifroot
+from .utils import Installer, ifroot, default_db_engine, resolve_db_engine
 
 SITES_AVAILABLE = '/etc/nginx/sites-available'
 SITES_ENABLED = '/etc/nginx/sites-enabled'
@@ -52,8 +52,16 @@ def default_shared_env():
               help="List of packages for which to install development version")
 @click.option('--shared-env', default=default_shared_env,
               help="Directory with shared virtualenv")
+@click.option('--db-engine', default=default_db_engine, help="Database engine to use.",
+    type=click.Choice([e.name for e in DB_ENGINES]))
+@click.option('--db-port', help="Database port to use.")
+@click.option('--db-host', default='localhost', help="Database host name to use.")
+@click.option('--db-user', help="Database user name to use. Leave empty to use the project name.")
+@click.option('--db-password', help="Password for database user. Leave empty to generate a secure password.")
 @click.pass_context
-def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
+def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
+              db_engine, db_port, db_host, db_user, db_password,
+):
     """
     Create a new Lino site.
 
@@ -93,22 +101,14 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                  + server_domain
     secret_key = secrets.token_urlsafe(20)
 
-    db_engine = None
-    for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name:
-            db_engine = e
-            break
-    if db_engine is None:
-        raise click.ClickException(
-            "Invalid --db-engine '{}'. Run getlino configure.".format(
-                DEFAULTSECTION.get('db_engine')))
+    db_engine = resolve_db_engine(db_engine or DEFAULTSECTION.get('db_engine'))
 
     if db_engine.needs_root and not ifroot():
         raise click.ClickException(
             "You need to be root for doing startsite with {}".format(db_engine))
 
-    db_host = DEFAULTSECTION.get('db_host')
-    db_port = DEFAULTSECTION.get('db_port') or db_engine.default_port
+    db_host = db_host or DEFAULTSECTION.get('db_host')
+    db_port = db_port or DEFAULTSECTION.get('db_port') or db_engine.default_port
 
     usergroup = DEFAULTSECTION.get('usergroup')
 
