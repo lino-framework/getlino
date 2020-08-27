@@ -15,9 +15,9 @@ before_install:
 install:
   # - pip3 install -U setuptools
   - pip3 install -e .
-  - pip3 install docker atelier lino_book
+  - pip3 install docker atelier
 
 # command to run tests, e.g. python setup.py test
 script:
   - bash prep.sh
-  - inv test bd
+  - inv test
