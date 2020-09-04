@@ -11,6 +11,7 @@ from os.path import join
 from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
 from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
 from .utils import Installer, ifroot, default_db_engine, resolve_db_engine
+from .utils import which_certbot
 
 SITES_AVAILABLE = '/etc/nginx/sites-available'
 SITES_ENABLED = '/etc/nginx/sites-enabled'
@@ -348,7 +349,10 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
         # new site.
 
         if DEFAULTSECTION.getboolean('https'):
-            i.runcmd("certbot-auto --nginx -d {}".format(server_domain))
+            certbot_cmd = which_certbot()
+            if certbot is None:
+                raise click.ClickException("Oops, certbot is not installed.")
+            i.runcmd("{} --nginx -d {}".format(certbot_cmd, server_domain))
             i.must_restart("nginx")
 
     click.echo("The new site {} has been created.".format(prjname))

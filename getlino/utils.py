@@ -228,6 +228,10 @@ def has_usergroup(usergroup):
             return True
     return False
 
+def which_certbot():
+    for x in ["certbot",  "certbot-auto"]:
+        if shutil.which(x):
+            return x
 
 class Installer(object):
     """Volatile object used by :mod:`getlino.configure` and :mod:`getlino.startsite`.
@@ -446,18 +450,23 @@ sudo adduser `whoami` {1}"""
     def run_apt_install(self):
         if len(self._system_packages) == 0:
             return
-        if not ifroot() and not has_usergroup('sudo'):
-            click.echo(
-                "The following system packages were not "
-                "installed because you cannot sudo:\n{}".format(
-                    ' '.join(list(self._system_packages))))
-            return
         # click.echo("Must install {} system packages: {}".format(
         #     len(self._system_packages), ' '.join(self._system_packages)))
-        cmd = "sudo apt-get install -q "
+        cmd = "apt-get install -q "
         if self.batch:
             cmd += "-y "
-        self.runcmd(cmd + ' '.join(self._system_packages))
+        cmd +=  ' '.join(self._system_packages)
+        self._system_packages = []
+        if ifroot():
+            pass
+        elif has_usergroup('sudo'):
+            cmd = "sudo " + cmd
+        else:
+            click.echo(
+                "The following command was not executed "
+                "because you cannot sudo:\n{}".format(cmd))
+            return
+        self.runcmd(cmd)
 
     def restart_services(self):
         if len(self._services) == 0:

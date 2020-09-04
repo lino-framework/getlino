@@ -4,6 +4,13 @@
 Changes in `getlino`
 =======================
 
+2020-09-02
+==========
+
+getlino can now install certbot either using the Debian packager or using
+certbot-auto. getlino now supports calling :meth:`Installer.run_apt_install`
+more than once during an installation session.
+
 2020-08-27
 ==========
 
