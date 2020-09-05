@@ -38,7 +38,7 @@ class DockerTestMixin:
             lines = ''
             for ln in output:
                 ln = ln.decode('utf-8')
-                print(ln)
+                print(ln, end='')
                 lines += ln
             return lines
         else:
