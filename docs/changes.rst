@@ -76,7 +76,7 @@ Remove useless command to copy "mysql_config" file for MariaDB.
 2020-05-14
 ==========
 
-.. program:: getlino configure
+.. command:: getlino configure
 
 Bugfix : Without :option:`--clone`, the :option:`--shared-env` now defaults to
 an empty string.
