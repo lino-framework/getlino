@@ -18,7 +18,7 @@ getlino
    changes
 
 .. toctree::
-  :hidden:
+   :hidden:
 
    install
    usage

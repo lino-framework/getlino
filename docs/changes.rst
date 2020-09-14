@@ -76,10 +76,10 @@ Remove useless command to copy "mysql_config" file for MariaDB.
 2020-05-14
 ==========
 
-.. command:: getlino configure
+.. program:: getlino configure
 
-Bugfix : Without :option:`--clone`, the :option:`--shared-env` now defaults to
-an empty string.
+Bugfix : :cmd:`getlino configure` without `--clone`, the `--shared-env` now
+defaults to an empty string.
 
 
 2020-05-04
@@ -135,10 +135,12 @@ shared virtualenv was still using the project_dir.
 2019-11-07
 ==========
 
-The :option:`getlino configure --https` option was appending directly to the
+.. program:: getlino configure
+
+The :option:`--https` option was appending directly to the
 main :file:`/etc/crontab` file. Fixed.
 
-Fixed some minor bugs.  For example the :option:`getlino configure --redis` option
+Fixed some minor bugs.  For example the :option:`--redis` option
 was ignored when not running as root.
 
 Released 19.11.0 to PyPI.
@@ -196,7 +198,7 @@ option sometimes had `True` as default value.
 
 .. program:: getlino configure
 
-The :option:`getlino configure --db-port` shows the default ports of databases.
+The :option:`--db-port` shows the default ports of databases.
 
 
 2019-09-19
@@ -204,7 +206,7 @@ The :option:`getlino configure --db-port` shows the default ports of databases.
 
 .. program:: getlino configure
 
-The :option:`getlino configure --clone` option installs all contributor
+The :option:`--clone` option installs all contributor
 repositories, i.e. those  required to build the book. Some repositories were
 still missing. Fixed.  Also separated the sequence of resulting actions: first
 run "git clone" for all repos, then "pip install -e".
