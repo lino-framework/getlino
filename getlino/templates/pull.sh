@@ -9,29 +9,29 @@
 set -e
 umask 0007
 
-PRJDIR={{project_dir}}
-ENVDIR=$PRJDIR/{{env_link}}
+PRJDIR=`pwd`
+ENVDIR={{envdir}}
 REPOS=$ENVDIR/{{repos_link}}
 
 function pull() {
     repo=$REPOS/$1
-    cd $repo
-    pwd
-    git pull
+    cd $repo && pwd && git pull && cd -
     find -name '*.pyc' -exec rm -f {} +
     cd $PRJDIR
 }
 
-cd $PRJDIR
 . $ENVDIR/bin/activate
 LOGFILE=$VIRTUAL_ENV/freeze.log
 echo "Run pull.sh in $PRJDIR ($VIRTUAL_ENV)" >> $LOGFILE
 date >> $LOGFILE
-pip freeze >> $LOGFILE
+python -m pip freeze >> $LOGFILE
+python -m pip install -U pip
 
-{% for name in dev_packages.split() -%}
+{% if dev_packages -%}
+{% for name in dev_packages.split() %}
 pull {{name}}
-{%- endfor %}
+{% endfor %}
+{%- endif %}
 
 {% if pip_packages -%}
 pip install -U {{pip_packages}}

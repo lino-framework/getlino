@@ -11,13 +11,14 @@ getlino
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   usage
+   docker
    api/index
    changes
 
 .. toctree::
-  :hidden:
+   :hidden:
 
-  install
+   install
+   usage

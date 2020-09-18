@@ -1,5 +1,5 @@
 #!python
-# Copyright 2019 Rumma & Ko Ltd
+# Copyright 2019-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
 """Some utilities for getlino.
@@ -7,18 +7,24 @@
 
 import os
 from os.path import join, expanduser
+from pathlib import Path
 import stat
 import shutil
-import grp
+try:
+    import grp
+except ImportError:
+    grp = None  # e.g. on Windows
 import configparser
 import subprocess
 import click
-import platform
+# import platform
+import distro
 import collections
 import getpass
 from contextlib import contextmanager
 import virtualenv
 from jinja2 import Environment, PackageLoader
+from .setup_info import SETUP_INFO
 
 JINJA_ENV = Environment(loader=PackageLoader('getlino', 'templates'))
 
@@ -44,45 +50,105 @@ LOGROTATE_CONF = """
 }}
 """
 
-if False:
-    class DbEngine(object):
-        def __init__(self):
-            self.name
-            self.service
-            self.apt_packages
-            self.python_packages
 
-        def get_apt_packages(self):
-            return self.apt_packages.split()
+class DbEngine(object):
+    name = None  # Note that the DbEngine.name field must match the Django engine name
+    service = None
+    apt_packages = ''
+    python_packages = ''
+    needs_root = False
+    "Whether you need to be root in order to create users and databases."
 
-    class MySQL(DbEngine):
-        def get_apt_packages(self):
-            if platform.dist()[0] == "Debian":
-                return "mariadb..."
-            else:
-                return "mysql-server..."
+    def runcmd(self, i, sqlcmd):
+        pass
+
+    def setup_database(self, i, database, user, db_host):
+        click.echo("No setup needed for " + self.name)
+
+    def setup_user(self, i, context):
+        click.echo("No need to setup user for " + self.name)
+
+    def after_prep(self, i, context):
+        pass
+
+class SQLite(DbEngine):
+    name = 'sqlite3'
+    default_port = ""
+
+    def after_prep(self, i, context):
+        project_dir = context['project_dir']
+        prjname = context['prjname']
+        pth = os.path.join(project_dir, prjname)
+        if os.path.exists(pth):
+            with i.override_batch(True):
+                i.check_permissions(pth)
 
 
-# Note that the DbEngine.name field must match the Django engine name
-DbEngine = collections.namedtuple(
-    'DbEngine', ('name service apt_packages python_packages default_port'))
-DB_ENGINES = []
-DB_ENGINES.append(
-    DbEngine('postgresql', 'postgresql', "postgresql postgresql-contrib libpq-dev python-dev", "psycopg2", "5432"))
-    # https://pypi.org/project/psycopg2/ : "The psycopg2-binary package is a
-    # practical choice for development and testing but in production it is
-    # advised to use the package built from sources."
 
-mariadb_apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
-    "python-dev libffi-dev libssl-dev python-mysqldb"
-# apt_packages = "mysql-server libmysqlclient-dev"
-# TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
-# apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
-if platform.dist()[0].lower() == "debian":
-    DB_ENGINES.append(DbEngine('mysql', 'mariadb', mariadb_apt_packages, "mysqlclient", "3306"))
-else:
-    DB_ENGINES.append(DbEngine('mysql', 'mysql', "mysql-server libmysqlclient-dev", "mysqlclient", "3306"))
-DB_ENGINES.append(DbEngine('sqlite3', '', "sqlite3", "", "0"))
+class MySQL(DbEngine):
+    name = 'mysql'
+    service = 'mysql'
+    default_port = "3306"
+    apt_packages = "mysql-server libmysqlclient-dev"
+    python_packages = "mysqlclient"
+    needs_root = True
+
+    def __init__(self):
+        super(MySQL, self).__init__()
+        # apt_packages = "mysql-server libmysqlclient-dev"
+        # TODO: support different platforms (Debian, Ubuntu, Elementary, ...)
+        # apt_packages += " python-dev libffi-dev libssl-dev python-mysqldb"
+        if distro.id() == "debian":
+            # package name is mariadb but service name remains mysql
+            # self.service = 'mariadb'
+            self.apt_packages = "mariadb-server libmariadb-dev-compat libmariadb-dev "\
+                "python-dev libffi-dev libssl-dev"
+                # "python-dev libffi-dev libssl-dev python-mysqldb"
+
+    def run(self, i, sqlcmd):
+        options = "" if i.batch else "-p"
+        return i.runcmd('mysql -u root {} -e "{};"'.format(options, sqlcmd))
+
+    def setup_user(self, i, context):
+        self.run(i, "create user '{db_user}'@'{db_host}' identified by '{db_password}'".format(**context))
+
+    def setup_database(self, i, database, user, db_host):
+        self.run(i, "create database {database} charset 'utf8'".format(**locals()))
+        self.run(i, "grant all PRIVILEGES on {database}.* to '{user}'@'{db_host}'".format(**locals()))
+
+class PostgreSQL(DbEngine):
+    name = 'postgresql'
+    service = 'postgresql'
+    apt_packages = "postgresql postgresql-contrib libpq-dev python-dev"
+    # python_packages = "psycopg2"
+    python_packages = "psycopg2-binary"
+    default_port = "5432"
+    needs_root = True
+
+    def run(self, i, cmd):
+        assert '"' not in cmd
+        # self.runcmd('sudo -u postgres bash -c "psql -c \\\"{}\\\""'.format(cmd))
+        i.runcmd('sudo -u postgres psql -c "{}"'.format(cmd))
+
+    def setup_user(self, i, context):
+        self.run(i, "CREATE USER {db_user} WITH PASSWORD '{db_password}';".format(**context))
+
+    def setup_database(self, i, database, user, db_host):
+        self.run(i, "CREATE DATABASE {database};".format(**locals()))
+        self.run(i, "GRANT ALL PRIVILEGES ON DATABASE {database} TO {user};".format(**locals()))
+
+
+DB_ENGINES = [MySQL(), PostgreSQL(), SQLite()]
+
+def default_db_engine():
+    return ifroot("mysql", 'sqlite3')
+
+def resolve_db_engine(db_engine):
+    for e in DB_ENGINES:
+        if e.name == db_engine:
+            return e
+    raise click.ClickException("Invalid --db-engine '{}'.".format(db_engine))
+
 
 
 Repo = collections.namedtuple(
@@ -104,6 +170,7 @@ add("be", "commondata.be", "https://github.com/lsaffre/commondata-be")
 add("ee", "commondata.ee", "https://github.com/lsaffre/commondata-ee")
 add("eg", "commondata.eg", "https://github.com/lsaffre/commondata-eg")
 add("atelier", "atelier", "https://github.com/lino-framework/atelier")
+add("rstgen", "rstgen", "https://github.com/lino-framework/rstgen")
 add("etgen", "etgen", "https://github.com/lino-framework/etgen")
 add("eid", "eidreader", "https://github.com/lino-framework/eidreader")
 
@@ -122,10 +189,13 @@ add("vilma", "lino-vilma", "https://github.com/lino-framework/vilma", "lino_vilm
 add("voga", "lino-voga", "https://github.com/lino-framework/voga", "lino_voga.lib.voga.settings")
 add("weleup", "lino-weleup", "https://github.com/lino-framework/weleup", "lino_weleup.settings")
 add("welcht", "lino-welcht", "https://github.com/lino-framework/welcht", "lino_welcht.settings")
+add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.lib.ciao.settings")
 
 add("book", "lino-book", "https://github.com/lino-framework/book")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
-# experimental: an application which has no repo on its own
+add("openui5", "lino-openui5", "https://github.com/lino-framework/openui5", "", "lino_openui5.openui5")
+
+# experimental: applications that have no repo on their own
 add("min1", "", "", "lino_book.projects.min1.settings")
 add("min2", "", "", "lino_book.projects.min2.settings")
 add("polls", "", "", "lino_book.projects.polls.mysite.settings")
@@ -133,6 +203,9 @@ add("cosi_ee", "", "", "lino_book.projects.cosi_ee.settings.demo")
 add("lydia", "", "", "lino_book.projects.lydia.settings.demo")
 add("team", "", "", "lino_book.projects.team.settings.demo")
 add("chatter", "", "", "lino_book.projects.chatter.settings")
+
+# e.g. for installing a non-Lino site like mailman
+add("std", "", "", "lino.projects.std.settings")
 
 APPNAMES = [a.nickname for a in KNOWN_REPOS if a.settings_module]
 FRONT_ENDS = [a for a in KNOWN_REPOS if a.front_end]
@@ -143,10 +216,22 @@ FOUND_CONFIG_FILES = CONFIG.read(CONF_FILES)
 DEFAULTSECTION = CONFIG[CONFIG.default_section]
 
 def ifroot(true=True, false=False):
+    if not hasattr(os, 'geteuid'):
+        return false
     if os.geteuid() == 0:
         return true
     return false
 
+def has_usergroup(usergroup):
+    for gid in os.getgroups():
+        if grp.getgrgid(gid).gr_name == usergroup:
+            return True
+    return False
+
+def which_certbot():
+    for x in ["certbot",  "certbot-auto"]:
+        if shutil.which(x):
+            return x
 
 class Installer(object):
     """Volatile object used by :mod:`getlino.configure` and :mod:`getlino.startsite`.
@@ -158,6 +243,10 @@ class Installer(object):
         self._system_packages = set()
         if ifroot():
             click.echo("Running as root.")
+        click.echo("This is getlino version {} running on {} ({} {}).".format(
+            SETUP_INFO['version'], distro.name(pretty=True),
+            distro.id(), distro.codename()))
+
 
     def check_overwrite(self, pth):
         """If `pth` (directory or file) exists, remove it after asking for confirmation.
@@ -210,6 +299,7 @@ class Installer(object):
             click.echo(cmd)
             cp = subprocess.run(cmd, **kw)
             if cp.returncode != 0:
+                # subprocess.run("sudo journalctl -xe", **kw)
                 raise click.ClickException(
                 "{} ended with return code {}".format(cmd, cp.returncode))
 
@@ -227,7 +317,7 @@ class Installer(object):
     def check_permissions(self, pth, executable=False):
         si = os.stat(pth)
 
-        if ifroot():
+        if grp and ifroot():
             # check whether group owner is what we want
             usergroup = DEFAULTSECTION.get('usergroup')
             if grp.getgrgid(si.st_gid).gr_name != usergroup:
@@ -268,54 +358,45 @@ class Installer(object):
                 self.check_permissions(pth, **kwargs)
             return True
 
+    def write_daily_cron_job(self, filename, content):
+        fn = Path('/etc/cron.daily') / filename
+        if fn.exists():
+            return
+        self.write_file(fn, content)
+        self.check_permissions(fn, executable=True)
+
     def write_supervisor_conf(self, filename, content):
         self.write_file(
             join(DEFAULTSECTION.get('supervisor_dir'), filename), content)
         self.must_restart('supervisor')
 
-    def setup_database(self, database, user, pwd, db_engine):
-        if db_engine.name == 'sqlite3':
-            click.echo("No setup needed for " + db_engine.name)
-        elif db_engine.name == 'mysql':
-            def run(cmd):
-                self.runcmd('mysql -u root -p -e "{};"'.format(cmd))
-            run("create user '{user}'@'localhost' identified by '{pwd}'".format(**locals()))
-            run("create database {database} charset 'utf8'".format(**locals()))
-            run("grant all PRIVILEGES on {database}.* to '{user}'@'localhost'".format(**locals()))
-        elif db_engine.name == 'postgresql':
-            def run(cmd):
-                assert '"' not in cmd
-                # self.runcmd('sudo -u postgres bash -c "psql -c \\\"{}\\\""'.format(cmd))
-                self.runcmd('sudo -u postgres psql -c "{}"'.format(cmd))
-            run("CREATE USER {user} WITH PASSWORD '{pwd}';".format(**locals()))
-            run("CREATE DATABASE {database};".format(**locals()))
-            run("GRANT ALL PRIVILEGES ON DATABASE {database} TO {user};".format(**locals()))
-        else:
-            click.echo("Warning: Don't know how to setup " + db_engine.name)
+    def make_file_executable(self,file_path):
+        """ Make a file executable """
+        st = os.stat(file_path)
+        os.chmod(file_path,0o775)
+        #os.chmod(file_path, st.st_mode | stat.S_IEXEC)
 
-    def run_apt_install(self):
-        if len(self._system_packages) == 0:
-            return
-        # click.echo("Must install {} system packages: {}".format(
-        #     len(self._system_packages), ' '.join(self._system_packages)))
-        cmd = "apt-get install "
-        if self.batch:
-            cmd += "-y "
-        self.runcmd(cmd + ' '.join(self._system_packages))
-
-    def check_virtualenv(self, envdir):
+    def check_virtualenv(self, envdir, context):
+        pull_sh_path = join(envdir, 'bin', 'pull.sh')
+        ok = False
         if os.path.exists(envdir):
-            return True
+            ok = True
             # msg = "Update virtualenv in {}"
             # return self.batch or click.confirm(msg.format(envdir), default=True)
-        msg = "Create virtualenv in {}"
-        if self.batch or self.yes_or_no(msg.format(envdir), default=True):
-            # create an empty directory and fix permissions
-            os.makedirs(envdir)
-            self.check_permissions(envdir)
-            virtualenv.create_environment(envdir)
-            return True
-        return False
+        else:
+            msg = "Create virtualenv in {}"
+            if self.batch or self.yes_or_no(msg.format(envdir), default=True):
+                # create an empty directory and fix permissions
+                os.makedirs(envdir)
+                self.check_permissions(envdir)
+                virtualenv.cli_run([envdir,'--python','python3'])
+                ok = True
+        if ok:
+            context.update(envdir=envdir)
+            if not os.path.exists(pull_sh_path):
+                self.jinja_write(pull_sh_path, **context)
+            self.make_file_executable(pull_sh_path)
+        return ok
 
     def clone_repo(self, repo):
         branch = DEFAULTSECTION.get('branch')
@@ -327,18 +408,20 @@ class Installer(object):
                     repo.nickname))
 
     def install_repo(self, repo, env):
-        self.run_in_env(env, "pip install -e {}".format(repo.nickname))
+        self.run_in_env(env, "pip install -q -e {}".format(repo.nickname))
 
     def check_usergroup(self, usergroup):
+        # not used since 20200720
         if ifroot():
             return
-        for gid in os.getgroups():
-            if grp.getgrgid(gid).gr_name == usergroup:
-                return
+        if grp is None:
+            return
+        if has_usergroup(usergroup):
+            return
         msg = """\
 You {0} don't belong to the {1} user group.  Maybe you want to run:
 sudo adduser `whoami` {1}"""
-        raise click.ClickException(msg.format(getpass.getuser(),usergroup))
+        raise click.ClickException(msg.format(getpass.getuser(), usergroup))
 
     def write_logrotate_conf(self, conffile, logfile):
         ctx = {}
@@ -364,26 +447,44 @@ sudo adduser `whoami` {1}"""
             fh.write(s)
         return True
 
-
-    def finish(self):
-        if not ifroot():
-            if len(self._system_packages):
-                click.echo(
-                    "Note that the following system packages were not "
-                    "installed because you aren't root:\n{}".format(
-                        ' '.join(list(self._system_packages))))
-            if len(self._services):
-                click.echo(
-                    "The following system services were not "
-                    "restarted because you aren't root:\n{}".format(
-                        ' '.join(list(self._services))))
+    def run_apt_install(self):
+        if len(self._system_packages) == 0:
             return
+        # click.echo("Must install {} system packages: {}".format(
+        #     len(self._system_packages), ' '.join(self._system_packages)))
+        cmd = "apt-get install -q "
+        if self.batch:
+            cmd += "-y "
+        cmd +=  ' '.join(self._system_packages)
+        self._system_packages = []
+        if ifroot():
+            pass
+        elif has_usergroup('sudo'):
+            cmd = "sudo " + cmd
+        else:
+            click.echo(
+                "The following command was not executed "
+                "because you cannot sudo:\n{}".format(cmd))
+            return
+        self.runcmd(cmd)
 
-        self.run_apt_install()
-
-        if len(self._services):
-            msg = "Restart services {}".format(self._services)
-            if self.batch or self.yes_or_no(msg, default=True):
-                with self.override_batch(True):
-                    for srv in self._services:
-                        self.runcmd("service {} restart".format(srv))
+    def restart_services(self):
+        if len(self._services) == 0:
+            return
+        if not ifroot() and not has_usergroup('sudo'):
+            click.echo(
+                "The following system services were not "
+                "restarted because you cannot sudo:\n{}".format(
+                    ' '.join(list(self._services))))
+            return
+        msg = "Restart services {}".format(self._services)
+        if self.batch or self.yes_or_no(msg, default=True):
+            with self.override_batch(True):
+                for srv in self._services:
+                    try:
+                        self.runcmd("sudo service {} restart".format(srv))
+                    except Exception:
+                        try:
+                            self.runcmd("sudo /etc/init.d/{}  restart".format(srv))
+                        except Exception:
+                            continue

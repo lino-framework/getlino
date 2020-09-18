@@ -1,5 +1,4 @@
 setuptools
 click
 virtualenv
-cookiecutter
 atelier

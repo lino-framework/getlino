@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 from {{app_settings_module}} import *
-from lino_local.settings import *
+from {{local_prefix}}.settings import *
 
-import logging
-logging.getLogger('weasyprint').setLevel("ERROR") # see #1462
+# import logging
+# logging.getLogger('weasyprint').setLevel("ERROR") # see #1462
 
 
 class Site(Site):
@@ -15,7 +15,7 @@ class Site(Site):
     {% if languages %}
     languages = '{{languages}}'
     {% endif %}
-    use_linod = {{linod}}
+    use_linod = True
     default_ui = '{{front_end}}'
 
     def get_plugin_configs(self):
@@ -27,8 +27,10 @@ SITE = Site(globals())
 
 {% if server_domain == "localhost" %}
 DEBUG = True
+# ALLOWED_HOSTS = ['{{server_domain}}']
 {% else %}
-DEBUG = False
+DEBUG = False  # "{{server_domain}}"
+ALLOWED_HOSTS = ['{{server_domain}}']
 {% endif %}
 
 SECRET_KEY = '{{secret_key}}'
@@ -37,10 +39,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.{{db_engine}}',
         'NAME': '{{db_name}}',
-        'USER': '{{db_user}}',
-        'PASSWORD': '{{db_password}}',
-        'HOST': '{{db_host}}',
-        'PORT': {{db_port}},
+        {%- if db_engine != "sqlite3" %}
+            'USER': '{{db_user}}',
+            'PASSWORD': '{{db_password}}',
+            'HOST': '{{db_host}}',
+            'PORT': {{db_port}},
+        {% endif -%}
         {%- if db_engine == "mysql" %}
         'OPTIONS': {
            "init_command": "SET default_storage_engine=MyISAM",
@@ -50,5 +54,3 @@ DATABASES = {
 }
 
 EMAIL_SUBJECT_PREFIX = '[{{prjname}}] '
-
-ALLOWED_HOSTS = ['{{server_domain}}']

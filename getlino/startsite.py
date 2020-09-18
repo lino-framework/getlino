@@ -1,4 +1,4 @@
-# Copyright 2019 Rumma & Ko Ltd
+# Copyright 2019-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
 import os
@@ -10,7 +10,8 @@ from os.path import join
 
 from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
 from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
-from .utils import Installer, ifroot
+from .utils import Installer, ifroot, default_db_engine, resolve_db_engine
+from .utils import which_certbot
 
 SITES_AVAILABLE = '/etc/nginx/sites-available'
 SITES_ENABLED = '/etc/nginx/sites-enabled'
@@ -53,8 +54,16 @@ def default_shared_env():
               help="List of packages for which to install development version")
 @click.option('--shared-env', default=default_shared_env,
               help="Directory with shared virtualenv")
+@click.option('--db-engine', default=default_db_engine, help="Database engine to use.",
+    type=click.Choice([e.name for e in DB_ENGINES]))
+@click.option('--db-port', help="Database port to use.")
+@click.option('--db-host', default='localhost', help="Database host name to use.")
+@click.option('--db-user', help="Database user name to use. Leave empty to use the project name.")
+@click.option('--db-password', help="Password for database user. Leave empty to generate a secure password.")
 @click.pass_context
-def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
+def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
+              db_engine, db_port, db_host, db_user, db_password,
+):
     """
     Create a new Lino site.
 
@@ -87,21 +96,21 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     # shared_env = DEFAULTSECTION.get('shared_env')
     admin_name = DEFAULTSECTION.get('admin_name')
     admin_email = DEFAULTSECTION.get('admin_email')
-    server_domain = prjname + "." + DEFAULTSECTION.get('server_domain')
+    server_domain = DEFAULTSECTION.get('server_domain')
+    if ifroot() and USE_NGINX:
+        server_domain = prjname + "." + server_domain
     server_url = ("https://" if DEFAULTSECTION.getboolean('https') else "http://") \
                  + server_domain
     secret_key = secrets.token_urlsafe(20)
-    db_engine = None
-    for e in DB_ENGINES:
-        if DEFAULTSECTION.get('db_engine') == e.name:
-            db_engine = e
-            break
-    if db_engine is None:
+
+    db_engine = resolve_db_engine(db_engine or DEFAULTSECTION.get('db_engine'))
+
+    if db_engine.needs_root and not ifroot():
         raise click.ClickException(
-            "Invalid --db-engine '{}'. Run getlino configure.".format(
-                DEFAULTSECTION.get('db_engine')))
-    db_host = DEFAULTSECTION.get('db_host')
-    db_port = DEFAULTSECTION.get('db_port') or db_engine.default_port
+            "You need to be root for doing startsite with {}".format(db_engine))
+
+    db_host = db_host or DEFAULTSECTION.get('db_host')
+    db_port = db_port or DEFAULTSECTION.get('db_port') or db_engine.default_port
 
     usergroup = DEFAULTSECTION.get('usergroup')
 
@@ -115,7 +124,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
     if front_end is None:
         raise click.ClickException("Invalid front_end name '{}''".format(front_end))
 
-    i.check_usergroup(usergroup)
+    # i.check_usergroup(usergroup)
 
     if dev_repos:
         for k in dev_repos.split():
@@ -163,7 +172,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         "app_package": app_package,
         "app_settings_module": app.settings_module,
         "django_settings_module": "{}.{}.settings".format(local_prefix, prjname),
-        "server_domain":server_domain,
+        "server_domain": server_domain,
         "server_url": server_url,
         "dev_packages": ' '.join([a.nickname for a in KNOWN_REPOS if a.nickname in dev_repos]),
         "pip_packages": ' '.join(pip_packages),
@@ -177,8 +186,10 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             **context))
 
     db_user = DEFAULTSECTION.get('db_user')
+    shared_user = False
     if db_user:
         db_password = DEFAULTSECTION.get('db_password')
+        shared_user = True
     else:
         db_user = prjname
         db_password = secrets.token_urlsafe(8)
@@ -200,9 +211,6 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         #     admin_email = click.prompt("Administrator's full name", default=admin_email)
         secret_key = click.prompt("Site's secret key", default=secret_key)
 
-    if not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
-        raise click.Abort()
-
     context.update({
         "db_host": db_host,
         "db_port": db_port,
@@ -211,32 +219,24 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         "secret_key": secret_key,
     })
 
+    if not i.yes_or_no("OK to create {} with above options?".format(project_dir)):
+        raise click.Abort()
+
     os.umask(0o002)
 
-    if True:
-        os.makedirs(join(project_dir, "nginx"), exist_ok=True)
-        i.jinja_write(join(project_dir, "settings.py"), **context)
-        i.jinja_write(join(project_dir, "manage.py"), **context)
-        i.jinja_write(join(project_dir, "pull.sh"), **context)
+    os.makedirs(project_dir, exist_ok=True)
+    i.jinja_write(join(project_dir, "settings.py"), **context)
+    i.jinja_write(join(project_dir, "manage.py"), **context)
+    # pull.sh script is now in the virtualenv's bin folder
+    #i.jinja_write(join(project_dir, "pull.sh"), **context)
+    if ifroot():
         i.jinja_write(join(project_dir, "make_snapshot.sh"), **context)
+        i.make_file_executable(join(project_dir, "make_snapshot.sh"))
+        os.makedirs(join(project_dir, "nginx"), exist_ok=True)
         i.jinja_write(join(project_dir, "wsgi.py"), **context)
         i.jinja_write(join(project_dir, "nginx", "uwsgi.ini"), **context)
         i.jinja_write(join(project_dir, "nginx", "uwsgi_params"), **context)
 
-    else:
-        from cookiecutter.main import cookiecutter
-        # click.echo("cookiecutter context is {}...".format(extra_context))
-        click.echo("Running cookiecutter {}...".format(COOKIECUTTER_URL))
-        cookiecutter(
-            COOKIECUTTER_URL,
-            no_input=True, extra_context=context, output_dir=python_path_root)
-        # /home/tonis/.cookiecutter_replay/ .cookiecutter_replay
-        # if ifroot():
-        #     with i.override_batch(True):
-        #         i.check_permissions(os.path.expanduser("~/.cookiecutter_replay"))
-        #         i.check_permissions(os.path.expanduser("~/.cookiecutter"))
-
-    if ifroot():
         logdir = join(DEFAULTSECTION.get("log_base"), prjname)
         os.makedirs(logdir, exist_ok=True)
         with i.override_batch(True):
@@ -246,6 +246,23 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                 'lino-{}.conf'.format(prjname),
                 join(logdir, "lino.log"))
 
+        backups_base_dir = join(DEFAULTSECTION.get("backups_base"), prjname)
+        os.makedirs(backups_base_dir, exist_ok=True)
+        with i.override_batch(True):
+            i.check_permissions(backups_base_dir)
+
+        content = """
+        #!/bin/sh
+        # generated by getlino
+        sudo service supervisor stop
+        {project_dir}/make_snapshot.sh > /dev/null
+        sudo service supervisor start
+        """.format(**context)
+        fn = 'make_snapshot_{prjname}.sh'.format(**context)
+        i.write_daily_cron_job(fn, content)
+
+
+
     if DEFAULTSECTION.getboolean('linod'):
         i.write_file(
             join(project_dir, 'linod.sh'),
@@ -254,24 +271,25 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
             i.write_supervisor_conf(
                 'linod_{}.conf'.format(prjname),
                 LINOD_SUPERVISOR_CONF.format(**context))
+            i.must_restart('supervisor')
 
     os.makedirs(join(project_dir, 'media'), exist_ok=True)
-
 
     if shared_env:
         envdir = shared_env
     else:
         envdir = join(project_dir, DEFAULTSECTION.get('env_link'))
 
-    i.check_virtualenv(envdir)
+    i.check_virtualenv(envdir, context)
 
     if shared_env:
         os.symlink(envdir, join(project_dir, DEFAULTSECTION.get('env_link')))
-        static_dir = join(shared_env, 'static')
-        if not os.path.exists(static_dir):
-            os.makedirs(static_dir, exist_ok=True)
+        static_root = join(shared_env, 'static_root')
+        if not os.path.exists(static_root):
+            os.makedirs(static_root, exist_ok=True)
 
     if dev_repos:
+        click.echo("dev_repos is {} --> {}".format(dev_repos, dev_repos.split()))
         repos = []
         for nickname in dev_repos.split():
             lib = REPOS_DICT.get(nickname, None)
@@ -279,7 +297,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                 raise click.ClickException("Invalid repository nickname {} in --dev-repos".format(nickname))
             repos.append(lib)
 
-        click.echo("Installing repositories...")
+        click.echo("Installing {} repositories...".format(len(repos)))
         full_repos_dir = DEFAULTSECTION.get('repos_base')
         if not full_repos_dir:
             full_repos_dir = join(envdir, DEFAULTSECTION.get('repos_link'))
@@ -292,12 +310,9 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
         for lib in repos:
             i.install_repo(lib, envdir)
 
-    click.echo("Installing Python packages...")
-    # for pkgname in pip_packages:
-    #     i.run_in_env(envdir, "pip install {}".format(pkgname))
-
     if len(pip_packages):
-        i.run_in_env(envdir, "pip install --upgrade {}".format(' '.join(pip_packages)))
+        click.echo("Installing {} Python packages...".format(len(pip_packages)))
+        i.run_in_env(envdir, "pip install -q --upgrade {}".format(' '.join(pip_packages)))
 
     if ifroot():
         if USE_NGINX:
@@ -311,21 +326,34 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env):
                         os.symlink(avpth, enpth)
             i.write_supervisor_conf('{}-uwsgi.conf'.format(prjname),
                  UWSGI_SUPERVISOR_CONF.format(**context))
+            i.must_restart("supervisor")
             i.must_restart("nginx")
-            if DEFAULTSECTION.getboolean('https'):
-                i.runcmd("certbot-auto --nginx -d {} -d www.{}".format(server_domain,server_domain))
-                i.must_restart("nginx")
 
     os.chdir(project_dir)
     i.run_in_env(envdir, "python manage.py install --noinput")
-    i.setup_database(prjname, db_user, db_password, db_engine)
+    if not shared_user:
+        db_engine.setup_user(i, context)
+    db_engine.setup_database(i, prjname, db_user, db_host)
     i.run_in_env(envdir, "python manage.py migrate --noinput")
     i.run_in_env(envdir, "python manage.py prep --noinput")
-    if db_engine.name == "sqlite3":
-        with i.override_batch(True):
-            i.check_permissions(os.path.join(project_dir, prjname))
-
+    db_engine.after_prep(i, context)
     if ifroot():
         i.run_in_env(envdir, "python manage.py collectstatic --noinput")
 
-    i.finish()
+    i.run_apt_install()
+    i.restart_services()
+
+    if ifroot() and USE_NGINX:
+        # I imagine that we need to actually restart nginx
+        # before running certbot-auto because otherwise certbot would add
+        # its entries to the default because it does does not yet see the
+        # new site.
+
+        if DEFAULTSECTION.getboolean('https'):
+            certbot_cmd = which_certbot()
+            if certbot is None:
+                raise click.ClickException("Oops, certbot is not installed.")
+            i.runcmd("{} --nginx -d {}".format(certbot_cmd, server_domain))
+            i.must_restart("nginx")
+
+    click.echo("The new site {} has been created.".format(prjname))

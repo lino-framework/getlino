@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2015-2019 Rumma & Ko Ltd
+# Copyright 2015-2020 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 #
 # Make a snapshot of a Lino database.
@@ -73,9 +73,19 @@ if [ "$MYSQL_USERNAME" != "" ] ; then
 fi
 echo "Writing $ZIPFILE..."
 zip -r $ZIPFILE $SNAPSHOTDIR
-zip -r $ZIPFILE fixtures
+
+if [ -f fixtures ] ; then
+  zip -r $ZIPFILE fixtures
+fi
+
+if [ -f media/webdav ] ; then
 zip -r $ZIPFILE media/webdav
+fi
+
+if [ -f media/beid ] ; then
 zip -r $ZIPFILE media/beid
+fi
+
 zip $ZIPFILE *.py *.sh
 
 # delete all files older than 60 days in ARCHDIR:

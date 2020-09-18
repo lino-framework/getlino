@@ -1,11 +1,17 @@
 SETUP_INFO = dict(
     name='getlino',
-    version='19.10.6',
-    install_requires=['setuptools', 'click', 'virtualenv', 'jinja2', 'atelier'],
-    test_suite='tests',
+    version='20.7.5',
+    install_requires=['click', 'virtualenv', 'jinja2', 'distro'],
+    # tests_require=['docker', 'atelier'],
+    # test_suite='tests',
     description="Lino installer",
     long_description="""
-A tool to install and configure Lino in different environments.
+A command-line tool to install and configure Lino in different environments.
+
+Note: If you **just want to install** Lino, then this repository is **not for
+you**. You want to read the  `Lino book <http://www.lino-framework.org>`__
+instead. This repository is for people who want to help with developing the tool
+that you use to install Lino.
 
 The central project homepage is http://getlino.lino-framework.org
 
