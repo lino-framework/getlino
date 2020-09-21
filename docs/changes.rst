@@ -4,6 +4,14 @@
 Changes in `getlino`
 =======================
 
+2020-09-21
+==========
+
+When invoking getlino configure without sudo, it no longer asks for
+`--usergroup`.
+
+Released getlino 20.9.0 to PyPI.
+
 2020-09-02
 ==========
 
