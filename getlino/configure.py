@@ -274,7 +274,7 @@ def configure(ctx, batch,
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
-    #No need for ldap
+    i.apt_install("libldap2-dev libsasl2-dev") # Needed e.g. by django_auth_ldap
     #i.apt_install("python2.7-dev libldap2-dev libsasl2-dev ldap-utils lcov") # Needed by Ldap package
     #i.runcmd("sudo DEBIAN_FRONTEND=noninteractive apt-get -yq install slapd")
 

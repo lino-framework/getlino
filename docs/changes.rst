@@ -4,6 +4,13 @@
 Changes in `getlino`
 =======================
 
+2020-09-23
+==========
+
+getlino configure now again installs (or instructs to install) apt packages
+libldap2-dev and libsasl2-dev, which are --as it seems-- required for
+django_auth_ldap.
+
 2020-09-21
 ==========
 
