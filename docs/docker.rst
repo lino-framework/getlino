@@ -96,32 +96,24 @@ As you can see, the :file:`hello.txt` from your previous session is still there.
 
 You can start a container in "detached mode", that is, without attaching it to
 your terminal. The :cmd:`docker start` command returns you immediately to the
-shell prompt and the container continues running in background:
-
-.. code-block::
+shell prompt and the container continues running in background::
 
   $ docker start 97621d803236
 
-You can now run one bash command at a time from the command line:
-
-.. code-block::
+You can now run one bash command at a time from the command line::
 
   $ docker exec 97621d803236 /bin/bash -c "cat hello.txt"
   Hello, world!
   $
 
-We can verify that the container is still running in the background:
-
-.. code-block::
+We can verify that the container is still running in the background::
 
   $ docker ps -a
   CONTAINER ID  IMAGE                COMMAND       CREATED       STATUS          PORTS  NAMES
   97621d803236  debian_with_getlino  "/bin/bash"   2 hours ago   Up 10 seconds          sharp_austin
 
 
-Let's tidy up and remove our container:
-
-.. code-block::
+Let's tidy up and remove our container::
 
   $ docker container rm 97621d803236
   Error response from daemon: You cannot remove a running container
@@ -129,16 +121,12 @@ Let's tidy up and remove our container:
   Stop the container before attempting removal or force remove
 
 Yes, we started the container in detached mode, it would run forever if we don't
-stop it.
-
-.. code-block::
+stop it::
 
   $ docker container stop 97621d803236
   97621d803236
 
-Now we can remove it:
-
-.. code-block::
+Now we can remove it::
 
   $ docker container rm 97621d803236
 
@@ -164,7 +152,6 @@ How to see how much disk space docker is using on your computer::
 To get more details, you can also run::
 
   $ docker system df -v
-
 
 From time to time I tidy up and remove all rebuildable containers::
 

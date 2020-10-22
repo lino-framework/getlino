@@ -11,10 +11,10 @@ ENV TZ=Europe/Brussels
 
 # RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 #         tzdata locales-all
-RUN apt-get update -yqq
+RUN apt-get update -y
+RUN apt-get upgrade -y
 RUN apt-get install -y tzdata locales-all
-RUN apt-get upgrade -yqq
-RUN apt-get install -yqq python3-pip
+RUN apt-get install -y python3-pip apt-utils
 RUN pip3 install virtualenv
 
 # Install sudo package and create a user lino

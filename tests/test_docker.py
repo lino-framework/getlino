@@ -67,7 +67,10 @@ class DockerTestMixin:
         self.assertIn('setup.py', res)
         self.run_docker_command("touch ~/.bash_aliases")
         cmdtpl = ". ~/lino/env/bin/activate && . ~/.bash_aliases && {}"
-        res = self.run_docker_command(cmdtpl.format('pip3 install -e . '))
+        # update pip to avoid warnings
+        self.run_docker_command(cmdtpl.format('pip3 install -U pip'))
+        # install getlino (the dev version)
+        res = self.run_docker_command(cmdtpl.format('pip3 install -e .'))
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command(cmdtpl.format(
             'getlino configure --clone --devtools --redis --batch '))
@@ -106,7 +109,10 @@ class UbuntuDockerTest(DockerTestMixin, TestCase):
         self.assertIn('setup.py', res)
         cmdtpl = '. {}/bin/activate'.format(venv)
         cmdtpl += " && {}"
-        res = self.run_docker_command(cmdtpl.format('pip3 install -e . '))
+        # update pip to avoid warnings
+        self.run_docker_command(cmdtpl.format('pip3 install -U pip'))
+        # install getlino (the dev version)
+        res = self.run_docker_command(cmdtpl.format('pip3 install -e .'))
         self.assertIn("Installing collected packages:", res)
         res = self.run_docker_command(
             cmdtpl.format('getlino configure --batch'))
@@ -128,7 +134,7 @@ class UbuntuDockerTest(DockerTestMixin, TestCase):
 #@unittest.skip("20200727")
 class DebianDockerTest(DockerTestMixin, TestCase):
     docker_image = "debian_with_getlino"
-    tested_applications = ['cosi', 'noi', 'avanti', 'std']
+    tested_applications = ['cosi', 'noi', 'avanti', 'voga', 'std']
 
     def test_production_server(self):
         """
@@ -146,6 +152,8 @@ class DebianDockerTest(DockerTestMixin, TestCase):
             'cd /usr/local/lino/shared/env && sudo chown root:www-data . && sudo chmod g+ws . && virtualenv -p python3 master')
         mastercmd = ". /usr/local/lino/shared/env/master/bin/activate && {}"
         sudocmd = mastercmd.format("sudo env PATH=$PATH") + " {}"
+        # update pip to avoid warnings
+        self.run_docker_command(sudocmd.format('pip3 install -U pip'))
         # install getlino (the dev version)
         res = self.run_docker_command(sudocmd.format('pip3 install -e .'))
         self.assertIn("Installing collected packages:", res)
