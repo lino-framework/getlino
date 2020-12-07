@@ -56,7 +56,7 @@ BASH_ALIASES = """
 alias a='. env/bin/activate'
 alias ll='ls -alF'
 alias pm='python manage.py'
-alias runserver='python manage.py runserver'
+alias runserver='LINO_LOGLEVEL=DEBUG python manage.py runserver'
 function pywhich() {{
   python -c "import $1; print($1.__file__)"
 }}
