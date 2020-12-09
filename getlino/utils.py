@@ -201,7 +201,7 @@ add("min2", "", "", "lino_book.projects.min2.settings")
 add("polls", "", "", "lino_book.projects.polls.mysite.settings")
 add("cosi_ee", "", "", "lino_book.projects.cosi_ee.settings.demo")
 add("lydia", "", "", "lino_book.projects.lydia.settings.demo")
-add("team", "", "", "lino_book.projects.team.settings.demo")
+add("noi1e", "", "", "lino_book.projects.noi1e.settings.demo")
 add("chatter", "", "", "lino_book.projects.chatter.settings")
 
 # e.g. for installing a non-Lino site like mailman
