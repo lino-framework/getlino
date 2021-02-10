@@ -7,8 +7,9 @@ set -e  # exit on error
 # stop and delete all containers
 # docker container prune
 # docker system prune
-# docker build -t debian_updated -f Dockerfiles/debian_updated .
-# docker build -t ubuntu_updated -f Dockerfiles/ubuntu_updated .
+
+docker build -t debian_updated -f Dockerfiles/debian_updated .
+docker build -t ubuntu_updated -f Dockerfiles/ubuntu_updated .
 
 
 docker build -t debian_with_getlino -f Dockerfiles/debian_with_getlino .
