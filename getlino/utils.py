@@ -1,12 +1,11 @@
-#!python
-# Copyright 2019-2020 Rumma & Ko Ltd
+# Copyright 2019-2021 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 
 """Some utilities for getlino.
 """
 
 import os
-from os.path import join, expanduser
+from os.path import expanduser
 from pathlib import Path
 import stat
 import shutil
@@ -78,7 +77,7 @@ class SQLite(DbEngine):
     def after_prep(self, i, context):
         project_dir = context['project_dir']
         prjname = context['prjname']
-        pth = os.path.join(project_dir, prjname)
+        pth = Path(project_dir) / prjname
         if os.path.exists(pth):
             with i.override_batch(True):
                 i.check_permissions(pth)
@@ -367,7 +366,7 @@ class Installer(object):
 
     def write_supervisor_conf(self, filename, content):
         self.write_file(
-            join(DEFAULTSECTION.get('supervisor_dir'), filename), content)
+            Path(DEFAULTSECTION.get('supervisor_dir')) / filename, content)
         self.must_restart('supervisor')
 
     def make_file_executable(self,file_path):
@@ -377,7 +376,7 @@ class Installer(object):
         #os.chmod(file_path, st.st_mode | stat.S_IEXEC)
 
     def check_virtualenv(self, envdir, context):
-        pull_sh_path = join(envdir, 'bin', 'pull.sh')
+        pull_sh_path = Path(envdir) / 'bin' / 'pull.sh'
         ok = False
         if os.path.exists(envdir):
             ok = True

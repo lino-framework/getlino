@@ -4,6 +4,16 @@
 Changes in `getlino`
 =======================
 
+2021-02-08
+==========
+
+Fixed several minor bugs in `getlino startsite`: Fixed a typo bug that caused
+``--https`` to fail at the last step (when calling certbot for the new
+subdomain). Some config files were generated with a leading newline, and the
+make_snapshot cron job even with leading blanks on every line. The
+:xfile:`nginx.conf` file was still pointing ``/static/``  to a directory static,
+but the new default name for this is :xfile:`static_root`.
+
 2020-09-23
 ==========
 
