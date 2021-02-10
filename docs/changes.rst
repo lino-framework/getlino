@@ -21,6 +21,8 @@ The test suite now also tests for "ERROR" (not just "Error") in the output of
 :xfile:`healthcheck.sh`. Increased the wait time for supervisor to restart from
 10 to 20 seconds because with only 10 seconds it failed once.
 
+Released version 21.2.0 to PyPI.
+
 2021-02-08
 ==========
 
