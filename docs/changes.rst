@@ -4,6 +4,23 @@
 Changes in `getlino`
 =======================
 
+2021-02-10
+==========
+
+Changed the number of nginx worker processes in the uwsgi.ini script from 2 to 1
+as every worker process immobilizes about 5 to 6% of 2GB of RAM even when nobody
+is using the site.
+
+Added support for apache web server.  Until now, getlino always installed nginx
+(when running as root). Now :cmd:`getlino configure` has a new option
+`--web-server`, which can be "nginx", "apache" or empty. Changed behaviour: When
+not given, getlino will not setup any web server configuration, even when
+running as root.
+
+The test suite now also tests for "ERROR" (not just "Error") in the output of
+:xfile:`healthcheck.sh`. Increased the wait time for supervisor to restart from
+10 to 20 seconds because with only 10 seconds it failed once.
+
 2021-02-08
 ==========
 

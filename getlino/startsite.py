@@ -8,13 +8,10 @@ import click
 
 from os.path import join
 
-from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION, USE_NGINX
+from .utils import APPNAMES, FOUND_CONFIG_FILES, DEFAULTSECTION
 from .utils import DB_ENGINES, BATCH_HELP, REPOS_DICT, KNOWN_REPOS
 from .utils import Installer, ifroot, default_db_engine, resolve_db_engine
-from .utils import which_certbot
-
-SITES_AVAILABLE = '/etc/nginx/sites-available'
-SITES_ENABLED = '/etc/nginx/sites-enabled'
+from .utils import which_certbot, resolve_web_server
 
 COOKIECUTTER_URL = "https://github.com/lino-framework/cookiecutter-startsite"
 
@@ -95,6 +92,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
     # if os.path.exists(prjpath):
     #     raise click.UsageError("Project directory {} already exists.".format(prjpath))
 
+    web_server = resolve_web_server(DEFAULTSECTION.get('web_server'))
     # prod = DEFAULTSECTION.getboolean('prod')
     # contrib = DEFAULTSECTION.getboolean('contrib')
     sites_base = DEFAULTSECTION.get('sites_base')
@@ -105,7 +103,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
     admin_name = DEFAULTSECTION.get('admin_name')
     admin_email = DEFAULTSECTION.get('admin_email')
     server_domain = DEFAULTSECTION.get('server_domain')
-    if ifroot() and USE_NGINX:
+    if ifroot() and web_server:
         server_domain = prjname + "." + server_domain
     server_url = ("https://" if DEFAULTSECTION.getboolean('https') else "http://") \
                  + server_domain
@@ -240,10 +238,13 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
     if ifroot():
         i.jinja_write(join(project_dir, "make_snapshot.sh"), **context)
         i.make_file_executable(join(project_dir, "make_snapshot.sh"))
-        os.makedirs(join(project_dir, "nginx"), exist_ok=True)
-        i.jinja_write(join(project_dir, "wsgi.py"), **context)
-        i.jinja_write(join(project_dir, "nginx", "uwsgi.ini"), **context)
-        i.jinja_write(join(project_dir, "nginx", "uwsgi_params"), **context)
+        if web_server:
+            i.jinja_write(join(project_dir, "wsgi.py"), **context)
+            pth = join(project_dir, web_server.name)
+            os.makedirs(pth, exist_ok=True)
+            if web_server.name == "nginx":
+                i.jinja_write(join(pth, "uwsgi.ini"), **context)
+                i.jinja_write(join(pth, "uwsgi_params"), **context)
 
         logdir = join(DEFAULTSECTION.get("log_base"), prjname)
         os.makedirs(logdir, exist_ok=True)
@@ -314,19 +315,22 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
         i.run_in_env(envdir, "pip install -q --upgrade {}".format(' '.join(pip_packages)))
 
     if ifroot():
-        if USE_NGINX:
+        if web_server:
             filename = "{}.conf".format(prjname)
-            avpth = join(SITES_AVAILABLE, filename)
-            enpth = join(SITES_ENABLED, filename)
+            conf_root = join("/etc/", web_server.service)
+            conf_tpl = web_server.name + ".conf"
+            avpth = join(conf_root, 'sites-available', filename)
+            enpth = join(conf_root, 'sites-enabled', filename)
             # shutil.copyfile(join(project_dir, 'nginx', filename), avpth)
-            if i.jinja_write(avpth, "nginx.conf", **context):
+            if i.jinja_write(avpth, conf_tpl, **context):
                 if i.override_batch(True):
                     if i.check_overwrite(enpth):
                         os.symlink(avpth, enpth)
-            i.write_supervisor_conf('{}-uwsgi.conf'.format(prjname),
-                 UWSGI_SUPERVISOR_CONF.format(**context))
-            i.must_restart("supervisor")
-            i.must_restart("nginx")
+            if web_server.name == "nginx":
+                i.write_supervisor_conf('{}-uwsgi.conf'.format(prjname),
+                     UWSGI_SUPERVISOR_CONF.format(**context))
+                i.must_restart("supervisor")
+            i.must_restart(web_server.service)
 
     os.chdir(project_dir)
     i.run_in_env(envdir, "python manage.py install --noinput")
@@ -342,7 +346,7 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
     i.run_apt_install()
     i.restart_services()
 
-    if ifroot() and USE_NGINX:
+    if ifroot() and web_server:
         # I imagine that we need to actually restart nginx
         # before running certbot-auto because otherwise certbot would add
         # its entries to the default because it does does not yet see the
@@ -352,7 +356,8 @@ def startsite(ctx, appname, prjname, batch, dev_repos, shared_env,
             certbot_cmd = which_certbot()
             if certbot_cmd is None:
                 raise click.ClickException("Oops, certbot is not installed.")
-            i.runcmd("{} --nginx -d {}".format(certbot_cmd, server_domain))
-            i.must_restart("nginx")
+            i.runcmd("{} --{} -d {}".format(
+                certbot_cmd, web_server.name, server_domain))
+            i.must_restart(web_server.service)
 
     click.echo("The new site {} has been created.".format(prjname))

@@ -28,7 +28,7 @@ from .setup_info import SETUP_INFO
 JINJA_ENV = Environment(loader=PackageLoader('getlino', 'templates'))
 
 # currently getlino supports only nginx, maybe we might add other web servers
-USE_NGINX = True
+# USE_NGINX = True
 
 BATCH_HELP = "Whether to run in batch mode, i.e. without asking any questions.  "\
              "Don't use this on a machine that is already being used."
@@ -49,6 +49,34 @@ LOGROTATE_CONF = """
 }}
 """
 
+
+class WebServer(object):
+    apt_packages = ''
+    service = None
+    name = None  # name must match certbot convention (nginx, apache)
+
+class Nginx(WebServer):
+    name = 'nginx'
+    service = 'nginx'
+    apt_packages = "nginx uwsgi-plugin-python3"
+
+class Apache(WebServer):
+    name = 'apache'
+    service = 'apache2'
+    apt_packages = "apache2 libapache2-mod-wsgi"
+
+WEB_SERVERS = [Nginx(), Apache()]
+
+# def default_web_server():
+#     return ifroot("nginx", '')
+
+def resolve_web_server(web_server):
+    if not web_server:
+        return None
+    for e in WEB_SERVERS:
+        if e.name == web_server:
+            return e
+    raise click.ClickException("Invalid --web-server '{}'.".format(web_server))
 
 class DbEngine(object):
     name = None  # Note that the DbEngine.name field must match the Django engine name

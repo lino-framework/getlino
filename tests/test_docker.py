@@ -158,10 +158,12 @@ class DebianDockerTest(DockerTestMixin, TestCase):
         res = self.run_docker_command(sudocmd.format('pip3 install -e .'))
         self.assertIn("Installing collected packages:", res)
         # print(self.run_docker_command(container, "sudo cat /etc/getlino/lino_bash_aliases"))
-        res = self.run_docker_command(
-            sudocmd.format('getlino configure --batch --monit'))
-        # res = self.run_docker_command(
-        #     mastercmd.format('sudo getlino configure --batch --db-engine postgresql --monit'))
+        cmd = 'getlino configure --batch --monit'
+        if True:
+            cmd += " --web-server nginx"
+        else:
+            cmd += " --web-server apache"
+        res = self.run_docker_command(sudocmd.format(cmd))
         self.assertIn('getlino configure completed', res)
 
         for application in self.tested_applications:
@@ -181,9 +183,10 @@ class DebianDockerTest(DockerTestMixin, TestCase):
             res = self.run_docker_command(cmdtpl.format('./make_snapshot.sh'))
             print(res)
             # Wait 10 sec for supervisor to finish restarting
-            time.sleep(10)
+            time.sleep(20)
             res = self.run_docker_command('/usr/local/bin/healthcheck.sh')
             self.assertNotIn('Error', res)
+            self.assertNotIn('ERROR', res)
 
             cmd = '/etc/cron.daily/make_snapshot_{}.sh'.format(site_name)
             res = self.run_docker_command(cmd)
