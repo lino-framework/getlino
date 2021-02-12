@@ -4,6 +4,13 @@
 Changes in `getlino`
 =======================
 
+2021-02-12
+==========
+
+Fixed a problem when using apache config: certbot made a copy of the 80 conf
+file, but failed to copy the WSGI* directives. Now getlino creates a 443 site
+with snakeoil certificate already from the beginning.
+
 2021-02-10
 ==========
 
