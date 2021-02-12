@@ -1,18 +1,14 @@
 #!/bin/bash
-# Copyright 2015-2020 Rumma & Ko Ltd
+# Copyright 2015-2021 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
 #
 # Make a snapshot of a Lino database.
-# This is meant as template for a script to be adapted to your system.
-# This is not meant to be used as is.
 #
 
 set -e  # exit on error
 
-# YOU MUST edit the following lines:
 # WARNING: all files older than 60 days in ARCHDIR will be deleted
 # without confirmation
-
 
 PROJECT_DIR={{project_dir}}
 ARCH_DIR={{backups_base}}/{{prjname}}
@@ -84,6 +80,10 @@ fi
 
 if [ -f media/beid ] ; then
 zip -r $ZIPFILE media/beid
+fi
+
+if [ -f media/uploads ] ; then
+zip -r $ZIPFILE media/uploads
 fi
 
 zip $ZIPFILE *.py *.sh
