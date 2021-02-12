@@ -9,7 +9,11 @@ Changes in `getlino`
 
 Fixed a problem when using apache config: certbot made a copy of the 80 conf
 file, but failed to copy the WSGI* directives. Now getlino creates a 443 site
-with snakeoil certificate already from the beginning.
+with snakeoil certificate already from the beginning. Added `uploads` to
+:xfile:`make_snapshots.py`.
+
+Released version 21.2.1 to PyPI.
+
 
 2021-02-10
 ==========
