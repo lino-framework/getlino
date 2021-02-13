@@ -4,6 +4,13 @@
 Changes in `getlino`
 =======================
 
+2021-02-13
+==========
+
+Fixed a bug in the generated :xfile:`make_snapshot.sh` file: it was testing `if
+[-f media/uploads]` instead of `if [-d media/uploads]`, as a result the uploads
+were never included in the snapshot.
+
 2021-02-12
 ==========
 

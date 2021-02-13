@@ -70,19 +70,19 @@ fi
 echo "Writing $ZIPFILE..."
 zip -r $ZIPFILE $SNAPSHOTDIR
 
-if [ -f fixtures ] ; then
+if [ -d fixtures ] ; then
   zip -r $ZIPFILE fixtures
 fi
 
-if [ -f media/webdav ] ; then
+if [ -d media/webdav ] ; then
 zip -r $ZIPFILE media/webdav
 fi
 
-if [ -f media/beid ] ; then
+if [ -d media/beid ] ; then
 zip -r $ZIPFILE media/beid
 fi
 
-if [ -f media/uploads ] ; then
+if [ -d media/uploads ] ; then
 zip -r $ZIPFILE media/uploads
 fi
 
