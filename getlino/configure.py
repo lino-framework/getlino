@@ -150,7 +150,7 @@ add('--https/--no-https', False, "Whether this server uses secure http", root_on
 add('--ldap/--no-ldap', False, "Whether this server works as an LDAP server", root_only=True)
 add('--monit/--no-monit', True, "Whether this server uses monit", root_only=True)
 add('--web-server', '', "Which web server to use here.",
-    click.Choice([e.name for e in WEB_SERVERS]), root_only=True)
+    click.Choice([e.name for e in WEB_SERVERS] + ['']), root_only=True)
 add('--db-engine', default_db_engine, "Default database engine for new sites.",
     click.Choice([e.name for e in DB_ENGINES]))
 add('--db-port', '', "Default database port to use for new sites.")
@@ -273,13 +273,8 @@ def configure(ctx, batch,
                         i.write_file(pth, content)
                         # i.runcmd('printf "%s\\n" "deb http://ftp.de.debian.org/debian buster-backports main" | sudo tee /etc/apt/sources.list.d/buster-backports.list')
                         # i.runcmd('echo "deb http://ftp.de.debian.org/debian buster-backports main" >> /etc/apt/sources.list.d/buster-backports.list')
-        if batch or i.yes_or_no("Upgrade the system?", default=True):
-            with i.override_batch(True):
-                i.runcmd("apt-get update -y")
-                i.runcmd("apt-get upgrade -y")
-
     i.apt_install(
-        "git subversion python3 python3-dev python3-setuptools python3-pip supervisor")
+        "git python3 python3-dev python3-setuptools python3-pip")
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
@@ -288,13 +283,14 @@ def configure(ctx, batch,
     #i.runcmd("sudo DEBIAN_FRONTEND=noninteractive apt-get -yq install slapd")
 
     if web_server and ifroot():
+        i.apt_install("supervisor")
         i.apt_install("cron")
         i.apt_install(web_server.apt_packages)
         i.apt_install("logrotate")
         i.must_restart(web_server.service)
 
     if DEFAULTSECTION.getboolean('devtools'):
-        i.apt_install("graphviz sqlite3")
+        i.apt_install("subversion graphviz sqlite3")
 
     if DEFAULTSECTION.getboolean('monit'):
         i.apt_install("monit")

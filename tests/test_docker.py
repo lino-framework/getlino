@@ -1,5 +1,8 @@
-# Copyright 2019-2020 Rumma & Ko Ltd
+# Copyright 2019-2021 Rumma & Ko Ltd
 # License: BSD (see file COPYING for details)
+
+# how to run a single test case:
+# python -m unittest tests.test_docker.UbuntuDockerTest
 
 from os.path import dirname, join
 import time
@@ -94,7 +97,7 @@ class DockerTestMixin:
         for application in self.tested_applications:
             self.do_test_contributor_env(application)
 
-@unittest.skip("20200727")
+# @unittest.skip("20200727")
 class UbuntuDockerTest(DockerTestMixin, TestCase):
     docker_image = "ubuntu_with_getlino"
 
@@ -122,7 +125,7 @@ class UbuntuDockerTest(DockerTestMixin, TestCase):
 
         for app in self.tested_applications:
             site_name = "{}1".format(app)
-            cmd = 'getlino startsite {} {} --batch"'.format(app, site_name)
+            cmd = 'getlino startsite {} {} --batch'.format(app, site_name)
             res = self.run_docker_command(cmdtpl.format(cmd))
             self.assertIn(
                 'The new site {} has been created.'.format(site_name), res)

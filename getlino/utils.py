@@ -467,6 +467,7 @@ sudo adduser `whoami` {1}"""
         if not self.check_overwrite(pth):
             return False
         if tplname is None:
+
             head, tplname = os.path.split(pth)
         tpl = JINJA_ENV.get_template(tplname)
         s = tpl.render(**context)
@@ -477,23 +478,27 @@ sudo adduser `whoami` {1}"""
     def run_apt_install(self):
         if len(self._system_packages) == 0:
             return
+
         # click.echo("Must install {} system packages: {}".format(
         #     len(self._system_packages), ' '.join(self._system_packages)))
         cmd = "apt-get install -q "
         if self.batch:
             cmd += "-y "
         cmd +=  ' '.join(self._system_packages)
-        self._system_packages = []
+
+        cmds = ["apt-get update -y", "apt-get upgrade -y", cmd]
         if ifroot():
             pass
         elif has_usergroup('sudo'):
-            cmd = "sudo " + cmd
+            cmds = ["sudo " + c for c in cmds]
         else:
             click.echo(
-                "The following command was not executed "
-                "because you cannot sudo:\n{}".format(cmd))
+                "The following commands were not executed "
+                "because you cannot sudo:\n{}".format("\n".join(cmds)))
             return
-        self.runcmd(cmd)
+        for cmd in cmds:
+            self.runcmd(cmd)
+        self._system_packages = []
 
     def restart_services(self):
         if len(self._services) == 0:

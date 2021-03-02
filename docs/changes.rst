@@ -4,6 +4,17 @@
 Changes in `getlino`
 =======================
 
+2021-03-02
+==========
+
+Fixed #3998 (getlino says Invalid value for '--web-server': invalid choice: .
+(choose from nginx, apache)). Reactivated UbuntuDockerTest in test suite.
+getlino now upgrades the system not only when you are root but also when you are
+member of sudo.  It no longer asks "Upgrade the system?" as a separate question,
+only when it actually wants to install packages (and when you are either root or
+sudoer).
+
+
 2021-02-13
 ==========
 

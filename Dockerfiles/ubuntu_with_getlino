@@ -20,5 +20,4 @@ ADD getlino getlino/
 # RUN echo 3; pwd ; ls -l
 # RUN pip3 install -e .
 
-
 # RUN sudo -H getlino configure --batch --db-engine postgresql --db-port 5432 && sudo -H getlino startsite --batch noi mysite1 --dev-repos "lino noi xl"
