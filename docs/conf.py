@@ -21,7 +21,7 @@ intersphinx_mapping['book'] = ('https://www.lino-framework.org/', None)
 
 # General information about the project.
 project = "getlino"
-copyright = '2019 Rumma & Ko Ltd'
+copyright = '2019-2021 Rumma & Ko Ltd'
 from getlino import SETUP_INFO
 release = SETUP_INFO['version']
 version = '.'.join(release.split('.')[:2])

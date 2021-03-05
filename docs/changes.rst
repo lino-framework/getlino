@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2021-03-05
+==========
+
+Optimization: When getlino asks to change file permissions, it now formats them
+as "rwx" style strings instead of decimal integers.
+
 2021-03-02
 ==========
 

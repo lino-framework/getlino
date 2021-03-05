@@ -49,6 +49,56 @@ LOGROTATE_CONF = """\
 }}
 """
 
+def perm2text(value):
+    """
+
+    Convert a permission value given as integer returned by os.stat() to an "rwx"
+    like text as used by :command:`ls -l`.
+
+    Inspired from comment by hack-tramp (Jul 6, 2020) on
+    https://gist.github.com/beugley/47b4812df0837fc90e783347faee2432
+    """
+    octal = "{:04o}".format(value)
+    result =  ''
+    first = 0
+    # if there are 4 digits, deal with first (setuid, setgid, and sticky flags) separately
+    if len(octal) > 4:
+        raise Exception("value must be less than 0o7777")
+    if octal[0] != '0':
+        first = int(octal [:1])
+    octal = octal [-3:]
+    value_letters = [(4, 'r'), (2, 'w'), (1, 'x')]
+    # Iterate over each of the digits in octal
+    for permission in [int(n) for n in octal]:
+        # Check for each of the permissions values
+        for value, letter in value_letters:
+            if permission >= value:
+                result += letter
+                permission -= value
+            else:
+                result += '-'
+    if first != 0:
+        for value in [4, 2, 1]:
+           if first >= value:
+              if value == 4:
+                 if result[2] == 'x':
+                    result = result[:2] + 's' + result[3:]
+                 elif result[2] == '-':
+                    result = result[:2] + 'S' + result[3:]
+              if value == 2:
+                 if result[5] == 'x':
+                    result = result[:5] + 's' + result[6:]
+                 elif result[5] == '-':
+                    result = result[:5] + 'S' + result[6:]
+              if value == 1:
+                 if result[8] == 'x':
+                    result = result[:8] + 't' + result[9:]
+                 elif result[8] == '-':
+                    result = result[:8] + 'T' + result[9:]
+              first -= value
+
+    return result
+
 
 class WebServer(object):
     apt_packages = ''
@@ -274,7 +324,6 @@ class Installer(object):
             SETUP_INFO['version'], distro.name(pretty=True),
             distro.id(), distro.codename()))
 
-
     def check_overwrite(self, pth):
         """If `pth` (directory or file) exists, remove it after asking for confirmation.
         Return False if it exists and user doesn't confirm.
@@ -348,8 +397,9 @@ class Installer(object):
             # check whether group owner is what we want
             usergroup = DEFAULTSECTION.get('usergroup')
             if grp.getgrgid(si.st_gid).gr_name != usergroup:
-                if self.batch or self.yes_or_no("Set group owner for {}".format(pth),
-                                                default=True):
+                if self.batch or self.yes_or_no(
+                    "Set group owner for {} to '{}''".format(pth, usergroup),
+                    default=True):
                     shutil.chown(pth, group=usergroup)
 
         # check access permissions
@@ -363,7 +413,7 @@ class Installer(object):
         imode = stat.S_IMODE(si.st_mode)
         if imode ^ mode:
             msg = "Set mode for {} from {} to {}".format(
-                pth, imode, mode)
+                pth, perm2text(imode), perm2text(mode))
             # pth, stat.filemode(imode), stat.filemode(mode))
             if self.batch or self.yes_or_no(msg, default=True):
                 os.chmod(pth, mode)

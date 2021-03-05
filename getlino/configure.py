@@ -382,7 +382,8 @@ def configure(ctx, batch,
                  SHARED_SETTINGS.format(**DEFAULTSECTION))
     go_bases.append(pth)
 
-    pth = ifroot('/etc/getlino/lino_bash_aliases', os.path.expanduser('~/.lino_bash_aliases'))
+    pth = ifroot('/etc/getlino/lino_bash_aliases',
+        os.path.expanduser('~/.lino_bash_aliases'))
     ctx = dict(DEFAULTSECTION)
     content = BASH_ALIASES.format(**ctx)
     if len(go_bases):
@@ -420,7 +421,7 @@ def configure(ctx, batch,
         if DEFAULTSECTION.getboolean('https'):
             certbot_cmd = which_certbot()
             if certbot_cmd:
-                click.echo("{} already installed".format(x))
+                click.echo("{} already installed".format(certbot_cmd))
             if certbot_cmd is None:
                 if batch or i.yes_or_no("Install certbot?", default=True):
                     i.apt_install("certbot python-certbot-nginx")

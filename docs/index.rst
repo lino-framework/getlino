@@ -15,6 +15,7 @@ getlino
 
    docker
    api/index
+   misc
    changes
 
 .. toctree::
