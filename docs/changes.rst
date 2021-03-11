@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2021-03-11
+==========
+
+When `--https` is specified but certbot is not installed, getlino now installs
+it using snapd (no longer using wget and apt-get)
+
 2021-03-08
 ==========
 

@@ -357,12 +357,13 @@ class Installer(object):
     def must_restart(self, srvname):
         self._services.add(srvname)
 
-    def runcmd(self, cmd, **kw):
-        """Run the cmd similar as os.system(), but stop when Ctrl-C.
+    def runcmd(self, *cmds, **kw):
+        """Run the specified command(s) in a subprocess.
 
-        If the subprocess has non-zero return code, we simply stop. We don't use
-        check=True because this would add another useless traceback.  The
-        subprocess is responsible for reporting the reason of the error.
+        Stop when Ctrl-C. If the subprocess has non-zero return code, we simply
+        stop. We don't use check=True because this would add another useless
+        traceback.  The subprocess is responsible for reporting the reason of
+        the error.
 
         """
         # kw.update(stdout=subprocess.PIPE)
@@ -371,13 +372,31 @@ class Installer(object):
         kw.update(universal_newlines=True)
         # kw.update(check=True)
         # subprocess.check_output(cmd, **kw)
-        if self.batch or self.yes_or_no("run {}".format(cmd), default=True):
-            click.echo(cmd)
-            cp = subprocess.run(cmd, **kw)
-            if cp.returncode != 0:
-                # subprocess.run("sudo journalctl -xe", **kw)
-                raise click.ClickException(
-                "{} ended with return code {}".format(cmd, cp.returncode))
+        if self.batch or self.yes_or_no("run {}".format(";".join(cmds)), default=True):
+            for cmd in cmds:
+                click.echo(cmd)
+                cp = subprocess.run(cmd, **kw)
+                if cp.returncode != 0:
+                    # subprocess.run("sudo journalctl -xe", **kw)
+                    raise click.ClickException(
+                    "{} ended with return code {}".format(cmd, cp.returncode))
+
+    def runcmd_sudo(self, *cmds, **kwargs):
+        """
+        Run the specified command(s) in a subprocess, prefixing each with sudo
+        if needed.
+
+        """
+        if ifroot():
+            pass
+        elif has_usergroup('sudo'):
+            cmds = ["sudo " + c for c in cmds]
+        else:
+            click.echo(
+                "The following commands were not executed "
+                "because you cannot sudo:\n{}".format("\n".join(cmds)))
+            return
+        self.runcmd(*cmds, **kwargs)
 
     def apt_install(self, packages):
         for pkg in packages.split():
@@ -528,26 +547,11 @@ sudo adduser `whoami` {1}"""
     def run_apt_install(self):
         if len(self._system_packages) == 0:
             return
-
-        # click.echo("Must install {} system packages: {}".format(
-        #     len(self._system_packages), ' '.join(self._system_packages)))
         cmd = "apt-get install -q "
         if self.batch:
             cmd += "-y "
         cmd +=  ' '.join(self._system_packages)
-
-        cmds = ["apt-get update -y", "apt-get upgrade -y", cmd]
-        if ifroot():
-            pass
-        elif has_usergroup('sudo'):
-            cmds = ["sudo " + c for c in cmds]
-        else:
-            click.echo(
-                "The following commands were not executed "
-                "because you cannot sudo:\n{}".format("\n".join(cmds)))
-            return
-        for cmd in cmds:
-            self.runcmd(cmd)
+        self.runcmd_sudo("apt-get update -y", "apt-get upgrade -y", cmd)
         self._system_packages = []
 
     def restart_services(self):

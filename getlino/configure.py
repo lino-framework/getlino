@@ -424,19 +424,23 @@ def configure(ctx, batch,
                 click.echo("{} already installed".format(certbot_cmd))
             if certbot_cmd is None:
                 if batch or i.yes_or_no("Install certbot?", default=True):
-                    i.apt_install("certbot python-certbot-nginx")
+                    # i.apt_install("certbot python-certbot-nginx")
+                    i.apt_install("snapd")
                     i.run_apt_install()
+                    i.runcmd_sudo("snap install core")
+                    i.runcmd_sudo("snap refresh core")
+                    i.runcmd_sudo("snap install --classic certbot")
                     certbot_cmd = "certbot"
-            if certbot_cmd is None:
-                if batch or i.yes_or_no("Install certbot-auto?", default=True):
-                    with i.override_batch(True):
-                        i.runcmd("wget https://dl.eff.org/certbot-auto")
-                        i.runcmd("mv certbot-auto /usr/local/bin/certbot-auto")
-                        i.runcmd("chown root /usr/local/bin/certbot-auto")
-                        i.runcmd("chmod 0755 /usr/local/bin/certbot-auto")
-                        i.runcmd("certbot-auto -n")
-                        i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
-                    certbot_cmd = "/usr/local/bin/certbot-auto"
+            # if certbot_cmd is None:
+            #     if batch or i.yes_or_no("Install certbot-auto?", default=True):
+            #         with i.override_batch(True):
+            #             i.runcmd("wget https://dl.eff.org/certbot-auto")
+            #             i.runcmd("mv certbot-auto /usr/local/bin/certbot-auto")
+            #             i.runcmd("chown root /usr/local/bin/certbot-auto")
+            #             i.runcmd("chmod 0755 /usr/local/bin/certbot-auto")
+            #             i.runcmd("certbot-auto -n")
+            #             i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
+            #         certbot_cmd = "/usr/local/bin/certbot-auto"
 
             if batch or i.yes_or_no("Set up automatic certificate renewal?", default=True):
                 i.write_file('/etc/cron.d/getlino-certbot.conf', CERTBOT_AUTO_RENEW.format(certbot_cmd))
