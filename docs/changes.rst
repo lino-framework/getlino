@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2021-03-14
+==========
+
+getlino forgot to run :command:`sudo ln -s /snap/bin/certbot /usr/bin/certbot`
+when installing certbot.
+
 2021-03-11
 ==========
 

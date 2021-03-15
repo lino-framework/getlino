@@ -273,8 +273,7 @@ def configure(ctx, batch,
                         i.write_file(pth, content)
                         # i.runcmd('printf "%s\\n" "deb http://ftp.de.debian.org/debian buster-backports main" | sudo tee /etc/apt/sources.list.d/buster-backports.list')
                         # i.runcmd('echo "deb http://ftp.de.debian.org/debian buster-backports main" >> /etc/apt/sources.list.d/buster-backports.list')
-    i.apt_install(
-        "git python3 python3-dev python3-setuptools python3-pip")
+    i.apt_install("git python3 python3-dev python3-setuptools python3-pip")
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
     i.apt_install("swig")  # required to install eidreader
@@ -430,6 +429,7 @@ def configure(ctx, batch,
                     i.runcmd_sudo("snap install core")
                     i.runcmd_sudo("snap refresh core")
                     i.runcmd_sudo("snap install --classic certbot")
+                    i.runcmd_sudo("ln -s /snap/bin/certbot /usr/bin/certbot")
                     certbot_cmd = "certbot"
             # if certbot_cmd is None:
             #     if batch or i.yes_or_no("Install certbot-auto?", default=True):
@@ -441,9 +441,9 @@ def configure(ctx, batch,
             #             i.runcmd("certbot-auto -n")
             #             i.runcmd("certbot-auto register --agree-tos -m {} -n".format(DEFAULTSECTION.get('admin_email')))
             #         certbot_cmd = "/usr/local/bin/certbot-auto"
-
-            if batch or i.yes_or_no("Set up automatic certificate renewal?", default=True):
-                i.write_file('/etc/cron.d/getlino-certbot.conf', CERTBOT_AUTO_RENEW.format(certbot_cmd))
+            if certbot_cmd:
+                if batch or i.yes_or_no("Set up automatic certificate renewal?", default=True):
+                    i.write_file('/etc/cron.d/getlino-certbot.conf', CERTBOT_AUTO_RENEW.format(certbot_cmd))
 
         if DEFAULTSECTION.getboolean('ldap'):
             i.runcmd("dpkg-reconfigure slapd")
