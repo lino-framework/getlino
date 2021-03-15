@@ -268,7 +268,7 @@ add("weleup", "lino-weleup", "https://github.com/lino-framework/weleup", "lino_w
 add("welcht", "lino-welcht", "https://github.com/lino-framework/welcht", "lino_welcht.settings")
 add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.lib.ciao.settings")
 
-add("book", "lino-book", "https://github.com/lino-framework/book")
+add("book", "lino-book", "https://gitlab.com/lino-framework/book")
 add("react", "lino-react", "https://github.com/lino-framework/react", "", "lino_react.react")
 add("openui5", "lino-openui5", "https://github.com/lino-framework/openui5", "", "lino_openui5.openui5")
 
