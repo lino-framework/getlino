@@ -4,6 +4,15 @@
 Changes in `getlino`
 =======================
 
+2021-03-16
+==========
+
+You can now run :cmd:`getlino configure` with ``--clone`` and without
+``--shared-env``, provided that you activated a virtualenv before calling
+getlino.  In that case getlino will install clones into the current virtualenv.
+
+
+
 2021-03-14
 ==========
 

@@ -335,7 +335,10 @@ def configure(ctx, batch,
     if clone:
         click.echo("Installing repositories for shared-env...")
         if not shared_env:
-            raise click.ClickException("Cannot --clone without --shared-env")
+            shared_env = os.environ.get('VIRTUAL_ENV', '')
+            if not shared_env:
+                raise click.ClickException("With --clone you must either "
+                    "have a virtualenv activated or specify one with --shared-env")
 
         repos_base = DEFAULTSECTION.get('repos_base')
         if not repos_base:
