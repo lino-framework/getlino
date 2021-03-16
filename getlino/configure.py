@@ -248,6 +248,8 @@ def configure(ctx, batch,
     db_password = DEFAULTSECTION.get('db_password')
     db_engine = resolve_db_engine(DEFAULTSECTION.get('db_engine'))
     web_server = resolve_web_server(DEFAULTSECTION.get('web_server'))
+    appy = DEFAULTSECTION.getboolean('appy')
+    supervisor = web_server or appy
 
     # combined validations
     if clone and not shared_env:
@@ -288,6 +290,7 @@ def configure(ctx, batch,
 
     if DEFAULTSECTION.getboolean('redis'):
         i.apt_install("redis-server")
+        i.must_restart('redis')
 
     i.apt_install(db_engine.apt_packages)
     if web_server:
@@ -296,7 +299,7 @@ def configure(ctx, batch,
     if db_engine.service:
         i.must_restart(db_engine.service)
 
-    if DEFAULTSECTION.getboolean('appy'):
+    if appy:
         i.apt_install("libreoffice python3-uno")
         i.apt_install("tidy")
 
@@ -321,8 +324,8 @@ def configure(ctx, batch,
         # Debian buster didn't include monit for administrative reasons,
         # so we must add a backport.
         if distro.id() == "debian" and distro.codename() == "buster":
-            click.echo("Add backport for monit on Debian buster...")
             if batch or i.yes_or_no("Add backport for monit on Debian buster?", default=True):
+                click.echo("Adding backport for monit on Debian buster...")
                 with i.override_batch(True):
                     pth = Path("/etc/apt/sources.list.d/buster-backports.list")
                     myline = "deb http://ftp.de.debian.org/debian buster-backports main"
@@ -408,19 +411,20 @@ def configure(ctx, batch,
     click.echo("Note: please add manually the following line to your .bashrc file:\nsource {}".format(pth))
 
     if ifroot():
-        i.write_logrotate_conf(
-            'supervisor.conf', '/var/log/supervisor/supervisord.log')
-        i.must_restart('supervisor')
+        if supervisor:
+            i.write_logrotate_conf(
+                'supervisor.conf', '/var/log/supervisor/supervisord.log')
+            i.must_restart('supervisor')
 
         if DEFAULTSECTION.getboolean('monit'):
             i.jinja_write(HEALTHCHECK_NAME, **context)
-            i.check_permissions(pth, executable=True)
+            i.check_permissions(HEALTHCHECK_NAME, executable=True)
             i.write_file('/etc/monit/conf.d/lino.conf', MONIT_CONF)
             # seems that monit creates its own logrotate config file
             # i.write_logrotate_conf(
             #     'monit.conf', '/var/log/monit.log')
 
-        if DEFAULTSECTION.getboolean('appy'):
+        if supervisor and appy:
             i.write_supervisor_conf(
                 'libreoffice.conf',
                 LIBREOFFICE_SUPERVISOR_CONF.format(**DEFAULTSECTION))

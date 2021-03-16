@@ -15,6 +15,9 @@ optimizations and bugfixes when setting up a demo server.
 
 Release to PYPI.
 
+More minor bugfixes: healthcheck.sh wasn't set to executable. configure failed
+when --https was given but no --web-server
+
 
 2021-03-14
 ==========
