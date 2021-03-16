@@ -243,9 +243,9 @@ def configure(ctx, batch,
     # update context and local vars after interactive prompt
     context.update(DEFAULTSECTION)
     clone = DEFAULTSECTION.getboolean('clone')
-    shared_env = DEFAULTSECTION.getboolean('shared_env')
-    db_user = DEFAULTSECTION.getboolean('db_user')
-    db_password = DEFAULTSECTION.getboolean('db_password')
+    shared_env = DEFAULTSECTION.get('shared_env')
+    db_user = DEFAULTSECTION.get('db_user')
+    db_password = DEFAULTSECTION.get('db_password')
     db_engine = resolve_db_engine(DEFAULTSECTION.get('db_engine'))
     web_server = resolve_web_server(DEFAULTSECTION.get('web_server'))
 
