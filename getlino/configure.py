@@ -188,7 +188,7 @@ def configure(ctx, batch,
 
     i = Installer(batch)
     context = {}
-    context.update(DEFAULTSECTION)
+    context.update(locals())
     context.update({
         "prjname": '',
         "appname": '',
@@ -216,7 +216,6 @@ def configure(ctx, batch,
         raise click.ClickException(
             "No write permission for file {}".format(conffile))
 
-
     if clone and not shared_env:
         shared_env = os.environ.get('VIRTUAL_ENV', '')
 
@@ -241,12 +240,18 @@ def configure(ctx, batch,
             # conf_values[k] = answer
             CONFIG.set(CONFIG.default_section, k, str(answer))
 
-    if clone and not shared_env:
-        raise click.ClickException("Cannot use --clone without --shared-env")
-
+    # update context and local vars after interactive prompt
+    context.update(DEFAULTSECTION)
+    clone = DEFAULTSECTION.getboolean('clone')
+    shared_env = DEFAULTSECTION.getboolean('shared_env')
+    db_user = DEFAULTSECTION.getboolean('db_user')
+    db_password = DEFAULTSECTION.getboolean('db_password')
     db_engine = resolve_db_engine(DEFAULTSECTION.get('db_engine'))
     web_server = resolve_web_server(DEFAULTSECTION.get('web_server'))
 
+    # combined validations
+    if clone and not shared_env:
+        raise click.ClickException("Cannot use --clone without --shared-env")
     if db_user and not db_password:
         raise click.Error("If you set a shared --db-user you must also set a shared --db-password")
 
@@ -260,28 +265,6 @@ def configure(ctx, batch,
     if not i.yes_or_no("Start configuring your system ?"):
         raise click.Abort()
 
-    # click.echo("20200727 os.geteuid() is {}".format(os.geteuid()))
-    if ifroot():
-        # click.echo("20200727 You are root...")
-        if DEFAULTSECTION.getboolean('monit'):
-            # click.echo("20200727 Install monit...")
-            # Debian buster didn't include monit for administrative reasons,
-            # so we must add a backport.
-            if distro.id() == "debian" and distro.codename() == "buster":
-                click.echo("Add backport for monit on Debian buster...")
-                if batch or i.yes_or_no("Add backport for monit on Debian buster?", default=True):
-                    with i.override_batch(True):
-                        pth = Path("/etc/apt/sources.list.d/buster-backports.list")
-                        myline = "deb http://ftp.de.debian.org/debian buster-backports main"
-                        if pth.is_file():
-                            content = pth.open().read()
-                            if not myline in content:
-                                content += "\n" + myline + "\n"
-                        else:
-                            content = myline + "\n"
-                        i.write_file(pth, content)
-                        # i.runcmd('printf "%s\\n" "deb http://ftp.de.debian.org/debian buster-backports main" | sudo tee /etc/apt/sources.list.d/buster-backports.list')
-                        # i.runcmd('echo "deb http://ftp.de.debian.org/debian buster-backports main" >> /etc/apt/sources.list.d/buster-backports.list')
     i.apt_install("git python3 python3-dev python3-setuptools python3-pip")
     i.apt_install("libffi-dev libssl-dev")  # maybe needed for weasyprint
     i.apt_install("build-essential")  # maybe needed for installing Python extensions
@@ -313,9 +296,6 @@ def configure(ctx, batch,
     if db_engine.service:
         i.must_restart(db_engine.service)
 
-    if db_user:
-        db_engine.setup_user(i, context)
-
     if DEFAULTSECTION.getboolean('appy'):
         i.apt_install("libreoffice python3-uno")
         i.apt_install("tidy")
@@ -336,8 +316,31 @@ def configure(ctx, batch,
             i.check_permissions(pth)
         i.apt_install("zip")
 
+    if ifroot() and DEFAULTSECTION.getboolean('monit'):
+        # click.echo("20200727 Install monit...")
+        # Debian buster didn't include monit for administrative reasons,
+        # so we must add a backport.
+        if distro.id() == "debian" and distro.codename() == "buster":
+            click.echo("Add backport for monit on Debian buster...")
+            if batch or i.yes_or_no("Add backport for monit on Debian buster?", default=True):
+                with i.override_batch(True):
+                    pth = Path("/etc/apt/sources.list.d/buster-backports.list")
+                    myline = "deb http://ftp.de.debian.org/debian buster-backports main"
+                    if pth.is_file():
+                        content = pth.open().read()
+                        if not myline in content:
+                            content += "\n" + myline + "\n"
+                    else:
+                        content = myline + "\n"
+                    i.write_file(pth, content)
+                    # i.runcmd('printf "%s\\n" "deb http://ftp.de.debian.org/debian buster-backports main" | sudo tee /etc/apt/sources.list.d/buster-backports.list')
+                    # i.runcmd('echo "deb http://ftp.de.debian.org/debian buster-backports main" >> /etc/apt/sources.list.d/buster-backports.list')
+
     i.run_apt_install()
     i.restart_services()
+
+    if DEFAULTSECTION.get('db_user'):
+        db_engine.setup_user(i, context)
 
     go_bases = []
 

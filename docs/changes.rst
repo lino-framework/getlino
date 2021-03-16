@@ -10,7 +10,8 @@ Changes in `getlino`
 You can now run :cmd:`getlino configure` as root with ``--clone`` and without
 ``--shared-env``, provided that you activated a virtualenv before calling
 getlino.  In that case getlino will install clones into the current virtualenv
-and store the current virtualenv in the system-wide config file.
+and store the current virtualenv in the system-wide config file. Miscellaneous
+optimizations and bugfixes when setting up a demo server.
 
 Release to PYPI.
 
