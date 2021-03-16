@@ -56,7 +56,7 @@ class DockerTestMixin:
     def do_test_contributor_env(self, application):
         """
         Test the instructions written on
-        https://www.lino-framework.org/team/index.html
+        https://www.lino-framework.org/contrib/index.html
         """
 
         # TODO: this does not yet work. before going on, we need to meditate on
