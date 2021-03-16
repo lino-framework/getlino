@@ -7,11 +7,13 @@ Changes in `getlino`
 2021-03-16
 ==========
 
-You can now run :cmd:`getlino configure` with ``--clone`` and without
+You can now run :cmd:`getlino configure` as root with ``--clone`` and without
 ``--shared-env``, provided that you activated a virtualenv before calling
-getlino.  In that case getlino will install clones into the current virtualenv.
+getlino.  In that case getlino will install clones into the current virtualenv
+and store the current virtualenv in the system-wide config file.
 
 Release to PYPI.
+
 
 2021-03-14
 ==========

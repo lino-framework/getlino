@@ -212,10 +212,13 @@ def configure(ctx, batch,
     if not os.access(pth, os.W_OK):
         raise click.ClickException(
             "No write permission for directory {}".format(pth))
-
     if os.path.exists(conffile) and not os.access(conffile, os.W_OK):
         raise click.ClickException(
             "No write permission for file {}".format(conffile))
+
+
+    if clone and not shared_env:
+        shared_env = os.environ.get('VIRTUAL_ENV', '')
 
     # if shared_env: not sure whether this is a good idea
     #     shared_env = os.path.abspath(shared_env)
@@ -238,18 +241,24 @@ def configure(ctx, batch,
             # conf_values[k] = answer
             CONFIG.set(CONFIG.default_section, k, str(answer))
 
+    if clone and not shared_env:
+        raise click.ClickException("Cannot use --clone without --shared-env")
+
     db_engine = resolve_db_engine(DEFAULTSECTION.get('db_engine'))
     web_server = resolve_web_server(DEFAULTSECTION.get('web_server'))
 
     if db_user and not db_password:
         raise click.Error("If you set a shared --db-user you must also set a shared --db-password")
 
-    if not i.yes_or_no("Start configuring your system using above options?"):
+    if not i.yes_or_no("Write above options to {} ?".format(conffile)):
         raise click.Abort()
 
     with open(conffile, 'w') as fd:
         CONFIG.write(fd)
     click.echo("Wrote config file " + conffile)
+
+    if not i.yes_or_no("Start configuring your system ?"):
+        raise click.Abort()
 
     # click.echo("20200727 os.geteuid() is {}".format(os.geteuid()))
     if ifroot():
@@ -335,10 +344,8 @@ def configure(ctx, batch,
     if clone:
         click.echo("Installing repositories for shared-env...")
         if not shared_env:
-            shared_env = os.environ.get('VIRTUAL_ENV', '')
-            if not shared_env:
-                raise click.ClickException("With --clone you must either "
-                    "have a virtualenv activated or specify one with --shared-env")
+            raise click.ClickException("With --clone you must either "
+                "have a virtualenv activated or specify one with --shared-env")
 
         repos_base = DEFAULTSECTION.get('repos_base')
         if not repos_base:
