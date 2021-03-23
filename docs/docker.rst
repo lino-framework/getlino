@@ -6,7 +6,7 @@ Using Docker to test getlino
 
 Testing getlino is quite different from testing Lino itself in that getlino is a
 tool that modifies the system configuration of a Linux machine.  You obviously
-don't want it to this on the notebook you are using for development.
+don't want it to do this on the computer you are using for development.
 
 .. highlight:: console
 
@@ -15,25 +15,19 @@ Quick introduction to Docker
 
 A Docker **container** is like a virtual machine, but it stores only the things
 that you changed after installing the **image**. A Docker **image** contains a
-whole operating system.
+whole operating system:.
 
-.. code-block::
-
-  $ go getlino
-  $ ./prep
-
-The :xfile:`prep.sh` file of the getlino repository will build a set of Docker
-images we need for running our test suite.  You don't need to run it before
-every test suite, only once.
+Running :cmd:`inv prep` in the getlino repository will build a set of Docker
+images needed for running the getlino test suite.  You don't need to run it
+before every test run, only once after each modification in the getlino source
+code.
 
 - ``debian_updated`` = a virgin Debian buster + apt upgrade + create a user "lino"
 - ``debian_with_getlino`` = `debian_updated` + add the current getlino source files
 - ``ubuntu_updated`` : same as `debian_updated` but with Ubuntu
 - ``ubuntu_with_getlino`` : same as `debian_with_getlino` but with Ubuntu
 
-You can see the available docker images on your computer:
-
-.. code-block::
+You can see the available docker images on your computer::
 
   $ docker image ls
   REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
@@ -45,10 +39,8 @@ You can see the available docker images on your computer:
   debian                buster              1b686a95ddbf        6 weeks ago         114MB
 
 
-How to run an interactive session in a docker container using one of those
-images:
-
-.. code-block::
+You can run an interactive session in a docker container using one of those
+images::
 
   $ docker run -it debian_with_getlino /bin/bash
   lino@97621d803236:/src$
@@ -57,9 +49,8 @@ images:
   than the automatically generated names given by Docker.
 
 The effect of this is that you are now inside a bash session on your container.
-Feel free to play around:
+Feel free to play around::
 
-.. code-block::
 
   lino@97621d803236:/src$ pwd
   /src
@@ -73,9 +64,7 @@ Feel free to play around:
 
 Now hit :kbd:`Ctrl-D` to terminate your bash session.  This will put your
 container into the state "exited".  You can see the status of all your
-containers by saying:
-
-.. code-block::
+containers by saying::
 
   $ docker ps -a
   CONTAINER ID        IMAGE                 COMMAND             CREATED              STATUS                     PORTS               NAMES
@@ -111,7 +100,6 @@ We can verify that the container is still running in the background::
   $ docker ps -a
   CONTAINER ID  IMAGE                COMMAND       CREATED       STATUS          PORTS  NAMES
   97621d803236  debian_with_getlino  "/bin/bash"   2 hours ago   Up 10 seconds          sharp_austin
-
 
 Let's tidy up and remove our container::
 

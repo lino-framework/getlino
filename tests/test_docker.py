@@ -14,6 +14,7 @@ client = docker.from_env(version='auto')
 
 class DockerTestMixin:
     docker_image = None
+    remove_container = True
     tested_applications = ['cosi', 'noi', 'avanti']
 
     def setUp(self):
@@ -27,7 +28,8 @@ class DockerTestMixin:
         if self.docker_image is None:
             return
         self.container.stop()
-        self.container.remove()
+        if self.remove_container:
+            self.container.remove()
 
     def run_docker_command(self, command):
         # exit_code, output = container.exec_run(command, user='lino')
