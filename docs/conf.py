@@ -2,7 +2,7 @@
 import sys,os
 
 sys.path.insert(0, os.path.abspath(".."))
-import  getlino
+import getlino
 
 extensions = []
 intersphinx_mapping = {}
@@ -138,10 +138,10 @@ html_use_opensearch = 'http://getlino.lino-framework.org'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'getlino'
 
-extlinks = {
-  'srcref': (getlino.srcref_url, ''),
-  'djangoticket': ('http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
-}
+extlinks.update(
+  srcref=(getlino.srcref_url, ''),
+  djangoticket=('http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
+)
 
 autosummary_generate = True
 
@@ -149,6 +149,6 @@ todo_include_todos = True
 
 gettext_compact = True
 
-extlinks.update(ticket=('http://bugs.saffre-rumma.net/tickets/Ticket/%s', '#'))
+# extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
 
 suppress_warnings = ['image.nonlocal_uri']

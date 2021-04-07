@@ -259,9 +259,9 @@ Released 19.11.0 to PyPI.
 2019-11-06
 ==========
 
-:cmd:`getlino configure --db-user` option
-now creates the shared database user (:ticket:`3329`).
-The items of :data:`getlino.utils.DB_ENGINES` are no longer named tuples but real objects with methods.
+:cmd:`getlino configure --db-user` option now creates the shared database user.
+The items of :data:`getlino.utils.DB_ENGINES` are no longer named tuples but
+real objects with methods.
 
 
 2019-10-25
