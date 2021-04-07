@@ -18,8 +18,8 @@ The project homepage is https://getlino.lino-framework.org
     """,
     author='Rumma & Ko Ltd',
     author_email='team@lino-framework.org',
-    url="https://getlino.lino-framework.org",
-    license='BSD-2-Clause',
+    url="https://github.com/lino-framework/getlino",
+    license_files=['COPYING'],
     entry_points={
         'console_scripts': ['getlino = getlino.cli:main']
     },
@@ -31,7 +31,7 @@ Environment :: Console
 Framework :: Django
 Intended Audience :: Developers
 Intended Audience :: System Administrators
-License :: OSI Approved :: BSD License
+License :: OSI Approved :: GNU Affero General Public License v3
 Operating System :: OS Independent
 Topic :: System :: Installation/Setup
 Topic :: Software Development :: Libraries :: Python Modules
