@@ -4,6 +4,12 @@
 Changes in `getlino`
 =======================
 
+2021-04-12
+==========
+
+Updated the KNOWN_REPOS in :mod:`getlino.utils`: the following repositories have
+moved to GitLab: lino, xl, noi, cosi, voga, avanti, welfare, weleup, welcht
+
 2021-03-16
 ==========
 
