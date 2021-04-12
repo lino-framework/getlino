@@ -13,7 +13,9 @@ you**. You want to read the  `Lino book <https://www.lino-framework.org>`__
 instead. This repository is for people who want to help with developing the tool
 that you use to install Lino.
 
-The project homepage is https://getlino.lino-framework.org
+- Project homepage: https://github.com/lino-framework/getlino
+- Documentation: https://getlino.lino-framework.org
+- Test results: https://travis-ci.com/github/lino-framework/getlino
 
     """,
     author='Rumma & Ko Ltd',
