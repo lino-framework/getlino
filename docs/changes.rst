@@ -4,6 +4,11 @@
 Changes in `getlino`
 =======================
 
+2021-04-27
+==========
+
+Added a new command :cmd:`getlino list`.
+
 2021-04-12
 ==========
 

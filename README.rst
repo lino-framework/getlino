@@ -5,7 +5,7 @@ The ``getlino`` package
 
 
 
-A command-line tool to install and configure Lino in different environments.
+``getlino`` is a command-line tool for installing Lino in different environments.
 
 Note: If you **just want to install** Lino, then this repository is **not for
 you**. You want to read the  `Lino book <https://www.lino-framework.org>`__

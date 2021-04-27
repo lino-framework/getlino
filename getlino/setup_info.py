@@ -1,12 +1,12 @@
 SETUP_INFO = dict(
     name='getlino',
     version='21.3.4',
-    install_requires=['click', 'virtualenv', 'jinja2', 'distro'],
+    install_requires=['click', 'virtualenv', 'jinja2', 'distro', 'rstgen'],
     # tests_require=['docker', 'atelier'],
     # test_suite='tests',
-    description="Lino installer",
+    description="A command-line tool for installing Lino in different environments.",
     long_description="""
-A command-line tool to install and configure Lino in different environments.
+``getlino`` is a command-line tool for installing Lino in different environments.
 
 Note: If you **just want to install** Lino, then this repository is **not for
 you**. You want to read the  `Lino book <https://www.lino-framework.org>`__
@@ -19,7 +19,7 @@ that you use to install Lino.
 
     """,
     author='Rumma & Ko Ltd',
-    author_email='team@lino-framework.org',
+    author_email='info@lino-framework.org',
     url="https://github.com/lino-framework/getlino",
     license_files=['COPYING'],
     entry_points={

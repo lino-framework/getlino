@@ -267,7 +267,7 @@ add("vilma", "lino-vilma", "https://github.com/lino-framework/vilma", "lino_vilm
 add("voga", "lino-voga", "https://gitlab.com/lino-framework/voga", "lino_voga.lib.voga.settings")
 add("weleup", "lino-weleup", "https://gitlab.com/lino-framework/weleup", "lino_weleup.settings")
 add("welcht", "lino-welcht", "https://gitlab.com/lino-framework/welcht", "lino_welcht.settings")
-add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.lib.ciao.settings")
+# add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.lib.ciao.settings")
 
 add("book", "lino-book", "https://gitlab.com/lino-framework/book")
 add("react", "lino-react", "https://gitlab.com/lino-framework/react", "", "lino_react.react")
@@ -537,7 +537,6 @@ sudo adduser `whoami` {1}"""
         if not self.check_overwrite(pth):
             return False
         if tplname is None:
-
             head, tplname = os.path.split(pth)
         tpl = JINJA_ENV.get_template(tplname)
         s = tpl.render(**context)

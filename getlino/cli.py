@@ -11,18 +11,20 @@ from .setup_info import SETUP_INFO
 
 from .configure import configure
 from .startsite import startsite
+from .list import list
 
 @click.group(help="""
-A command-line tool for installing Lino in different environments.
-See http://getlino.lino-framework.org for more information.
+{}
+See https://getlino.lino-framework.org for more information.
 
 This is getlino version {} running on {}.
-""".format(SETUP_INFO['version'], distro.name(pretty=True)))
+""".format(SETUP_INFO['description'], SETUP_INFO['version'], distro.name(pretty=True)))
 def main():
     pass
 
 main.add_command(configure)
 main.add_command(startsite)
+main.add_command(list)
 
 if __name__ == '__main__':
     main()
