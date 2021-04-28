@@ -7,4 +7,6 @@
 
 Source code: {{package.SETUP_INFO['url']}}
 
+{% if public_url %}
 Documentation: {{public_url}}
+{% endif  %}

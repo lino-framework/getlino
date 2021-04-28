@@ -56,9 +56,9 @@ def list(ctx, rst):
             m = import_module(r.settings_module)
             s = m.Site
             p = import_module(r.package_name.replace("-", "_"))
-            public_url = m.SETUP_INFO['url']
+            public_url = None
             if hasattr(p, 'intersphinx_urls'):
-                public_url = p.intersphinx_urls.get('docs', public_url)
+                public_url = p.intersphinx_urls.get('docs', None)
             context = dict(repo=r, package=p, m=m, site=s, rstgen=rstgen,
                 public_url=public_url)
             click.echo(tpl.render(**context))
