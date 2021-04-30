@@ -258,6 +258,7 @@ add("amici", "lino-amici", "https://gitlab.com/lino-framework/amici", "lino_amic
 add("avanti", "lino-avanti", "https://gitlab.com/lino-framework/avanti", "lino_avanti.lib.avanti.settings")
 add("care", "lino-care", "https://github.com/lino-framework/care", "lino_care.lib.care.settings")
 add("cosi", "lino-cosi", "https://gitlab.com/lino-framework/cosi", "lino_cosi.lib.cosi.settings")
+add("mentori", "lino-mentori", "https://gitlab.com/lino-framework/mentori", "lino_mentori.lib.mentori.settings")
 add("noi", "lino-noi", "https://gitlab.com/lino-framework/noi", "lino_noi.lib.noi.settings")
 add("presto", "lino-presto", "https://gitlab.com/lino-framework/presto", "lino_presto.lib.presto.settings")
 add("pronto", "lino-pronto", "https://github.com/lino-framework/pronto", "lino_pronto.lib.pronto.settings")
@@ -269,9 +270,13 @@ add("weleup", "lino-weleup", "https://gitlab.com/lino-framework/weleup", "lino_w
 add("welcht", "lino-welcht", "https://gitlab.com/lino-framework/welcht", "lino_welcht.settings")
 # add("ciao", "lino-ciao", "https://github.com/lino-framework/ciao", "lino_ciao.lib.ciao.settings")
 
-add("book", "lino-book", "https://gitlab.com/lino-framework/book")
 add("react", "lino-react", "https://gitlab.com/lino-framework/react", "", "lino_react.react")
 add("openui5", "lino-openui5", "https://github.com/lino-framework/openui5", "", "lino_openui5.openui5")
+
+add("book", "lino-book", "https://gitlab.com/lino-framework/book")
+add("cg", "", "https://gitlab.com/lino-framework/cg")
+add("ug", "", "https://gitlab.com/lino-framework/ug")
+add("hg", "", "https://gitlab.com/lino-framework/hg")
 
 # experimental: applications that have no repo on their own
 add("min1", "", "", "lino_book.projects.min1.settings")
