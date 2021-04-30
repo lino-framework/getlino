@@ -2,7 +2,7 @@
 The ``getlino`` package
 =======================
 
-
+Warning: This repository has moved to https://gitlab.com/lino-framework/getlino
 
 
 ``getlino`` is a command-line tool for installing Lino in different environments.
